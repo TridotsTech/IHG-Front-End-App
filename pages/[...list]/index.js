@@ -1,6 +1,6 @@
-import { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { get_category_products, get_category_filters, seo_Image, getCurrentUrl, typesense_search_items } from '@/libs/api';
+import { get_category_products, get_category_filters, seo_Image, getCurrentUrl, typesense_search_items, get_all_masters } from '@/libs/api';
 import dynamic from 'next/dynamic';
 const ProductBox = dynamic(() => import('@/components/Product/ProductBox'))
 const SortBy = dynamic(() => import('@/components/Product/SortBy'))
@@ -22,9 +22,9 @@ import Brands from '@/components/Common/Brands';
 import Typesense from '@/components/Product/filters/Typesense';
 
 
-export default function List({ productRoute, filterInfo, currentId, params }) {
+export default function List({ productRoute, filterInfo, currentId, params, mastersData }) {
 
-
+  console.log('maste', mastersData)
 
   const router = useRouter();
   let [productList, setProductList] = useState([]);
@@ -478,8 +478,9 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [priceBetween, setPriceBetween] = useState({ min: 0.0, max: 100 })
-  const [brandsList, setBrandsList] = useState([])
-
+  const [pageNo, setpageNo] = useState(1)
+  const [hasMore, setHasMore] = useState(true);
+  const observer = useRef();
 
   const [filters, setFilters] = useState({
     ...filtersData,
@@ -491,34 +492,38 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
   const buildFilterQuery = () => {
     const filterParams = [];
     const { price_range, stock_range, ...rest } = filters;
-
+  
     if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
     if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
-    if (rest.upcoming_products) filterParams.push(`upcoming_products:${rest.upcoming_products}`);
+    if (rest.hot_product) filterParams.push(`hot_product:${rest.hot_product ? 1 : 0}`);
     if (rest.show_promotion) filterParams.push(`show_promotion:=true`);
     if (rest.in_stock) filterParams.push(`in_stock:=true`);
-    if (rest.sort_by) filterParams.push(`sort_by:=${rest.sort_by}`)
-
+    if (rest.sort_by) filterParams.push(`sort_by:=${rest.sort_by}`);
+  
     [
-      "brands", "color_temp_", "product_type", "has_variants", "custom_in_bundle_item",
+      "brand", "color_temp_", "product_type", "has_variants", "custom_in_bundle_item",
       "item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
-      "power", "input", "material", "body_finish", "warranty",
-      "output_voltage", "output_current"
+      "power", "input", "material", "body_finish", "warranty_",
+      "output_voltage", "output_current", "category_list"
     ].forEach(key => {
-      if (rest[key]?.length) filterParams.push(`${key}:=[${rest[key]}]`);
+      if (rest[key]?.length) {
+        const values = rest[key].map(v => `"${v}"`).join(",");
+        filterParams.push(`${key}:=[${values}]`);
+      }
     });
-
-    if (price_range?.min > 0) {
+  
+    if (price_range?.min > 0 && price_range?.max) {
       filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
     }
     if (stock_range?.min > 0 && stock_range?.max) {
       filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
     }
-
-    console.log('params', filterParams);
+  
+    console.log("params", filterParams);
     return filterParams.length > 0 ? filterParams.join(" && ") : "";
   };
+  
 
 
   // console.log('type',filters)
@@ -549,7 +554,9 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
   //           no_product = true
   //           // setNoProduct(no_product)
   //           // setTimeout(() => {
-  //           let updatedPageNo = filters.page_no + 1;
+  //           let updatedPageNo = pageNo + 1;
+  //           setpageNo(updatedPageNo)
+  //           console.log(pageNo)
   //           let obj = { ...filters, page_no: updatedPageNo };
   //           setPageLoading(true);
   //           dispatch(setFilter(obj));
@@ -570,15 +577,15 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
   // }, [no_product, results]);
 
 
-  const fetchResults = async () => {
+  const fetchResults = async (reset = false) => {
     setLoading(true);
     setError(null);
 
     const queryParams = new URLSearchParams({
       q: '*',
       query_by: "item_name,item_description,brand",
-      page: "1",
-      per_page: "30",
+      page: pageNo,
+      per_page: "5",
       query_by_weights: "1,2,3",
       ...buildFilterQuery() && { filter_by: buildFilterQuery() },
     });
@@ -586,8 +593,19 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
     try {
       console.log('query', buildFilterQuery);
       const data = await typesense_search_items(queryParams);
-
-      setResults(data.hits || []);
+      if (data.hits.length === 0) {
+        setHasMore(false);
+      } else {
+        setHasMore(true);
+        setResults((prevResults) =>
+          reset ? data.hits : [...prevResults, ...data.hits]
+        );
+        // if(reset){
+        //   setResults([data.hits])
+        // } else{
+        //   setResults((prevResults) => [...prevResults, ...data.hits]);
+        // }
+      }
     } catch (err) {
       setError(err.message || "An error occurred while fetching data.");
       setResults([])
@@ -605,6 +623,41 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
   useEffect(() => {
     dispatch(setFilter(filters));
   }, [filters]);
+
+  const lastResultRef = useCallback(
+      (node) => {
+        if (observer.current) observer.current.disconnect(); // Disconnect previous observer
+  
+        observer.current = new IntersectionObserver((entries) => {
+          if (entries[0].isIntersecting && hasMore) {
+            setpageNo((prevPage) => prevPage + 1); // Increment page number
+          }
+        });
+  
+        if (node) observer.current.observe(node); // Observe the last result element
+      },
+      [hasMore]
+    );
+
+
+    useEffect(()=>{
+      setTimeout(()=>{
+        fetchResults()
+      }, 500)
+    }, [pageNo])
+
+    const handleFilterClick  = ()=>{
+      fetchResults(true);
+      setResults([])
+      setpageNo(1)
+    }
+
+    // useEffect(()=>{
+    //   setTimeout(()=>{
+    //     applyFilter()
+    //   }, 500)
+    // }, [filters])
+   
 
   // useEffect(() => {
   //     fetchResults();
@@ -662,7 +715,7 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
         </div> */}
 
         <div className="md:hidden flex-[0_0_calc(20%_-_7px)] mr-[10px] sticky top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
-          {filtersList && <Filters filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={fetchResults} />}
+          {filtersList && <Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} />}
         </div>
 
         <div className="lg:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
@@ -742,28 +795,29 @@ export default function List({ productRoute, filterInfo, currentId, params }) {
               <Skeleton />
               :
               <>
-                {((productList.length != 0 && Array.isArray(productList)) && productBoxView) ? <ProductBox productList={results} rowCount={'flex-[0_0_calc(33.333%_-_8px)]'} productBoxView={productBoxView} /> :
-                  <>{theme_settings && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
+                {((results.length != 0 && Array.isArray(results)) && productBoxView) ? <ProductBox productList={results} rowCount={'flex-[0_0_calc(33.333%_-_8px)]'} productBoxView={productBoxView} /> :
+                  <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
                 }
               </>
             }
-            <div className='more' ref={cardref}></div>
+            {/* <div className='more' ref={cardref}></div> */}
+            <div className="more mt-20" ref={lastResultRef}></div>
 
-            {/* {pageLoading &&
+            {loading &&
               <div id="wave">
                 <span className="dot"></span>
                 <span className="dot"></span>
                 <span className="dot"></span>
               </div>
-            } */}
+            }
 
           </>
         </div>
 
 
-        <div>
+        {/* <div>
           <Typesense />
-        </div>
+        </div> */}
 
       </div>
 
@@ -915,8 +969,14 @@ export async function getServerSideProps({ params }) {
     }
   }
 
+  let mastersData = []
+  const mastersRes = await get_all_masters();
+  if (mastersRes && mastersRes.message){
+      mastersData = mastersRes.message
+  }
+
   return {
-    props: { productRoute, filterInfo, currentId, params }
+    props: { productRoute, filterInfo, currentId, params, mastersData }
   }
 
 }

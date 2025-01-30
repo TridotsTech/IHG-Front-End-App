@@ -1657,3 +1657,26 @@ input[type="range"] {
       border-radius: 20px;
   }
 }
+
+
+@keyframes scan {
+  0% {
+    top: 0;
+  }
+  100% {
+    top: 100%;
+  }
+}
+
+.animate-scan {
+  animation: scan 2s linear infinite;
+}
+
+video{
+  width: 100% !important;
+  height: 60vh;
+}
+
+canvas{
+  display: none !important;
+}

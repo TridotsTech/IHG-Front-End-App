@@ -13,7 +13,7 @@ import clsx from 'clsx'
 import RangeSlider from './RangeSlider'
 import { typesense_search_items } from '@/libs/api'
 import MultiSelectBox from './MultiSelect'
-export default function Filters({ filtersList, ProductFilter, closeModal, clearFilter, filters, setFilters, priceBetween, setPriceBetween, fetchResults }) {
+export default function Filters({ mastersData, filtersList, ProductFilter, closeModal, clearFilter, filters, setFilters, priceBetween, setPriceBetween, fetchResults }) {
   const input_classname = "border bordert-[1px] border-[#0000000D] p-[5px_10px] text-[14px] rounded-[5px] mt-[5px] w-full"
   const label_classname = "text-[16px] md:text-[13px] font-bold"
   const [switchValues, setSwitchValues] = useState({
@@ -64,7 +64,7 @@ export default function Filters({ filtersList, ProductFilter, closeModal, clearF
   //     // console.log('Perform search for:', inputText);
   //   }, 300); // Adjust the debounce delay (in milliseconds) 
   // };
-  const options = ["LIGHTING", "Option 2", "Option 3", "Option 4"];
+  const options = ["LTECH", "Option 2", "Option 3", "Option 4"];
   let sortByOptions = [
     { text: 'Relevance', value: '' },
     { text: 'Created Date', value: 'created_date' },
@@ -77,24 +77,25 @@ export default function Filters({ filtersList, ProductFilter, closeModal, clearF
   ]
 
   const multiSelectOptions = [
-    { type: "brands", label: "Brands", options: options },
+    { type: "brand", label: "Brands", options: mastersData.brand || [] },
+    { type: "item_group", label: "Item Group", options: mastersData.item_group || [] },
     { type: "product_type", label: "Product Type", options: options },
-    { type: "has_variants", label: "Has Variants", options: options },
-    { type: "custom_in_bundle_item", label: "Custom In Bundle Item", options: options },
-    { type: "item_group", label: "Category List", options: options },
-    { type: "beam_angle", label: "Beam Angle", options: options },
-    { type: "lumen_output", label: "Lumen Output", options: options },
-    { type: "mounting", label: "Mounting", options: options },
-    { type: "ip_rate", label: "IP Rate", options: options },
-    { type: "lamp_type", label: "Lamp Type", options: options },
-    { type: "power", label: "Power", options: options },
-    { type: "input", label: "Input", options: options },
-    { type: "material", label: "Material", options: options },
-    { type: "body_finish", label: "Body Finish", options: options },
-    { type: "warranty", label: "Warranty", options: options },
-    { type: "output_voltage", label: "Output Voltage", options: options },
-    { type: "output_current", label: "Output Current", options: options },
-    { type: "color_temp_", label: "Color Temp", options: options },
+    { type: "has_variants", label: "Has Variants", options: mastersData.has_variants || [] },
+    { type: "custom_in_bundle_item", label: "Custom In Bundle Item", options: mastersData.custom_in_bundle_item || [] },
+    { type: "category_list", label: "Category List", options: mastersData.category_list || [] },
+    { type: "beam_angle", label: "Beam Angle", options: mastersData.beam_angle },
+    { type: "lumen_output", label: "Lumen Output", options: mastersData.lumen_output || [] },
+    { type: "mounting", label: "Mounting", options: mastersData.mounting || [] },
+    { type: "ip_rate", label: "IP Rate", options: mastersData.ip_rate || [] },
+    { type: "lamp_type", label: "Lamp Type", options: mastersData.lamp_type || [] },
+    { type: "power", label: "Power", options: mastersData.power || [] },
+    { type: "input", label: "Input", options: mastersData.input || [] },
+    { type: "material", label: "Material", options: mastersData.material || [] },
+    { type: "body_finish", label: "Body Finish", options: mastersData.body_finish || [] },
+    { type: "warranty_", label: "Warranty", options: mastersData.warranty_ || [] },
+    { type: "output_voltage", label: "Output Voltage", options: mastersData.output_voltage || [] },
+    { type: "output_current", label: "Output Current", options: mastersData.output_current || [] },
+    { type: "color_temp_", label: "Color Temp", options: mastersData.color_temp_ || [] },
   ];
   const handleSelectionChange = (type, selectedArray) => {
     console.log("Selected Options:", selectedArray);
@@ -132,7 +133,7 @@ export default function Filters({ filtersList, ProductFilter, closeModal, clearF
         </div> */}
 
         <div>
-          <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'upcoming_products'} checked={filters.upcoming_products} label2={"Show Upcoming products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"InStock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
         </div>

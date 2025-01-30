@@ -559,3 +559,10 @@ export async function typesense_search_items(queryParams) {
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
+
+export async function get_all_masters() {
+    let api = `http://178.128.108.196/api/method/igh_search.igh_search.api.get_all_masters`
+    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
+    const response = await fetch(api, { method: 'GET', headers: myHead, })
+    return await response.json()
+}

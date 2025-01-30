@@ -390,6 +390,12 @@ export default function MainHeader({ header_template, theme_settings, website_se
                       </div>
                       <p className='text-[13px] text-center line-clamp-1 bottom-[-21px]'>Cart</p>
                     </div> */}
+
+                    <div>
+                      <Link href={"/scanner"}>
+                        <Image src="/scanner.svg" height={20} width={20} />
+                      </Link>
+                    </div>
                     <Link href={"/"}>Help</Link>
 
                     {/* <div onClick={() => { openModal('Wishlist') }} class=" cursor-pointer  flex items-center flex-col justify-center">

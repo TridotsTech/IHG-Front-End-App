@@ -88,15 +88,17 @@ const LoginScreen = ({ webSettings, modal, checkModal, hide, cssClass, visible, 
 
     return (
         <div className={`${cssClass ? cssClass : 'h-full'} flex gap-5 w-full md:items-center md:justify-center`}>
-            <div className='md:hidden flex-[0_0_calc(60%_-_10px)] h-full'>
+            {/* <div className='md:hidden flex-[0_0_calc(60%_-_10px)] h-full'>
                 {webSettings && webSettings.websiteSettings && webSettings.websiteSettings.login_image && <Image src={check_Image(webSettings.websiteSettings.login_image)} height={200} width={400} alt={'go-1 Market'} className={`w-full h-full rounded-[10px_0_0_10px]`} />}
-            </div>
-            {webSettings && <div className={`lg:flex-[0_0_calc(40%_-_10px)] flex flex-col justify-center md:px-[10px] lg:pr-5`}>
+            </div> */}
+            {webSettings && <div className={`flex w-full flex-col justify-center items-center md:px-[10px]`}>
+                <div className='w-full lg:w-[450px] lg:h-[450px]'>
                 {modal == 'login' ? <Login checkModal={(mod) => checkModal(mod)} hide={hide} />
                     : modal == 'signup' ? <SignUp webSettings={webSettings.websiteSettings} checkModal={(mod) => checkModal(mod)} hide={hide} />
                         : modal == 'forget' ? <Forget checkModal={(mod) => checkModal(mod)} hide={hide} visible={visible} setVisible={setVisible} />
                             : modal == 'otp' ? <OTP checkModal={(mod) => checkModal(mod)} hide={hide} />
                                 : <>{modal}</>}
+                </div>
                 {/* <div> */}
                     {/* <div className='flex h-[50px] w-[75px] rounded-[10px] border cursor-pointer items-center justify-center '> */}
                         {/* <Image height={20} className='h-[25px] w-[25px] object-contain' width={20} alt='google' src={'/google-login.svg'} /> */}

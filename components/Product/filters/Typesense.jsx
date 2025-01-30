@@ -1,4 +1,4 @@
-// import React, { useEffect, useState } from "react";
+// import React, { useEffect, useState, useRef, useCallback } from "react";
 // import RangeSlider from "./RangeSlider";
 // import { useSelector, useDispatch } from "react-redux";
 // import { setFilter } from "@/redux/slice/filtersList";
@@ -7,6 +7,9 @@
 //   const [results, setResults] = useState([]);
 //   const [loading, setLoading] = useState(false);
 //   const [error, setError] = useState(null);
+//   const [page, setPage] = useState(1);
+//   const [hasMore, setHasMore] = useState(true); // Track if more results are available
+//   const observer = useRef(); // Ref for Intersection Observer
 
 //   const filtersData = useSelector((state) => state.FiltersList);
 //   const dispatch = useDispatch();
@@ -14,7 +17,7 @@
 //   const [filters, setFilters] = useState({
 //     ...filtersData,
 //     price_range: { min: 0, max: 100000 },
-//     stock_range: { min: 0, max: 200}
+//     stock_range: { min: 0, max: 200 },
 //   });
 
 //   const buildFilterQuery = () => {
@@ -36,17 +39,16 @@
 //     }
 //     return filterParams.length > 0 ? filterParams.join(" && ") : "";
 //   };
-  
 
-//   const fetchResults = async () => {
+//   const fetchResults = async (pageNumber = 1) => {
 //     setLoading(true);
 //     setError(null);
 
-//     const filterQuery = buildFilterQuery(); 
+//     const filterQuery = buildFilterQuery();
 //     const queryParams = new URLSearchParams({
 //       q: "*",
 //       query_by: "item_name,item_description,brand",
-//       page: "1",
+//       page: pageNumber.toString(),
 //       per_page: "30",
 //       query_by_weights: "1,2,3",
 //       ...(filterQuery && { filter_by: filterQuery }),
@@ -69,7 +71,11 @@
 //       }
 
 //       const data = await response.json();
-//       setResults(data.hits || []);
+//       if (data.hits.length === 0) {
+//         setHasMore(false); // No more results to fetch
+//       } else {
+//         setResults((prevResults) => [...prevResults, ...data.hits]); // Append new results
+//       }
 //     } catch (err) {
 //       setError(err.message || "An error occurred while fetching data.");
 //     } finally {
@@ -80,6 +86,27 @@
 //   useEffect(() => {
 //     dispatch(setFilter(filters));
 //   }, [filters, dispatch]);
+
+//   useEffect(() => {
+//     fetchResults(page); // Fetch results for the current page
+//   }, [page]);
+
+//   // Infinite scroll logic
+//   const lastResultRef = useCallback(
+//     (node) => {
+//       if (loading) return; // Don't trigger if already loading
+//       if (observer.current) observer.current.disconnect(); // Disconnect previous observer
+
+//       observer.current = new IntersectionObserver((entries) => {
+//         if (entries[0].isIntersecting && hasMore) {
+//           setPage((prevPage) => prevPage + 1); // Increment page number
+//         }
+//       });
+
+//       if (node) observer.current.observe(node); // Observe the last result element
+//     },
+//     [loading, hasMore]
+//   );
 
 //   return (
 //     <div className="p-4">
@@ -176,25 +203,41 @@
 //           />
 //         </div>
 
-//         <button onClick={fetchResults} className="p-2 bg-blue-500 text-white">
+//         <button onClick={() => fetchResults(1)} className="p-2 bg-blue-500 text-white">
 //           Submit
 //         </button>
 //       </div>
 
-    
 //       {loading && <p>Loading...</p>}
 //       {error && <p className="text-red-500">Error: {error}</p>}
 //       {!loading && !error && (
 //         <div>
 //           {results.length > 0 ? (
 //             <ul className="list-disc pl-5">
-//               {results.map((result, index) => (
-//                 <li key={index} className="mb-2">
-//                   <strong>{result.document.item_name}</strong>:{" "}
-//                   {result.document.item_description} (Brand:{" "}
-//                   {result.document.brand})
-//                 </li>
-//               ))}
+//               {results.map((result, index) => {
+//                 if (results.length === index + 1) {
+//                   // Attach the ref to the last result element
+//                   return (
+//                     <li
+//                       key={index}
+//                       ref={lastResultRef}
+//                       className="mb-2"
+//                     >
+//                       <strong>{result.document.item_name}</strong>:{" "}
+//                       {result.document.item_description} (Brand:{" "}
+//                       {result.document.brand})
+//                     </li>
+//                   );
+//                 } else {
+//                   return (
+//                     <li key={index} className="mb-2">
+//                       <strong>{result.document.item_name}</strong>:{" "}
+//                       {result.document.item_description} (Brand:{" "}
+//                       {result.document.brand})
+//                     </li>
+//                   );
+//                 }
+//               })}
 //             </ul>
 //           ) : (
 //             <p>No results found.</p>
@@ -208,176 +251,73 @@
 // export default TypesenseSearch;
 
 
-// "use client"
-// import { useEffect, useState } from "react";
-// import ScanbotSDK from "scanbot-web-sdk/ui";
 
-// const App = () => {
-//   const [scanResult, setScanResult] = useState("");
 
-//   useEffect(() => {
-//     const init = async () => {
-//       await ScanbotSDK.initialize({
-//         licenseKey: "",
-//       });
-//     };
 
-//     init();
-//   }, []);
 
-//   const startScanner = async () => {
-//     const config = new ScanbotSDK.UI.Config.BarcodeScannerConfiguration();
 
-//     const result = await ScanbotSDK.UI.createBarcodeScanner(config);
 
-//     if (result && result.items.length > 0) {
-//       setScanResult(result.items[0].text);
+
+
+
+
+
+// const fetchResults = async (reset = false) => {
+//   setLoading(true);
+//   setError(null);
+
+//   // Reset page number and results if filters are applied
+//   if (reset) {
+//     setPageNo(1); // Reset to the first page
+//     setResults([]); // Clear existing results
+//     setHasMore(true); // Reset hasMore flag
+//   }
+
+//   const queryParams = new URLSearchParams({
+//     q: '*',
+//     query_by: "item_name,item_description,brand",
+//     page: pageNo.toString(), // Ensure pageNo is a string
+//     per_page: "5", // Fetch 5 items per page
+//     query_by_weights: "1,2,3",
+//     ...(buildFilterQuery() && { filter_by: buildFilterQuery() }), // Add filter query if it exists
+//   });
+
+//   try {
+//     console.log('query', buildFilterQuery());
+//     const data = await typesense_search_items(queryParams);
+
+//     if (data.hits.length === 0) {
+//       setHasMore(false); // No more results to fetch
+//     } else {
+//       // Append new results if not resetting, otherwise replace results
+//       setResults((prevResults) => reset ? data.hits : [...prevResults, ...data.hits]);
 //     }
-
-//     return result;
-//   };
-
-//   return (
-//     <div>
-//       <button onClick={startScanner}>Start Scanner</button>
-//       {scanResult && <div>{scanResult}</div>}
-//     </div>
-//   );
+//   } catch (err) {
+//     setError(err.message || "An error occurred while fetching data.");
+//     setResults([]); // Clear results on error
+//   } finally {
+//     setLoading(false);
+//   }
 // };
 
-// export default App;
+// // Call this function when filters are applied
+// const applyFilters = () => {
+//   fetchResults(true); // Reset pagination and fetch new results
+// };
 
+// // Call this function for infinite scroll
+// const loadMoreResults = () => {
+//   if (hasMore && !loading) {
+//     setPageNo((prevPageNo) => prevPageNo + 1); // Increment page number
+//   }
+// };
 
+// // Use useEffect to trigger fetchResults when pageNo changes
+// useEffect(() => {
+//   fetchResults();
+// }, [pageNo]);
 
-
-
-
-
-import React, { useEffect, useRef, useState } from 'react';
-import Quagga from 'quagga';
-
-const App = (props) => {
-
-  const firstUpdate = useRef(true);
-  const [isStart, setIsStart] = useState(false);
-  const [barcode, setBarcode] = useState('');
-
-  useEffect(() => {
-    return () => {
-      if (isStart) stopScanner();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (firstUpdate.current) {
-      firstUpdate.current = false;
-      return;
-    }
-
-    if (isStart) startScanner();
-    else stopScanner();
-  }, [isStart]);
-
-  const _onDetected = res => {
-    // stopScanner();
-    setBarcode(res.codeResult.code);
-  };
-
-  const startScanner = () => {
-    Quagga.init(
-      {
-        inputStream: {
-          type: 'LiveStream',
-          target: document.querySelector('#scanner-container'),
-          constraints: {
-            facingMode: 'environment' // or user
-          }
-        },
-        numOfWorkers: navigator.hardwareConcurrency,
-        locate: true,
-        frequency: 1,
-        debug: {
-          drawBoundingBox: true,
-          showFrequency: true,
-          drawScanline: true,
-          showPattern: true
-        },
-        multiple: false,
-        locator: {
-          halfSample: false,
-          patchSize: 'large', // x-small, small, medium, large, x-large
-          debug: {
-            showCanvas: false,
-            showPatches: false,
-            showFoundPatches: false,
-            showSkeleton: false,
-            showLabels: false,
-            showPatchLabels: false,
-            showRemainingPatchLabels: false,
-            boxFromPatches: {
-              showTransformed: false,
-              showTransformedBox: false,
-              showBB: false
-            }
-          }
-        },
-        decoder: {
-          readers: props.readers
-        }
-      },
-      err => {
-        if (err) {
-          return console.log(err);
-        }
-        Quagga.start();
-      }
-    );
-    Quagga.onDetected(_onDetected);
-    Quagga.onProcessed(result => {
-      let drawingCtx = Quagga.canvas.ctx.overlay,
-        drawingCanvas = Quagga.canvas.dom.overlay;
-
-      if (result) {
-        if (result.boxes) {
-          drawingCtx.clearRect(
-            0,
-            0,
-            parseInt(drawingCanvas.getAttribute('width')),
-            parseInt(drawingCanvas.getAttribute('height'))
-          );
-          result.boxes.filter(box => box !== result.box).forEach(box => {
-            Quagga.ImageDebug.drawPath(box, { x: 0, y: 1 }, drawingCtx, {
-              color: 'green',
-              lineWidth: 2
-            });
-          });
-        }
-
-        if (result.box) {
-          Quagga.ImageDebug.drawPath(result.box, { x: 0, y: 1 }, drawingCtx, { color: '#00F', lineWidth: 2 });
-        }
-
-        if (result.codeResult && result.codeResult.code) {
-          Quagga.ImageDebug.drawPath(result.line, { x: 'x', y: 'y' }, drawingCtx, { color: 'red', lineWidth: 3 });
-        }
-      }
-    });
-  };
-
-  const stopScanner = () => {
-    Quagga.offProcessed();
-    Quagga.offDetected();
-    Quagga.stop();
-  };
-
-  return <div>
-    <h3>Barcode scanner in React - <a href="https://www.cluemediator.com/" target="_blank">Clue Mediator</a></h3>
-    <button onClick={() => setIsStart(prevStart => !prevStart)} style={{ marginBottom: 20 }}>{isStart ? 'Stop' : 'Start'}</button>
-    {isStart && <React.Fragment>
-      <div id="scanner-container" />
-      <span>Barcode: {barcode}</span>
-    </React.Fragment>}
-  </div>
-}
-
-export default App;
+// // Use useEffect to trigger fetchResults when filters change
+// useEffect(() => {
+//   applyFilters(); // Reset and fetch results when filters change
+// }, [filters]);

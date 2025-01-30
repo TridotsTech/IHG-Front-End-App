@@ -65,8 +65,11 @@ export default function LogIn({ hide, checkModal }) {
             }
             let val = await login(datas);
             if (val.message.status == 'success') {
-                localStorage['api_key'] = val.message.api_key
-                localStorage['api_secret'] = val.message.api_secret
+                const dateNow = new Date();
+                dateNow.setDate(dateNow.getDate() + 30);
+                Cookies.set('api_key',val.message.api_key, { expires: dateNow })
+                Cookies.set('api_secret',val.message.api_secret, { expires: dateNow })
+                // localStorage['api_secret'] = val.message.api_secret
 
                 getCustomerInfo({ email: data.email, guest_id: localStorage['customerRefId'] }, datas)
                 // localStorage['customerUser_id'] = val.message.user_id;
@@ -224,7 +227,7 @@ export default function LogIn({ hide, checkModal }) {
 
             <div className='w-full text-center'>
                 <h2 className='text-[20px] font-semibold'>Welcome</h2>
-                <p className='text-[14px]'>Don't have an account? <span className='primary_color text-[15px] cursor-pointer' onClick={() => checkModal('signup')}>Sign Up</span></p>
+                {/* <p className='text-[14px]'>Don't have an account? <span className='primary_color text-[15px] cursor-pointer' onClick={() => checkModal('signup')}>Sign Up</span></p> */}
             </div>
             <form onSubmit={handleSubmit((data) => log_in(data))} autoComplete='off'>
                 <div className={`flex flex-col py-5 relative`}>
@@ -259,10 +262,10 @@ export default function LogIn({ hide, checkModal }) {
                 {/* {wrong && <p className='text-center pt-[5px] text-[#ff1010] font-semibold'>Please check your email or password</p>} */}
             </form>
 
-            <div onClick={() => checkModal('otp')} className='flex gap-[10px] mt-5 w-[75%] md:w-full m-[0_auto] h-[45px] cursor-pointer rounded-[5px] border items-center justify-center '>
+            {/* <div onClick={() => checkModal('otp')} className='flex gap-[10px] mt-5 w-[75%] md:w-full m-[0_auto] h-[45px] cursor-pointer rounded-[5px] border items-center justify-center '>
                 <Image height={20} width={20} alt='google' src={'/login/otp.svg'} />
                 <p className=' font-[500]' >Sign In with OTP</p>
-            </div>
+            </div> */}
 
             {/* <div className='m-[0_auto] py-[10px]'> */}
                 {/* <GoogleLogin

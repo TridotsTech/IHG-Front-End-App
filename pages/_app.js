@@ -215,7 +215,7 @@ export default function App({ Component, pageProps }) {
             }
 
 
-            {(website_settings && website_settings.all_categories) && <BrandCategory category={website_settings.all_categories} />}
+            {(website_settings && website_settings.all_categories) && (router.pathname != "/login" && router.pathname != "/seller/[login]") && <BrandCategory category={website_settings.all_categories} />}
 
             {router.pathname != "/login" && router.pathname != "/seller/[login]" &&
               <div className='md:hidden lg:min-h-[345px] lg:w-full your-element'>

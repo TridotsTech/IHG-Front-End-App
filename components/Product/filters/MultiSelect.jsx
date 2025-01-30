@@ -63,11 +63,9 @@ const MultiSelectBox = ({ options, onSelectionChange, type, label, label_classna
   }, [isOpen]);
 
   return (
-    <div className="relative w-full py-2" ref={dropdownRef}>
-      {/* Label */}
+    <div className="relative w-full my-3" ref={dropdownRef}>
       <p className={`${label_classname}`}>{label} ({options.length})</p>
 
-      {/* Selected options */}
       <div
         onClick={toggleDropdown}
         className="w-full border rounded-lg p-2 flex justify-between gap-3 cursor-pointer"
