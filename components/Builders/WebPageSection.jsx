@@ -40,6 +40,7 @@ const Sliders = dynamic(() => import('@/components/Sliders/index'));
 
 export default function WebPageSection({ data, i }) {
   // console.log(data)
+  data = []
 
   let [isMobile, setIsMobile] = useState(false);
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
@@ -154,6 +155,42 @@ export default function WebPageSection({ data, i }) {
     return (
       <>
         {/* <div className={`mb-[20px] your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background' || data.section_name == 'Category Product') ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[700px] w-full md:min-h-[200px]' : ''}`}> */}
+        <div className="main-width bg-cover lg:mt-10">
+        <div className="p-4 lg:p-[60px] bg-cover" style={{ backgroundImage: 'url("/Home/Hero.png")' }}>
+          <div>
+            <h1 className="font-bold text-[24px] lg:text-[48px]">Elevate Your Shopping Experience</h1>
+            <p className="mt-2 text-sm lg:text-[20px] font-medium text-[#606060] w-full lg:w-[55%] leading-[24px] lg:leading-[36px]">Explore a world of innovation with our handpicked selection of iPhones and top-notch smartphones. Elevate your daily routine with the latest in mobile technology.</p>
+
+            <button className="py-1 lg:py-2 px-2 lg:px-3 rounded bg-black font-bold text-xs lg:text-lg text-white mt-4">
+              ⚡Shop Now
+            </button>
+          </div>
+
+          <div className="lg:flex space-y-3 justify-between mt-8">
+            <div className="lg:flex gap-4 space-y-2 items-center">
+              <div className="flex items-center gap-2">
+                <Image src="/Home/shield.png" width={13} height={16} alt="" />
+                <p className="lg:text-lg font-bold">Certifiied Sellers</p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Image src="/Home/star.png" width={13} height={16} alt="" />
+                <p className="lg:text-lg font-bold">12 Months Warranty</p>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <Image src="/Home/calendar.png" width={13} height={16} alt="" />
+                <p className="lg:text-lg font-bold">14 Days Returns</p>
+              </div>
+            </div>
+
+            <div className="border rounded bg-white py-1 lg:py-2 px-2 lg:px-3 flex gap-1 w-fit">
+              <p className="text-sm lg:text-base">Loved by <span className="font-bold">30,00,000</span> Customers</p>
+              <Image src="/Home/Heart.png" width={24} height={24} />
+            </div>
+          </div>
+        </div>
+      </div>
         {
           data.section_name == "Content Slider" &&
           data.sliders &&
@@ -169,10 +206,13 @@ export default function WebPageSection({ data, i }) {
           )
         }
 
+
+
+
         {
-          data.section_name == "Content Slider" && (
+          true && (
             <div>
-              <div className="main-width py-10 px-2 lg:px-0 bg-white">
+              <div className="main-width py-10  bg-white">
                  <ViewAll data={{ title: "Browse our Categories" }} viewAll={true} />
 
                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12">
@@ -191,14 +231,14 @@ export default function WebPageSection({ data, i }) {
         }
 
         {
-          data.section_name == "Content Slider" && (
+          true && (
            <ChooseCategory />
           )
         }
 
 
         {
-          data.section_name == "Content Slider" && (
+          true && (
             <Brands />
           )
         }

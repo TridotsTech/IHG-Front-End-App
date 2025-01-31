@@ -104,8 +104,8 @@ const initialState = {
         price_range: { min: 0, max: 1000 },
         stock_range: { min: 0, max: 1000 },
         product_type: [],
-        has_variants: [],
-        custom_in_bundle_item: [],
+        has_variants: false,
+        custom_in_bundle_item: false,
         category_list: [],
         item_group: [],
         beam_angle: [],
@@ -138,8 +138,8 @@ const FiltersList = createSlice({
             });
         },
         
-        resetFilters() {
-            return initialState;
+        resetFilters(state) {
+            state.filtersValue = { ...initialState.filtersValue };
         },
     },
 });

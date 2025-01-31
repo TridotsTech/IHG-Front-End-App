@@ -9,7 +9,7 @@ const MainHeader = dynamic(() => import('./webheader/MainHeader'))
 const Navbar = dynamic(() => import('./webheader/Navbar'))
 import Link from 'next/link'
 
-export default function WebHeader({ website_settings }) {
+export default function WebHeader({ website_settings,categoryData }) {
   //  console.log(website_settings)
   let [websiteSettings, set_website_settings] = useState();
   let [staticMenu, setStaticMenu] = useState([]);
@@ -54,13 +54,13 @@ export default function WebHeader({ website_settings }) {
                 <div className="main-width !m-[0_auto]">
                 {/* {console.log(websiteSettings,"websiteSettings")} */}
                   {/* {(staticMenu && staticMenu.length != 0) ? <StaticMenuSec staticMenu={staticMenu} /> : <div></div> } */}
-                  {websiteSettings.default_header && <MainHeader header_template={websiteSettings.default_header} theme_settings={websiteSettings.app_settings} all_categories={websiteSettings.all_categories} website_settings={website_settings} />}
+                  {websiteSettings.default_header && <MainHeader header_template={websiteSettings.default_header} theme_settings={websiteSettings.app_settings} all_categories={websiteSettings.all_categories} website_settings={website_settings} categoryData={categoryData} />}
                 </div>
               </div>
               {/* headerWidth_r */}
               <div className=" p-[10px_0_5px_0] bg-[#00000008] ">
                 {/* {websiteSettings.all_categories && <Navbar all_categories={websiteSettings.all_categories} />} */}
-                {websiteSettings.default_header && <Navbar all_categories={websiteSettings.all_categories} />}
+                {websiteSettings.default_header && <Navbar all_categories={websiteSettings.all_categories} categoryData={categoryData} />}
               </div>
             </div>
           </div>

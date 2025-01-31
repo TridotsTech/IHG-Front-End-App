@@ -1,7 +1,7 @@
 import '@/styles/globals.scss'
-import { useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 import ErrorBoundary from '@/components/Exception/ErrorBoundary'
-import { websiteSettings, check_Image } from '@/libs/api';
+import { websiteSettings, check_Image, get_all_category, get_all_masters } from '@/libs/api';
 import store from '@/redux/store'
 import dynamic from 'next/dynamic';
 const BottomTabs = dynamic(() => import('@/components/Common/BottomTabs'))
@@ -22,8 +22,13 @@ import 'rodal/lib/rodal.css'
 import 'react-multi-carousel/lib/styles.css';
 import 'tailwindcss/tailwind.css';
 const BrandCategory = dynamic(() => import('@/components/Common/BrandCategory'))
+import settig from '@/libs/websiteSettings'
+console.log('setting', settig.message)
+
 // import { GoogleOAuthProvider } from '@react-oauth/google';
 // import { Poppins } from 'next/font/google'
+
+
 
 
 // const poppins = Poppins({
@@ -104,12 +109,31 @@ export default function App({ Component, pageProps }) {
   }, [router])
 
   async function get_websiteSettings() {
-    let res = await websiteSettings();
-    if (res && res.message) {
-      website_settings = res.message;
-      setWebsite_settings(website_settings)
+    setWebsite_settings(settig.message);
+    // let res = await websiteSettings();
+    // if (res && res.message) {
+    //   website_settings = res.message;
+    //   setWebsite_settings(website_settings)
+    // }
+  }
+
+  const [categoryData, setCategoryData] = useState([])
+
+  const getCategoryList = async () => {
+    try {
+      const data = await get_all_category()
+      setCategoryData(data.data)
+      console.log('catego', data.data)
+    } catch {
+
     }
   }
+
+
+  useEffect(() => {
+    getCategoryList()
+    getValue()
+  }, [])
 
   // const loadScripts = () => {
   //   // let lightScipt = document.createElement('script')
@@ -189,6 +213,16 @@ export default function App({ Component, pageProps }) {
     }
   }, [router])
 
+
+  const [masterValue, setMasterValues] = useState()
+  const getValue = async () => {
+    const mastersRes = await get_all_masters();
+    if (mastersRes && mastersRes.message) {
+      console.log(mastersRes.message, "mastersRes.message")
+      setMasterValues(mastersRes.message)
+    }
+  }
+
   return (
     <>
       <script src="https://cdn.jsdelivr.net/npm/typesense-instantsearch-adapter@2/dist/typesense-instantsearch-adapter.min.js"></script>
@@ -202,10 +236,11 @@ export default function App({ Component, pageProps }) {
           <RootLayout website_settings={website_settings} >
             {website_settings && website_settings.app_settings.favicon &&
               <Head>
-                <link rel="shortcut icon" href={check_Image(website_settings.app_settings.favicon)} />
+                {/* <link rel="shortcut icon" href={check_Image(website_settings.app_settings.favicon)} /> */}
+                <link rel="shortcut icon" href={'/logo.png'} />
               </Head>}
 
-            {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} />}
+            {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
             {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
             <Component  {...pageProps} />
             {/* </main> */}
@@ -215,12 +250,24 @@ export default function App({ Component, pageProps }) {
             }
 
 
-            {(website_settings && website_settings.all_categories) && (router.pathname != "/login" && router.pathname != "/seller/[login]") && <BrandCategory category={website_settings.all_categories} />}
+            <div id='footer'>
+              {(masterValue && masterValue['item_group']) && (router.pathname != "/login") && <>
+                <div className="bg-[#F0F0F0] py-[30px]" >
 
-            {router.pathname != "/login" && router.pathname != "/seller/[login]" &&
+                  <BrandCategory title={'Categories'} keys={'item_group'} masterValue={masterValue} />
+                  <BrandCategory title={'Brands'} keys={'brand'} masterValue={masterValue} sliceKey={30} />
+
+                </div>
+                <div className='border-t border-t-[#ddd] w-full text-center bg-[#F0F0F0] py-2'>
+                  © 2025 ihg-sigma.vercel.app. All Rights Reserved.
+                </div>
+
+              </>}
+            </div>
+            {/* {router.pathname != "/login" && router.pathname != "/seller/[login]" &&
               <div className='md:hidden lg:min-h-[345px] lg:w-full your-element'>
                 <MainFooter />
-              </div>}
+              </div>} */}
 
           </RootLayout>
           {/* </GoogleOAuthProvider> */}

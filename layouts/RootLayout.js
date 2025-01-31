@@ -27,10 +27,10 @@ export default function RootLayout({ children, website_settings }) {
 
 
   async function get_cart_item() {
-    let res = await get_cart_items();
-    if (res && res.message && res.message.status && res.message.status == "success") {
-      dispatch(setCartItems(res.message));
-    }
+    // let res = await get_cart_items();
+    // if (res && res.message && res.message.status && res.message.status == "success") {
+    //   dispatch(setCartItems(res.message));
+    // }
   }
 
 

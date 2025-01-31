@@ -16,17 +16,22 @@ import Rodal from 'rodal';
 // import 'rodal/lib/rodal.css';
 import { setBoxView } from '@/redux/slice/websiteSettings'
 import { setFilters, resetSetFilters, setLoad } from '@/redux/slice/ProductListFilters'
-import { setFilter } from "@/redux/slice/filtersList";
+import { resetFilters, setFilter } from "@/redux/slice/filtersList";
 import Head from 'next/head'
 import Brands from '@/components/Common/Brands';
 import Typesense from '@/components/Product/filters/Typesense';
 
 
-export default function List({ productRoute, filterInfo, currentId, params, mastersData }) {
+export default function List({ productRoute, filterInfo, currentId, params, mastersData, initialData }) {
 
-  console.log('maste', mastersData)
-
+  console.log('maste', initialData)
   const router = useRouter();
+
+  useEffect(() => {
+    setResults(initialData)
+  }, [router])
+
+
   let [productList, setProductList] = useState([]);
 
   let [loader, setLoader] = useState(true);
@@ -205,7 +210,8 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   async function getCategoryFilters() {
     // productRoute = router.asPath.substring(1);
     let data = { "route": productRoute }
-    let res = await get_category_filters(data);
+    // let res = await get_category_filters(data);
+    let res = [];
     if (res && res.message) {
       setFiltersList(res.message)
       if (res.message.category_list && res.message.category_list.current_category && res.message.category_list.current_category.category_name) {
@@ -314,7 +320,9 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
 
     try {
-      let res = await get_category_products(datas);
+      // let res = await get_category_products(datas);
+      let res = [];
+
       setLoader(false);
       setPageLoading(false);
       setLoadSpinner(false);
@@ -482,27 +490,46 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
 
+  const { category, brand } = router.query;
+  console.log(category, brand)
+
   const [filters, setFilters] = useState({
     ...filtersData,
     price_range: { min: 0, max: 1000 },
     stock_range: { min: 0, max: 1000 }
   });
 
+  useEffect(() => {
+    if (!router.isReady) return;
+
+    console.log('Query Params:', router.query);
+
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
+      brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
+    }));
+  }, [router.isReady, category, brand, router]);
+
+  console.log('querFilter', filters)
+
 
   const buildFilterQuery = () => {
     const filterParams = [];
     const { price_range, stock_range, ...rest } = filters;
-  
+
     if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
     if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
-    if (rest.hot_product) filterParams.push(`hot_product:${rest.hot_product ? 1 : 0}`);
-    if (rest.show_promotion) filterParams.push(`show_promotion:=true`);
-    if (rest.in_stock) filterParams.push(`in_stock:=true`);
-    if (rest.sort_by) filterParams.push(`sort_by:=${rest.sort_by}`);
-  
+    if (rest.hot_product) filterParams.push(`hot_product:=${rest.hot_product ? 1 : 0}`);
+    if (rest.show_promotion) filterParams.push(`show_promotion:=${rest.show_promotion ? 1 : 0}`);
+    if (rest.in_stock) filterParams.push(`in_stock:=${rest.in_stock ? 1 : 0}`);
+    if (rest.has_variants) filterParams.push(`has_variants:=${rest.has_variants ? 1 : 0}`);
+    if (rest.custom_in_bundle_item) filterParams.push(`custom_in_bundle_item:=${rest.custom_in_bundle_item ? 1 : 0}`);
+    // if (rest.sort_by) filterParams.push(`sort_by:=${rest.sort_by}`);
+
     [
-      "brand", "color_temp_", "product_type", "has_variants", "custom_in_bundle_item",
+      "brand", "color_temp_", "product_type",
       "item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
       "power", "input", "material", "body_finish", "warranty_",
       "output_voltage", "output_current", "category_list"
@@ -512,19 +539,23 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
         filterParams.push(`${key}:=[${values}]`);
       }
     });
-  
+
     if (price_range?.min > 0 && price_range?.max) {
       filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
     }
     if (stock_range?.min > 0 && stock_range?.max) {
       filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
     }
-  
+
     console.log("params", filterParams);
     return filterParams.length > 0 ? filterParams.join(" && ") : "";
   };
-  
 
+
+  const removeFilter = () => {
+    dispatch(resetFilters())
+    setFilters(filtersData);
+  }
 
   // console.log('type',filters)
 
@@ -578,22 +609,24 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
 
   const fetchResults = async (reset = false) => {
-    setLoading(true);
     setError(null);
 
     const queryParams = new URLSearchParams({
       q: '*',
       query_by: "item_name,item_description,brand",
       page: pageNo,
-      per_page: "5",
+      per_page: "12",
       query_by_weights: "1,2,3",
       ...buildFilterQuery() && { filter_by: buildFilterQuery() },
+      sort_by: filters.sort_by || ''
     });
 
     try {
+      setLoading(true);
       console.log('query', buildFilterQuery);
       const data = await typesense_search_items(queryParams);
       if (data.hits.length === 0) {
+        setResults([])
         setHasMore(false);
       } else {
         setHasMore(true);
@@ -621,47 +654,109 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   console.log('result', filters)
 
   useEffect(() => {
+    return () => observer.current?.disconnect();
+  }, []);
+
+  useEffect(() => {
     dispatch(setFilter(filters));
   }, [filters]);
 
+  useEffect(() => {
+    dispatch(resetFilters())
+  }, [router.query])
+
   const lastResultRef = useCallback(
-      (node) => {
-        if (observer.current) observer.current.disconnect(); // Disconnect previous observer
-  
-        observer.current = new IntersectionObserver((entries) => {
-          if (entries[0].isIntersecting && hasMore) {
-            setpageNo((prevPage) => prevPage + 1); // Increment page number
-          }
-        });
-  
-        if (node) observer.current.observe(node); // Observe the last result element
-      },
-      [hasMore]
-    );
+    (node) => {
+      if (loading || !hasMore) return;
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          setpageNo((prevPage) => prevPage + 1); // Increment page number
+        }
+      });
+
+      if (node) observer.current.observe(node); // Observe the last result element
+    },
+    [hasMore] // Add loading and hasMore as dependencies
+  );
 
 
-    useEffect(()=>{
-      setTimeout(()=>{
-        fetchResults()
-      }, 500)
-    }, [pageNo])
+  const [initialLoad, setInitialLoad] = useState(true);
 
-    const handleFilterClick  = ()=>{
-      fetchResults(true);
-      setResults([])
-      setpageNo(1)
+  useEffect(() => {
+    if (initialLoad) {
+      setInitialLoad(false);
+      return;
     }
 
-    // useEffect(()=>{
-    //   setTimeout(()=>{
-    //     applyFilter()
-    //   }, 500)
-    // }, [filters])
-   
+    const timeout = setTimeout(() => {
+      fetchResults();
+      console.log('pageNo', pageNo);
+    }, 0);
+
+    return () => clearTimeout(timeout);
+  }, [pageNo]);
+
+
+  const handleFilterClick = () => {
+    const scrollPosition = window.scrollY;
+
+    fetchResults(true);
+    setResults([]);
+    setpageNo(1);
+
+    requestAnimationFrame(() => {
+      window.scrollTo(0, scrollPosition);
+    });
+  };
+
+
+  // useEffect(()=>{
+  //   setTimeout(()=>{
+  //     applyFilter()
+  //   }, 500)
+  // }, [filters])
+
 
   // useEffect(() => {
   //     fetchResults();
   //   }, [filters, priceBetween]);
+
+  useEffect(() => {
+    // Create an IntersectionObserver instance
+    const observer = new IntersectionObserver((entries) => {
+      // Loop through each entry (in case multiple elements are being observed)
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          // Trigger the event when the footer is visible
+          console.log('Footer is visible!');
+          const ele = document.getElementById('filter-sec')
+          ele.classList.add('!absolute')
+          // You can trigger any custom function here
+          // Example: call a function or update state
+        }else{
+          const ele = document.getElementById('filter-sec')
+          ele.classList.remove('!absolute')
+        }
+      });
+    }, {
+      threshold: 0.1, // This means 10% of the footer must be visible for the event to be triggered
+    });
+
+    // Target the element with id "footer"
+    const footerElement = document.getElementById('footer');
+    if (footerElement) {
+      observer.observe(footerElement); // Start observing the footer
+    }
+
+    // Cleanup observer when the component is unmounted
+    return () => {
+      if (footerElement) {
+        observer.unobserve(footerElement); // Stop observing on unmount
+      }
+    };
+  }, []); // Empty dependency array to run this only once on mount
 
   return (
 
@@ -714,8 +809,8 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
           {filtersList && <Filters filtersList={filtersList} ProductFilter={ProductFilter} />}
         </div> */}
 
-        <div className="md:hidden flex-[0_0_calc(20%_-_7px)] mr-[10px] sticky top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
-          {filtersList && <Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} />}
+        <div id='filter-sec' className="md:hidden transition-all delay-300 duration-300 ease-in flex-[0_0_calc(20%_-_7px)] mr-[10px] fixed top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
+          {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} />}
         </div>
 
         <div className="lg:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
@@ -794,14 +889,14 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
             {loader ?
               <Skeleton />
               :
-              <>
-                {((results.length != 0 && Array.isArray(results)) && productBoxView) ? <ProductBox productList={results} rowCount={'flex-[0_0_calc(33.333%_-_8px)]'} productBoxView={productBoxView} /> :
+              <div className='min-h-screen'>
+                {((results.length != 0 && Array.isArray(results)) && productBoxView) ? <ProductBox productList={results} rowCount={'flex-[0_0_calc(25%_-_8px)]'} productBoxView={productBoxView} /> :
                   <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
                 }
-              </>
+              </div>
             }
             {/* <div className='more' ref={cardref}></div> */}
-            <div className="more mt-20" ref={lastResultRef}></div>
+            <div className="more" ref={lastResultRef}></div>
 
             {loading &&
               <div id="wave">
@@ -823,7 +918,7 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
       {/* Shop By Brands */}
 
-      {!pageLoading && <Brands />}
+
 
       {(cartItems && cartItems.length > 0) &&
         <div className='lg:hidden h-[60px] bg-[#fff] flex items-center justify-between fixed w-full bottom-0 z-[9] p-[10px] shadow-[0_0_5px_#ddd]'>
@@ -949,34 +1044,75 @@ const Backdrop = () => {
   )
 }
 
-export async function getServerSideProps({ params }) {
-  let productRoute = ''
-  let value = params.list
+export async function getServerSideProps(req) {
 
-  value.map((r, i) => {
-    productRoute = productRoute + r + ((value.length != (i + 1)) ? '/' : '')
-  })
+  const { category, brand } = req.query;
 
-  let filterInfo = ''
-  let currentId = ''
+  // let productRoute = ''
+  // let value = params.list
 
-  let data = { "route": productRoute }
-  let res = await get_category_filters(data);
-  if (res && res.message) {
-    filterInfo = res.message
-    if (res.message.category_list && res.message.category_list.current_category && res.message.category_list.current_category.category_name) {
-      currentId = res.message.category_list.current_category
+  // value.map((r, i) => {
+  //   productRoute = productRoute + r + ((value.length != (i + 1)) ? '/' : '')
+  // })
+
+  // let filterInfo = ''
+  // let currentId = ''
+
+  // let data = { "route": productRoute }
+  // let res = await get_category_filters(data);
+  // if (res && res.message) {
+  //   filterInfo = res.message
+  //   if (res.message.category_list && res.message.category_list.current_category && res.message.category_list.current_category.category_name) {
+  //     currentId = res.message.category_list.current_category
+  //   }
+  // }
+
+  // Fetch data from API
+
+  const filters = {
+    item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
+    brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
+  };
+
+  const buildFilterQuery = () => {
+    const filterParams = [];
+
+    if (filters.item_group.length) {
+      const values = filters.item_group.map(v => `"${v}"`).join(",");
+      filterParams.push(`item_group:=[${values}]`);
     }
-  }
+
+    if (filters.brand.length) {
+      const values = filters.brand.map(v => `"${v}"`).join(",");
+      filterParams.push(`brand:=[${values}]`);
+    }
+
+    return filterParams.length > 0 ? filterParams.join(" && ") : "";
+  };
+
+  const queryParams = new URLSearchParams({
+    q: '*',
+    query_by: "item_name,item_description,brand",
+    page: "1",
+    per_page: "12",
+    query_by_weights: "1,2,3",
+    filter_by: buildFilterQuery(),
+  });
+
+  const data = await typesense_search_items(queryParams);
+  const initialData = data.hits || [];
+
+
 
   let mastersData = []
   const mastersRes = await get_all_masters();
-  if (mastersRes && mastersRes.message){
-      mastersData = mastersRes.message
+  if (mastersRes && mastersRes.message) {
+    mastersData = mastersRes.message
   }
 
   return {
-    props: { productRoute, filterInfo, currentId, params, mastersData }
+    // props: { productRoute, filterInfo, currentId, params, mastersData }
+    props: { mastersData, initialData }
   }
 
 }

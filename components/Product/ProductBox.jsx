@@ -405,20 +405,20 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[230px]  relative ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:h-[170px]' : 'md:h-[170px] md:w-[100%] pb-[10px] '} your-element `}>
-                  <Link href={'/pr/' + item.route} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:h-[170px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 130 : 170) : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[160px]' : ''} lg:h-[210px] md:h-[125px] md:w-[125px] object-contain your-element`} src={item.product_image} title={item.item ? item.item : ''} /></Link>
+                  <Link href={'/pr/' + item.route} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:h-[170px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 130 : 170) : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[160px]' : ''} lg:h-[210px] md:h-[125px] md:w-[125px] object-contain your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
                 </div>
 
-                <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%]' : ''} p-[10px] mt-3`}>
+                <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%]' : ''} p-[10px]`}>
                   <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link>
 
-                  <p className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.name}</p>
+                  <p className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
 
-                  <p className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.description}</p>
+                  <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`} />
 
-                  <p className={`line-clamp-1 uppercase py-[5px] text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>IN STOCK ({item.stock ? item.stock : '100'} PCS)</p>
+                  <p className={`line-clamp-1 uppercase py-[5px] text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>IN STOCK ({item.document.stock ? item.document.stock : '0'} PCS)</p>
 
                   <div className='flex items-center gap-5 justify-between'>
-                    {(webSettings && webSettings.currency) && <h3 className={`text-[13px] primary_color float-left font-semibold openSens `}>{currencyFormatter1(item.rate, webSettings.currency)}</h3>}
+                    {(webSettings && webSettings.currency) && <h3 className={`text-[13px] primary_color float-left font-semibold openSens `}>{currencyFormatter1(item.document.rate, webSettings.currency)}</h3>}
 
                     {(item.discount_percentage && item.discount_percentage != '' && item.discount_percentage != 0) ? <h6 className='additional_bg text-[#fff] p-[3px_13px] rounded-[5px] text-[12px]'>Save {item.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% </span> </h6> : <></>}
                   </div>

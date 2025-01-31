@@ -1,8 +1,7 @@
-import { HomePage, websiteSettings, seo_Image, getCurrentUrl } from "@/libs/api";
+import { HomePage, seo_Image, getCurrentUrl } from "@/libs/api";
 import { useEffect, useState, useRef, useMemo } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useRouter } from "next/router";
-import { setWebSetting } from '@/redux/slice/websiteSettings'
 import dynamic from "next/dynamic";
 // import IsMobile from "@/libs/hooks/resize";
 const MobileHeader = dynamic(() => import("@/components/Headers/mobileHeader/MobileHeader"))
@@ -17,8 +16,6 @@ export default function Home({ data, checkIsMobileValue }) {
   const [loading, setLoading] = useState(false);
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const business = useSelector((state) => state.webSettings.business);
-  const dispatch = useDispatch();
-
   // let page_no = 1;
   let cardref = useRef();
   // let no_product = false;
@@ -48,16 +45,16 @@ export default function Home({ data, checkIsMobileValue }) {
   let [page_no, setPageNo] = useState(1)
   let [no_product, setNoProduct] = useState(false);
   // useEffect(()=>{
-    // const param = {
-    //       application_type: checkIsMobileValue ? "mobile" : "web",
-    //       route: "p/home",
-    //       page_no: 1,
-    //       page_size: 4,
-    //     };
-      
-    //     const resp = await HomePage(param);
-    //     // const data = await resp.message;
-    //     console.log(resp)
+  // const param = {
+  //       application_type: checkIsMobileValue ? "mobile" : "web",
+  //       route: "p/home",
+  //       page_no: 1,
+  //       page_size: 4,
+  //     };
+
+  //     const resp = await HomePage(param);
+  //     // const data = await resp.message;
+  //     console.log(resp)
   // },[])
 
   useEffect(() => {
@@ -168,18 +165,12 @@ export default function Home({ data, checkIsMobileValue }) {
       if (business || localStorage['business']) {
         no_product = true;
         getHomePageValues()
-        get_websiteSettings()
+
       }
     }
   }, [business]);
 
 
-  async function get_websiteSettings() {
-    let res = await websiteSettings();
-    if (res && res.message) {
-      dispatch(setWebSetting(res.message));
-    }
-  }
 
   useEffect(() => {
     // if (typeof window !== 'undefined') {
@@ -212,38 +203,15 @@ export default function Home({ data, checkIsMobileValue }) {
     };
   }, []);
 
-  useMemo(() => {
-    if (page_no > 1) {
-      get_home_content()
-    }
-  }, [page_no])
-
-
-  const memoizedState = useMemo(() => {
-    if ((value && value.length > 0) && ((page_no * 4) >= value.length)) {
-      return (
-        // <>
-          <div className={`${isMobile ? "bg-[#f1f1f1]" : "bg-transparent"} min-h-screen w-full your-element mb-[65px]`} >
-            {value.map((data, i) => {
-              return (
-                <WebPageSection data={data} i={i} />
-              )
-            })}
-          </div>
-        // {/* </> */}
-      )
-    }
-
-  }, [value, page_no, isMobile])
 
   return (
     <>
       <Head>
         {/* <title>{data?.meta_info?.meta_title ? data?.meta_info?.meta_title : "Single Vendor"}</title> */}
         <title>{"IHG"}</title>
-        <meta name="description" content={data?.meta_info?.meta_description ? data?.meta_info?.meta_description:"Single Vendor"} />
+        <meta name="description" content={data?.meta_info?.meta_description ? data?.meta_info?.meta_description : "Single Vendor"} />
         <meta property="og:type" content={'Blog'} />
-        <meta property="og:title" content={data?.meta_info?.meta_title ? data?.meta_info?.meta_title :"Single Vnedor"} />
+        <meta property="og:title" content={data?.meta_info?.meta_title ? data?.meta_info?.meta_title : "Single Vnedor"} />
         <meta key="og_description" property="og:description" content={data?.meta_info?.meta_description} />
         <meta property="og:image" content={seo_Image(data?.meta_info?.meta_image)}></meta>
         <meta property="og:url" content={getCurrentUrl(router.asPath)}></meta>
@@ -256,66 +224,16 @@ export default function Home({ data, checkIsMobileValue }) {
         )}
       </div>
 
-      {/* <div className={`${isMobile ? "bg-[#f1f1f1]" : "bg-transparent"} min-h-screen w-full your-element mb-[65px]`}> */}
-        {memoizedState}
-      {/* </div> */}
-      {/* <div className={`${mobile ? "bg-[#f1f1f1]" : "bg-transparent"} min-h-screen w-full your-element mb-[65px]`} >
-        {value &&
-          value.length != 0 &&
-          <>
-            {value.map((data, i) => {
-              return (
-                <WebPageSection data={data} i={i} />
-              )
-            })}
-          </>
-        }
-      </div> */}
 
-      <div className="more md:h-5 your-element" ref={cardref}></div>
-      {loading ? (
-        <div id="wave" className="md:mb-[40px] your-element">
-          <span className="dot"></span>
-          <span className="dot"></span>
-          <span className="dot"></span>
-        </div>
-      ) : <div className="your-element "></div>}
+      {/* {memoizedState} */}
+      <WebPageSection />
+
+
     </>
 
   );
 }
 
-
-// export async function getStaticProps(context) {
-//   const userAgent =  context.req.headers['user-agent']; // You might need to handle this differently on the server.
-//   const checkIsMobileValue = Boolean(
-//     userAgent.match(
-//       /Android|BlackBerry|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i
-//     )
-//   );
-//   const param = {
-//     application_type: checkIsMobileValue ? 'mobile' : 'web',
-//     route: 'home-page',
-//     page_no: 1,
-//     page_size: 4,
-//     // business:localStorage['business']
-//   };
-
-//   const resp = await HomePage(param);
-//   const data = await resp.message;
-
-//     if (!data) {
-//       return {
-//         notFound: true,
-//       };
-//     }
-
-//    return {
-//       props: { data, checkIsMobileValue },
-//       revalidate: 120
-//    };
-
-// }
 
 export async function getServerSideProps(context) {
   const userAgent = context.req.headers['user-agent'];
@@ -331,8 +249,9 @@ export async function getServerSideProps(context) {
     page_size: 4,
   };
 
-  const resp = await HomePage(param);
-  const data = await resp.message;
+  // const resp = await HomePage(param);
+  const data = []
+
 
   if (!data) {
     return {

@@ -39,7 +39,7 @@ const ChooseCategory = () => {
     return (
         <>
             <div className="bg-[#F0F0F0] py-12">
-                <div className="main-width px-2 lg:px-0 pb-[10px]">
+                <div className="main-width  pb-[10px]">
                     <ViewAll data={{ title: "Now easier to choose" }} viewAll={true} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">

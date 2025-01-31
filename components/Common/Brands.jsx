@@ -98,7 +98,7 @@ const Brands = () => {
         },
     ]
   return (
-    <div className='main-width px-2 lg:px-0'>
+    <div className='main-width '>
         <div className='py-5'>
           <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} />
 

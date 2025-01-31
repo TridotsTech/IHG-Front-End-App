@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 // import { check_Image } from '@/libs/api';
 
-export default function Navbar({ all_categories }) {
+export default function Navbar({ all_categories, categoryData }) {
 
   const router = useRouter();
   // const [isDropdownVisible, setDropdownVisible] = useState(false);
@@ -23,7 +23,7 @@ export default function Navbar({ all_categories }) {
   //   setDropdownVisible(false);
   // };
 
-  
+
   let hoverTimeout;
   let allMenuHoverTimeout;
 
@@ -130,21 +130,21 @@ export default function Navbar({ all_categories }) {
 
       {(all_categories && all_categories.length != 0) &&
 
-// onMouseEnter={() => { setShowMegamenu(true) }} onMouseLeave={() => { setShowMegamenu(false), leaveFormnav() }}
-        <div className={`relative flex main-width !m-[0_auto] items-center justify-center`}> 
+        // onMouseEnter={() => { setShowMegamenu(true) }} onMouseLeave={() => { setShowMegamenu(false), leaveFormnav() }}
+        <div className={`relative flex main-width !m-[0_auto] items-center justify-center`}>
           {/* <div className='flex items-center gap-[5px]'> */}
-            {/* <div>
+          {/* <div>
               <Image src={'/Navbar/premium-1.svg'} height={20} width={20} alt='premium' />
             </div>
             <p className='text-[#340C0C] text-[14px] uppercase'>Subscribe To Premium</p> */}
           {/* </div> */}
 
           <div className={`flex items-center justify-center gap-[8px]`} >
-          {/* <div className={`flex items-center justify-center gap-[8px]`} onMouseEnter={handleMouseEnter} > */}
+            {/* <div className={`flex items-center justify-center gap-[8px]`} onMouseEnter={handleMouseEnter} > */}
 
 
             {mega_menu == 1 &&
-            // onMouseLeave={() => enbleAllMenuSection('')} onMouseEnter={() => { enbleAllMenuSection('Enter') }}
+              // onMouseLeave={() => enbleAllMenuSection('')} onMouseEnter={() => { enbleAllMenuSection('Enter') }}
               <div className={`relative cursor-pointer pb-[2px]  hoverMenuSec ${allMenu == 1 ? 'active_parent' : ''}`}>
                 <span className='flex item-center mb-[0] gap-[5px] pb-[6px]'>
                   <h6 className={`border-b-[3px] border-b-[#fff] text-left font-medium navigation_c lg:text-[15px] tracking-wide `}>All Categories</h6>
@@ -154,19 +154,20 @@ export default function Navbar({ all_categories }) {
 
 
 
-            {all_categories.slice(0, 5).map((item, index) => {
+            {/* {all_categories.slice(0, 5).map((item, index) => { */}
+            {categoryData.slice(0, 10).map((item, index) => {
               return (
                 // onMouseLeave={() => enbleDropdown('leave', index)} 
                 // (dropdown == index) || 
                 <div key={index} >
 
-                  
+
                   {/* href={'/' + item.route} */}
                   {/* onMouseEnter={() => { enbleDropdown('enter', index), setAllMenu(-1) }} */}
                   <div onClick={() => { leaveFormnav(), navigateToDetail1(item) }} className={`flex items-center gap-[5px] relative  first:p-[0_15px_6px_0px] p-[0_15px_6px_15px] text-[#976563]  `}>
                     {/* <Image style={{ objectFit: 'contain' }} className='h-[30px] w-[30px]' height={35}  width={35} alt='vantage' src={check_Image(item.mobile_image)} /> */}
                     <div className={`hoverMenuSec relative cursor-pointer ${(allMenu != 1 && router.asPath.split('/')[1] == item.route) ? 'active_parent' : ''} `}>
-                      <h6 onClick={() => router.push('/' + item.route)} className={`font-medium text-[#000000B2] text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item.category_name}>{item.category_name}</h6>
+                      <h6 onClick={() => router.push('/list?category=' + item.name)} className={`font-medium text-[#000000B2] text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item.category_name}>{item.name}</h6>
                     </div>
 
 
@@ -205,7 +206,7 @@ export default function Navbar({ all_categories }) {
 
 
 
-            {mega_menu == 0 && all_categories.length > 8 &&
+            {/* {mega_menu == 0 && all_categories.length > 7 &&
               <div className={`relative pb-[2px] cursor-pointer hoverMenuSec ${moreMenu == 1 ? 'active_parent' : ''}`} onMouseEnter={() => { enbleDropdownMore('enter'), setDropdown(-1) }} onMouseLeave={() => enbleDropdownMore('leave')}>
                 <span className='flex item-center mb-[0] gap-[5px] pb-[4px]'>
                   <a className={`text-left font-medium navigation_c lg:text-[15px] tracking-wide`}>More</a>
@@ -222,11 +223,32 @@ export default function Navbar({ all_categories }) {
                   </div>
                 }
               </div>
+            } */}
+
+
+
+            {categoryData.length > 10 &&
+              <div className={`relative pb-[2px] cursor-pointer hoverMenuSec ${moreMenu == 1 ? 'active_parent' : ''}`} onMouseEnter={() => { enbleDropdownMore('enter'), setDropdown(-1) }} onMouseLeave={() => enbleDropdownMore('leave')}>
+                <span className='flex item-center mb-[0] gap-[5px] pb-[4px]'>
+                  <a className={`text-left font-medium navigation_c lg:text-[15px] tracking-wide`}>More</a>
+                </span>
+                {moreMenu == 1 && (categoryData && categoryData.length != 0) &&
+                  <div className="w-[241px] dropdown top-[32px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-99">
+                    {categoryData.slice(10, categoryData.length).map((submenu, sub1) => (
+                      <>
+                        <Link href={('/list?category=' + submenu.name)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
+                          <h6 className='text-left text-[14px] text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu.name}</h6>
+                        </Link>
+                      </>
+                    ))}
+                  </div>
+                }
+              </div>
             }
 
           </div>
 
-          
+
           {(allMenu == 1 || dropdown >= 0) && showMegamenu && mega_menu == 1 && <MegaMenu leaveFormnav={leaveFormnav} all_categories={all_categories} category={all_categories[allMenu == 1 ? (dropdown == -1 ? 0 : dropdown) : dropdown].child} setDropdown={setDropdown} setDropdown1={setDropdown1} setMoreMenu={setMoreMenu} setAllMenu={setAllMenu} allMenu={allMenu} dropdown={dropdown} />}
         </div>
       }

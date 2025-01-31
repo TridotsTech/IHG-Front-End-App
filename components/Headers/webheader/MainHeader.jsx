@@ -15,7 +15,6 @@ import { setCustomerInfo } from '@/redux/slice/logInInfo';
 import { resetCust } from '@/redux/slice/customerInfo';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Location from '@/components/Location/Location'
 import Link from 'next/link';
 
 export default function MainHeader({ header_template, theme_settings, website_settings, all_categories }) {
@@ -137,10 +136,10 @@ export default function MainHeader({ header_template, theme_settings, website_se
   const [alertMsg, setAlertMsg] = useState({})
 
   async function get_cart_item() {
-    let res = await get_cart_items();
-    if (res && res.message && res.message.status && res.message.status == "success") {
-      dispatch(setCartItems(res.message));
-    }
+    // let res = await get_cart_items();
+    // if (res && res.message && res.message.status && res.message.status == "success") {
+    //   dispatch(setCartItems(res.message));
+    // }
   }
 
   async function ClearCart() {
@@ -317,21 +316,6 @@ export default function MainHeader({ header_template, theme_settings, website_se
   return (
     <>
       {/* <ToastContainer position={'bottom-right'} autoClose={2000}  /> */}
-      {isOpen && <div className='cartPopup'>
-        <Rodal visible={isOpen} enterAnimation='slideRight' animation='' onClose={closeModal}>
-          <SliderCart website_settings={website_settings} closeModal={closeModal} router={router} ClearCart={ClearCart} moveToCart={moveToCart} theme_settings={theme_settings} tabs={tabs} cartValue={cartValue} cartCount={cartCount} wishlistCount={wishlistCount} openModal={openModal} activeTab={activeTab} />
-        </Rodal>
-      </div>
-      }
-
-
-      {enableLocation &&
-        <div className='locationPopup'>
-          <Rodal visible={enableLocation} enterAnimation='slideDown' animation='' onClose={closeModalLoaction}>
-            <Location theme_settings={theme_settings} closeModal={closeModalLoaction} />
-          </Rodal>
-        </div>
-      }
 
       {visible && <AuthModal visible={visible} hide={hide} setVisible={setVisible} />}
         
@@ -342,7 +326,6 @@ export default function MainHeader({ header_template, theme_settings, website_se
       {alertUi &&
         <AlertUi isOpen={alertUi} closeModal={(value) => logout(value)} headerMsg={'Alert'} button_1={'No'} button_2={'Yes'} alertMsg={alertMsg} />
       }
-
 
       <div className='flex items-center justify-between gap-[10px] w-[100%]'>
         {header_template && header_template.items.length != 0 &&
@@ -359,55 +342,19 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
                 {(res.section_name == 'Header Menu' && res.section_type == 'Menu') &&
                   <div className={`flex items-center gap-[10px]`}>
-
-                    {/* <div onClick={()=>closeModalLoaction()} className='w-[180px] overflow-hidden flex items-center gap-[8px] border_color rounded-[5px] h-[45px] p-[4px_10px] cursor-pointer'>
-                   <Image className='h-[20px] w-[20px] object-contain' height={40}  width={40} alt='logo' src={'/location.svg'}></Image>
-                   <div>
-                     <h5 className='text-[12px] font-normal gray_color leading-[1.1]'>{(localValue && localValue.city) ? localValue.city : 'Location' }</h5>
-                     {(localValue && localValue.address && localValue.address != 'undefined') ? <h5 className='text-[14px] font-medium line-clamp-1 w-[100px]'>{localValue.address}</h5> : <></>}
-                   </div>
-                  </div>  */}
-
-                    <div key={index} className={`${website_settings.enable_multi_store == 1 ? 'w-full' : 'w-full'} relative flex justify-center`}>
-                      <div className="p-[5px_10px] h-[40px] flex items-center m-0_auto] bg-[#00000008] rounded-[5px] w-[335px]">
-                        <input value={searchValue} id='search' spellcheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='text-[13px] w-[95%] search bg-[#f7f7f7]' placeholder='Search Items' />
-                        {theme_settings.header_search_icon && <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={check_Image(theme_settings.header_search_icon)}></Image>}
-                      </div>
-                      {activeSearch && <div className={`p-[5px] max-h-[390px] min-h-[150px] w-full ${searchProducts && searchProducts.length > 0 ? "overflow-auto":"overflow-hidden"}  scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]`}>
-                        <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
-                    </div>
-
                   </div>
                 }
 
                 {(res.section_name == 'Header Button' && res.section_type == 'Static Section') &&
                   <div key={index} className='pl-[15px] flex gap-[25px] items-center justify-end'>
 
-                    {/* <div onClick={() => { openModal('Shopping Cart') }} class=" cursor-pointer flex items-center flex-col justify-center">
-                      <div className='relative headerBtbs'>
-                        {theme_settings.cart_icon && <Image style={{ objectFit: 'contain' }} className='h-[22px] w-[23px]' height={25} width={25} alt='vantage' src={check_Image(theme_settings.cart_icon)}></Image>}
-                        <p className='primary_bg text-[12px] text-[#fff] rounded-[50%] absolute h-[20px] w-[20px] text-center top-[-8px] right-[-8px]'>{cartCount}</p>
-                      </div>
-                      <p className='text-[13px] text-center line-clamp-1 bottom-[-21px]'>Cart</p>
-                    </div> */}
-
+                   
                     <div>
                       <Link href={"/scanner"}>
                         <Image src="/scanner.svg" height={20} width={20} />
                       </Link>
                     </div>
-                    <Link href={"/"}>Help</Link>
-
-                    {/* <div onClick={() => { openModal('Wishlist') }} class=" cursor-pointer  flex items-center flex-col justify-center">
-                      <div className='relative headerBtbs'>
-                        {theme_settings.wishlist_icon && <Image style={{ objectFit: 'contain' }} className='h-[22px] w-[23px]' height={25} width={25} alt='vantage' src={check_Image(theme_settings.wishlist_icon)}></Image>}
-                        <p className='primary_bg text-[12px] text-[#fff] rounded-[50%] absolute h-[20px] w-[20px] text-center top-[-8px] right-[-8px]'>{wishlistCount}</p>
-
-                      </div>
-                      <p className='text-[13px] text-center line-clamp-1 bottom-[-21px]'>Wishlist</p>
-                    </div> */}
-
-                    <Link href={"/"}>About</Link>
+                                       
 
                     <div onClick={() => {checkUser()}} onMouseEnter={() => customerName ? setCustomerMenu(true) : null} onMouseLeave={() => customerName ? setCustomerMenu(false) : null} class="relative  cursor-pointer flex flex-row-reverse items-center">
                       <div className='headerBtbs'>
@@ -432,126 +379,6 @@ export default function MainHeader({ header_template, theme_settings, website_se
             )
           })
         }
-      </div>
-    </>
-  )
-}
-
-// const SearchProduct = ({all_categories, router,searchValue, navigateToSearch, get_search_products, searchProducts, theme_settings}) =>{
-
-//   return(
-//    <>
-//    {searchValue != '' ?
-//     <>
-//     {searchProducts.length == 0 ? 
-//       <NoProductFound cssClass={'flex-col h-[calc(100vh_-_265px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />
-//       :
-//       searchProducts.map((res,index)=>{
-//         return(
-//           <div onClick={()=>{navigateToSearch('/pr/' + res.route)}} key={index} className='py-[10px] flex items-center border-b-[1px] border-b-slate-100 last:border-b-[0px] justify-between'>
-//             <div className='cursor-pointer flex items-center gap-[10px]' key={index}>
-//               <Image  className='h-[55px] w-[55px] object-contain' height={60}  width={60} alt='logo' src={check_Image(res.product_image)}></Image>
-//               <h6 className='text-[12px] text-center line-clamp-2'>{res.item}</h6> 
-//             </div>
-
-//             <Image className='h-[8px] object-contain opacity-60' height={14} width={14} alt='logo' src={'/Arrow/arrowBlack.svg'}></Image>
-//         </div>
-//         )
-//       })
-//     }
-//     </>
-//     :
-//       <>
-//         <h6 className="text-[14px] gray_color font-medium pt-[6px]">Enter a text to search a products...</h6> 
-//         <h6 className="text-[15px] font-medium py-[6px]">Top Categories</h6> 
-//         <div className='gap-[10px] grid grid-cols-3'>
-//           {all_categories.map((res,index)=>{
-//           return(
-//             <div className='cursor-pointer flex items-center justify-center flex-col' onClick={()=>{navigateToSearch('/' + res.route)}} key={index}>
-//               <Image  className='h-[50px] object-contain' height={60}  width={60} alt='logo' src={check_Image(res.mobile_image)}></Image>
-//               <h6 className='text-[12px] text-center'>{res.category_name}</h6> 
-//             </div>  
-//           )
-//           })}
-//         </div>
-//       </>
-//     }
-//    </>
-//   )
-// }
-
-const SliderCart = ({ website_settings, closeModal, router, tabs, openModal, activeTab, wishlistCount, cartCount, cartValue, ClearCart, theme_settings, moveToCart }) => {
-
-  const [tab, setTab] = useState(-1);
-
-
-  useEffect(() => {
-    let value = tabs.find(res => { return res.isActive })
-    if (value) {
-      // console.log(value)
-      setTab(value.label)
-    }
-  }, [])
-
-  const openModal1 = (type) => {
-    openModal(type);
-    setTab(tab + 1)
-  }
-
-
-
-  return (
-    <>
-      <div className={`flex flex-col h-full w-full`}>
-
-
-        <div className='grid grid-cols-2'>
-          {tabs.map(item => (
-            <div onClick={() => { openModal1(item.label) }} className={`${item.isActive ? 'active_parent_Modal' : ''} border-b-[3px] cursor-pointer border-b-[#fff] min-h-[50px] flex items-center justify-center `}>
-              <h5 className={`${item.isActive ? 'primary_color' : ''} text-[15px] font-semibold relative`}>
-                {item.label}
-                
-                <p className='primary_bg text-[13px] text-[#fff] rounded-[50%] absolute h-[20px] w-[20px] text-center top-[-8px] right-[-18px]'>{item.label == 'Shopping Cart' ? cartCount : wishlistCount}</p>
-              </h5>
-            </div>
-          ))}
-        </div>
-
-
-
-        <div className='scrollbarHide overflow-auto h-full'>
-
-          {activeTab == 'Shopping Cart' &&
-            <>
-              <YourCart headerRodal={true} />
-            </>
-          }
-
-          {activeTab == 'Wishlist' && <WishList theme_settings={theme_settings} />}
-        </div>
-
-        {(activeTab == 'Shopping Cart' && cartCount > 0) &&
-          <div className='p-[10px] border-t border-t-slate-100'>
-            <div className={`flex items-center justify-between pb-[8px]`}>
-
-              <button onClick={() => { ClearCart() }} className='flex items-center rounded-[5px] p-[5px_10px] cursor-pointer light_bg'>
-                <span className='text-[14px] '>Clear Cart</span>
-                <Image style={{ objectFit: 'contain' }} className='ml-[7px] h-[18px] w-[20px] opacity-60' height={25} width={25} alt='Delete' src={'/Cart/delete.svg'}></Image>
-              </button>
-
-              {(website_settings && website_settings.currency) && <h6 className='text-[15px] pb-[5px] font-semibold openSens'><span className='gray_color text-[14px] px-[2px]'>Total : </span>{currencyFormatter1(cartValue.total + (cartValue.tax ? cartValue.tax : 0), website_settings.currency)}</h6>}
-
-            </div>
-            <button onClick={() => { closeModal(), router.push('/checkout') }} className='primary_btn h-[50px] w-full'>Proceed to Checkout</button>
-          </div>
-        }
-
-        {(activeTab == 'Wishlist' && wishlistCount > 0) &&
-          <div onClick={() => { moveToCart() }} className='p-[10px] border-t border-t-slate-100'>
-            <button className='primary_btn h-[50px] w-full'>Move to Cart</button>
-          </div>
-        }
-
       </div>
     </>
   )

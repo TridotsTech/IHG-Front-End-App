@@ -679,9 +679,10 @@ input {
   }
 
   .main-width {
-    width: 90%;
-    max-width: 1300px;
+    width: 100%;
+    // max-width: 1300px;
     margin: 0 auto;
+    padding: 0 20px;
   }
 
   .cartPopup {

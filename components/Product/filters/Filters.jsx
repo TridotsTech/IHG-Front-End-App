@@ -68,10 +68,10 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   let sortByOptions = [
     { text: 'Relevance', value: '' },
     { text: 'Created Date', value: 'created_date' },
-    { text: 'Price low to high', value: 'price_asc' },
-    { text: 'Price high to low', value: 'price_desc' },
-    { text: 'Stock low to high', value: 'stock_asc' },
-    { text: 'Stock high to low', value: 'stock_desc' },
+    { text: 'Price low to high', value: 'rate:asc' },
+    { text: 'Price high to low', value: 'rate:desc' },
+    { text: 'Stock low to high', value: 'stock:asc' },
+    { text: 'Stock high to low', value: 'stock:desc' },
     { text: 'Mostly Sold', value: 'mostly_sold' },
     { text: 'Least Sold', value: 'least_sold' },
   ]
@@ -80,8 +80,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
     { type: "brand", label: "Brands", options: mastersData.brand || [] },
     { type: "item_group", label: "Item Group", options: mastersData.item_group || [] },
     { type: "product_type", label: "Product Type", options: options },
-    { type: "has_variants", label: "Has Variants", options: mastersData.has_variants || [] },
-    { type: "custom_in_bundle_item", label: "Custom In Bundle Item", options: mastersData.custom_in_bundle_item || [] },
+    // { type: "has_variants", label: "Has Variants", options: mastersData.has_variants || [] },
+    // { type: "custom_in_bundle_item", label: "Custom In Bundle Item", options: mastersData.custom_in_bundle_item || [] },
     { type: "category_list", label: "Category List", options: mastersData.category_list || [] },
     { type: "beam_angle", label: "Beam Angle", options: mastersData.beam_angle },
     { type: "lumen_output", label: "Lumen Output", options: mastersData.lumen_output || [] },
@@ -136,6 +136,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"InStock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
         </div>
 
         <div className='py-4 flex flex-col gap-2'>
@@ -194,7 +196,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
         {/* <PriceFilter ProductFilter={ProductFilter} /> */}
 
         <div className='w-full flex items-center gap-[10px] justify-between'>
-          <button className='w-[50%] text-[#585858] bg-[#F0F0F0] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter('', 'clearAll')}>Clear All</button>
+          <button className='w-[50%] text-[#585858] bg-[#F0F0F0] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter()}>Clear All</button>
           <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => fetchResults()}>Filter</button>
         </div>
       </div>
@@ -232,8 +234,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           </div>
 
 
-          {(filtersList.brand_list && filtersList.brand_list.length != 0) && <BrandsFilter brand_list={filtersList.brand_list} ProductFilter={ProductFilter} />}
-          {(filtersList.attribute_list && filtersList.attribute_list.length != 0) && <AttributeFilter attribute_list={filtersList.attribute_list} ProductFilter={ProductFilter} />}
+          {/* {(filtersList.brand_list && filtersList.brand_list.length != 0) && <BrandsFilter brand_list={filtersList.brand_list} ProductFilter={ProductFilter} />} */}
+          {/* {(filtersList.attribute_list && filtersList.attribute_list.length != 0) && <AttributeFilter attribute_list={filtersList.attribute_list} ProductFilter={ProductFilter} />} */}
           <RatingFilter ProductFilter={ProductFilter} />
           <PriceFilter ProductFilter={ProductFilter} />
         </div>

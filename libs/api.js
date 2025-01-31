@@ -566,3 +566,11 @@ export async function get_all_masters() {
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
+
+
+export async function get_all_category() {
+    let api = `http://178.128.108.196/api/resource/Item%20Group?filters=[[%22name%22,%22!=%22,%22All%20Item%20Groups%22]]`
+    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
+    const response = await fetch(api, { method: 'GET', headers: myHead, })
+    return await response.json()
+}
