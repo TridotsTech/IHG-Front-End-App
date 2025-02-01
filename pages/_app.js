@@ -23,6 +23,7 @@ import 'react-multi-carousel/lib/styles.css';
 import 'tailwindcss/tailwind.css';
 const BrandCategory = dynamic(() => import('@/components/Common/BrandCategory'))
 import settig from '@/libs/websiteSettings'
+import ScrollToTopButton from '@/components/Common/ScrollToTop';
 console.log('setting', settig.message)
 
 // import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -218,11 +219,12 @@ export default function App({ Component, pageProps }) {
   const getValue = async () => {
     const mastersRes = await get_all_masters();
     if (mastersRes && mastersRes.message) {
-      console.log(mastersRes.message, "mastersRes.message")
+      // console.log(mastersRes.message, "mastersRes.message")
       setMasterValues(mastersRes.message)
     }
   }
 
+  console.log(router,"router")
   return (
     <>
       <script src="https://cdn.jsdelivr.net/npm/typesense-instantsearch-adapter@2/dist/typesense-instantsearch-adapter.min.js"></script>
@@ -251,7 +253,7 @@ export default function App({ Component, pageProps }) {
 
 
             <div id='footer'>
-              {(masterValue && masterValue['item_group']) && (router.pathname != "/login") && <>
+              {(masterValue && masterValue['item_group']) && (router.pathname != "/login" && router.pathname != "/[...list]") && <>
                 <div className="bg-[#F0F0F0] py-[30px]" >
 
                   <BrandCategory title={'Categories'} keys={'item_group'} masterValue={masterValue} />
@@ -268,6 +270,7 @@ export default function App({ Component, pageProps }) {
               <div className='md:hidden lg:min-h-[345px] lg:w-full your-element'>
                 <MainFooter />
               </div>} */}
+              <ScrollToTopButton />
 
           </RootLayout>
           {/* </GoogleOAuthProvider> */}

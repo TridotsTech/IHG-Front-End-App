@@ -2,7 +2,7 @@ import React from 'react'
 import ViewAll from './ViewAll'
 import Image from 'next/image'
 
-const ChooseCategory = () => {
+const ChooseCategory = ({customCss}) => {
 
     const chooseData = [
         {
@@ -38,8 +38,8 @@ const ChooseCategory = () => {
 
     return (
         <>
-            <div className="bg-[#F0F0F0] py-12">
-                <div className="main-width  pb-[10px]">
+            <div className={`bg-[#F0F0F0] py-12 md:px-[10px] `}>
+                <div className={`main-width  pb-[10px] ${customCss}`}>
                     <ViewAll data={{ title: "Now easier to choose" }} viewAll={true} />
 
                     <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">

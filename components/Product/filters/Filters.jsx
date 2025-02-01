@@ -1,4 +1,4 @@
-import { useState, useMemo, Fragment } from 'react'
+import { useState, useMemo, Fragment, useEffect } from 'react'
 import dynamic from 'next/dynamic'
 const CurrentProductFilter = dynamic(() => import('@/components/Product/filters/CurrentProductFilter'))
 const BrandsFilter = dynamic(() => import('@/components/Product/filters/BrandsFilter'))
@@ -13,9 +13,11 @@ import clsx from 'clsx'
 import RangeSlider from './RangeSlider'
 import { typesense_search_items } from '@/libs/api'
 import MultiSelectBox from './MultiSelect'
-export default function Filters({ mastersData, filtersList, ProductFilter, closeModal, clearFilter, filters, setFilters, priceBetween, setPriceBetween, fetchResults }) {
+import { useRouter } from 'next/router'
+
+export default function Filters({ mastersData, filtersList, ProductFilter, closeModal, clearFilter, filters, setFilters, priceBetween, setPriceBetween, fetchResults, foundValue }) {
   const input_classname = "border bordert-[1px] border-[#0000000D] p-[5px_10px] text-[14px] rounded-[5px] mt-[5px] w-full"
-  const label_classname = "text-[16px] md:text-[13px] font-bold"
+  const label_classname = "text-[14px] md:text-[13px] font-semibold"
   const [switchValues, setSwitchValues] = useState({
     upcoming: false,
     promotion: false,
@@ -24,6 +26,13 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
 
   const [priceRange, setPriceRange] = useState({ min: 0, max: 350 })
   const [stockRange, setStockRange] = useState({ min: 0, max: 350 })
+
+const router = useRouter()
+
+  useEffect(() => {
+    console.log('fd', filters)
+
+  }, [filters, router.query])
 
   // const changeValue = (type, value) => {
   //   setSwitchValues(prev => {
@@ -72,8 +81,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
     { text: 'Price high to low', value: 'rate:desc' },
     { text: 'Stock low to high', value: 'stock:asc' },
     { text: 'Stock high to low', value: 'stock:desc' },
-    { text: 'Mostly Sold', value: 'mostly_sold' },
-    { text: 'Least Sold', value: 'least_sold' },
+    { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
+    { text: 'Least Sold', value: 'sold_last_30_days:asc' },
   ]
 
   const multiSelectOptions = [
@@ -104,25 +113,26 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
       ...prevFilters,
       [type]: selectedArray,
     }));
+    console.log("filters", filters)
   };
 
   return (
     <>
-      <div className='md:hidden border border-[1px] border-[#0000001F] rounded-[10px] p-[10px]'>
+      <div className='bg-[#F0F0F0] p-[7px_14px] md:my-[5px] md:hidden'>
+        <h4 className='text-[16px] font-semibold md:text-[14px] text-center'>Total  {foundValue}  Products</h4>
+      </div>
+      <div className='md:hidden  px-[20px]'>
 
-        <div className='bg-[#F0F0F0] rounded-[6px] p-[7px_14px] my-[10px] md:my-[5px]'>
-          <h4 className='text-[16px] font-semibold md:text-[14px]'>Total  6,7832  Products</h4>
-        </div>
 
-        <div className='pt-[15px] md:p-t-[10px]'>
-          <label htmlFor="code" className={`${label_classname}`}>Search By Code</label>
-          {/* <input name='code' onInput={(e) => handleChange(e, 'code')} className={`${input_classname}`} type='text' placeholder='Search by code' /> */}
-          <input name='code' onChange={(e) => setFilters({ ...filters, item_code: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by code' />
-        </div>
+        {/* <div className='pt-[15px] md:p-t-[10px]'> */}
+        {/* <label htmlFor="code" className={`${label_classname}`}>Search By Code</label> */}
+        {/* <input name='code' onInput={(e) => handleChange(e, 'code')} className={`${input_classname}`} type='text' placeholder='Search by code' /> */}
+        {/* <input name='code' onChange={(e) => setFilters({ ...filters, item_code: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by code' /> */}
+        {/* </div> */}
 
         <div className='py-4 md:py-2'>
           <label htmlFor="code" className={`${label_classname}`}>Search By Description</label>
-          <input name='code' onChange={(e) => setFilters({ ...filters, item_description: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by description' />
+          <input name='code' value={filters.item_description} onChange={(e) => setFilters({ ...filters, item_description: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by description' />
         </div>
 
 
@@ -135,12 +145,12 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
         <div>
           <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
-          <SwitchComponent label_classname={label_classname} label1={"InStock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
         </div>
 
-        <div className='py-4 flex flex-col gap-2'>
+        {/* <div className='py-4 flex flex-col gap-2'>
           <label htmlFor="" className={`${label_classname}`}>Sort by</label>
           <select value={filters.sort_by} onChange={(e)=> setFilters({...filters, sort_by: e.target.value})} className={` outline-none border-2 p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
             {
@@ -149,26 +159,26 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
               ))
             }
           </select>
-        </div>
+        </div> */}
 
         {/* <div className='py-4 md:py-2'>
           <RangeSlider MIN={0} MAX={350} ranges={priceRange} setRanges={setPriceRange} label={'Price'} label_classname={label_classname} />
         </div> */}
         <div className='py-4 md:py-2'>
-          <RangeSlider MIN={0} MAX={1000} ranges={filters.price_range} setRanges={(ranges) => {
+          <RangeSlider MIN={0} MAX={100000} ranges={filters.price_range} setRanges={(ranges) => {
             setFilters({ ...filters, price_range: { ...ranges } });
           }
           } label={'Price'} label_classname={label_classname} />
         </div>
 
         <div className='py-4 md:py-2'>
-          <RangeSlider MIN={0} MAX={1000} ranges={filters.stock_range}
+          <RangeSlider MIN={0} MAX={100000} ranges={filters.stock_range}
             setRanges={(ranges) =>
               setFilters({ ...filters, stock_range: ranges })
             } label={'Stock'} label_classname={label_classname} />
         </div>
 
-        <div className='py-4 md:py-2'>
+        <div className='pt-4 md:py-2'>
           <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
           <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
         </div>
@@ -179,6 +189,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
 
         {/* <CurrentProductFilter category_list={filtersList.category_list} /> */}
         {/* {(filtersList.brand_list && filtersList.brand_list.length != 0) && <BrandsFilter brand_list={filtersList.brand_list} ProductFilter={ProductFilter} />} */}
+        <div className='mb-20'>
         {multiSelectOptions.map(({ type, label, options }) => (
           <MultiSelectBox
             key={type}
@@ -188,18 +199,29 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
             onSelectionChange={handleSelectionChange}
             label_classname={label_classname}
             filters={filters}
+            clearFilter={clearFilter}
           />
         ))}
+        </div>
 
         {/* {(filtersList.attribute_list && filtersList.attribute_list.length != 0) && <AttributeFilter attribute_list={filtersList.attribute_list} ProductFilter={ProductFilter} />} */}
         {/* <RatingFilter ProductFilter={ProductFilter} /> */}
         {/* <PriceFilter ProductFilter={ProductFilter} /> */}
 
-        <div className='w-full flex items-center gap-[10px] justify-between'>
-          <button className='w-[50%] text-[#585858] bg-[#F0F0F0] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter()}>Clear All</button>
-          <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => fetchResults()}>Filter</button>
-        </div>
+{/* position: fixed;
+    bottom: 0;
+    width: auto;
+    background: #fff;
+    z-index: 99;
+    width: 20%;
+} */}
       </div>
+        <div className='fixed bottom-0 w-[20%] p-[12px_10px] bg-[#F0F0F0] z-[99]' style={{boxShadow: '-1px 0px 1px 2px #eeeeee'}}>
+          <div className='w-full flex items-center gap-[10px] justify-between'>
+            <button className='w-[50%] text-[#fff] bg-[#f56c6c] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter()}>Clear All</button>
+            <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => fetchResults()}>Filter</button>
+          </div>
+        </div>
 
       <div className='lg:hidden flex flex-col h-full'>
         <h5 className='text-[15px] font-semibold p-[10px_10px_0_10px]'>Filter</h5>
@@ -240,7 +262,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           <PriceFilter ProductFilter={ProductFilter} />
         </div>
 
-        <div className={'flex gap-[5px] p-[10px] mt-[10px] border-t-[1px] border-t-slate-100'}>
+        <div className={'flex gap-[5px] p-[10px] mt-[10px] border-t-[1px] border-t-slate-100 bg-[#F0F0F0]'}>
           <button onClick={() => { closeModal(), clearFilter('', 'clearAll') }} className={`secondary_btn p-[5px_10px] h-[40px] w-[50%]`}>Clear All</button>
           <button onClick={closeModal} className={`primary_btn p-[5px_10px] h-[40px] w-[50%]`}>Filter</button>
         </div>
@@ -486,7 +508,7 @@ const SwitchCom = ({ label1, label2, label_classname, checked, changeValue, type
 const SwitchComponent = ({ label1, label2, label_classname, checked, changeValue, type, filters }) => {
   const label2_class = 'text-[#7C7C7C] text-[12px]'
   return (
-    <div className='py-4'>
+    <div className='pb-4'>
       <div className='flex items-center gap-5 justify-between'>
         <h5 className={`${label_classname}`}>{label1}</h5>
         <Switch checked={checked} onChange={(e) => changeValue(type, e)} as={Fragment}>

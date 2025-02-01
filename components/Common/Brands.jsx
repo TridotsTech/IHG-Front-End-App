@@ -2,7 +2,7 @@ import React from 'react'
 import ViewAll from './ViewAll'
 import Image from 'next/image'
 
-const Brands = () => {
+const Brands = ({customCss=""}) => {
 
 
     const brandsData = [
@@ -98,11 +98,11 @@ const Brands = () => {
         },
     ]
   return (
-    <div className='main-width '>
+    <div className={`main-width md:px-[10px] ${customCss}`}>
         <div className='py-5'>
           <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} />
 
-          <div className='py-3'>
+          <div className='py-3 '>
               <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
                 {
                     brandsData.map((item,i)=>(

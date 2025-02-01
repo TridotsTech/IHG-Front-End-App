@@ -12,7 +12,8 @@ module.exports = {
         'lg1': { 'max': '1024px' },
         'lg': { 'min': '768px' },
         'xl': { 'min': '1024px' },
-        '2xl': { 'min': '1200px' },
+        '2xl': { 'min': '1400px' },
+        'tab': {'min': '768px','max': '1024px'}
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

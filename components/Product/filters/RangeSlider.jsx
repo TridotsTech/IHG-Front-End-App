@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-const RangeSlider = ({ MIN = 0, MAX = 1000, label, label_classname, setRanges, ranges }) => {
+const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges, ranges }) => {
     const COLOR_TRACK = "#CBD5E1";
     const COLOR_RANGE = "#000";
 

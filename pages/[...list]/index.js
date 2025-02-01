@@ -22,14 +22,53 @@ import Brands from '@/components/Common/Brands';
 import Typesense from '@/components/Product/filters/Typesense';
 
 
-export default function List({ productRoute, filterInfo, currentId, params, mastersData, initialData }) {
+export default function List({ productRoute, filterInfo, currentId, params, mastersData, initialData, found }) {
 
   console.log('maste', initialData)
   const router = useRouter();
 
+  const initialValue = {
+    q: "*",
+    page_no: 1,
+    item_description: "",
+    sort_by: '',
+    hot_product: false,
+    show_promotion: false,
+    in_stock: false,
+    brand: [],
+    price_range: { min: 0, max: 1000 },
+    stock_range: { min: 0, max: 1000 },
+    product_type: [],
+    has_variants: false,
+    custom_in_bundle_item: false,
+    category_list: [],
+    item_group: [],
+    beam_angle: [],
+    lumen_output: [],
+    mounting: [],
+    ip_rate: [],
+    lamp_type: [],
+    power: [],
+    input: [],
+    dimension: '',
+    material: [],
+    body_finish: [],
+    warranty_: [],
+    output_voltage: [],
+    output_current: [],
+    color_temp_: []
+  }
+
+  const [foundValue, setFoundValue] = useState(0);
+
+
   useEffect(() => {
     setResults(initialData)
+    setFoundValue(found)
   }, [router])
+
+  console.log("foundValue", foundValue)
+
 
 
   let [productList, setProductList] = useState([]);
@@ -494,10 +533,12 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   console.log(category, brand)
 
   const [filters, setFilters] = useState({
-    ...filtersData,
-    price_range: { min: 0, max: 1000 },
-    stock_range: { min: 0, max: 1000 }
+    ...initialValue,
+    price_range: { min: 0, max: 100000 },
+    stock_range: { min: 0, max: 100000 }
   });
+
+  console.log("fiterValue", filters)
 
   useEffect(() => {
     if (!router.isReady) return;
@@ -518,7 +559,7 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
     const filterParams = [];
     const { price_range, stock_range, ...rest } = filters;
 
-    if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
+    // if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
     if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
     if (rest.hot_product) filterParams.push(`hot_product:=${rest.hot_product ? 1 : 0}`);
@@ -553,9 +594,16 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
 
   const removeFilter = () => {
+    console.log('filter')
     dispatch(resetFilters())
-    setFilters(filtersData);
+    setFilters({...initialValue, price_range: { min: 0, max: 1000 },
+    stock_range: { min: 0, max: 1000 },});
+    router.replace('/list?category=')
   }
+
+  // useEffect(()=>{
+  //   removeFilter()
+  // }, [router.query])
 
   // console.log('type',filters)
 
@@ -607,32 +655,40 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   //   }
   // }, [no_product, results]);
 
+  
+
 
   const fetchResults = async (reset = false) => {
     setError(null);
-
+    console.log("queryfilter", filters)
+    // const perPage = window.innerWidth >= 1400 ? "15" : "12";
     const queryParams = new URLSearchParams({
       q: '*',
       query_by: "item_name,item_description,brand",
       page: pageNo,
-      per_page: "12",
-      query_by_weights: "1,2,3",
+      per_page: "15",
+      // query_by_weights: "1,2,3",
       ...buildFilterQuery() && { filter_by: buildFilterQuery() },
-      sort_by: filters.sort_by || ''
+      sort_by: filters.sort_by
     });
 
     try {
       setLoading(true);
       console.log('query', buildFilterQuery);
+      console.log('queParam', filters)
       const data = await typesense_search_items(queryParams);
-      if (data.hits.length === 0) {
-        setResults([])
+      if (data.hits.length === 0 && pageNo > 1) {
+        setResults((prev)=> [...prev])
         setHasMore(false);
-      } else {
+      } else if(data.hits.length === 0 && pageNo < 2){
+         setResults([])
+         setHasMore(false)
+      }else {
         setHasMore(true);
         setResults((prevResults) =>
           reset ? data.hits : [...prevResults, ...data.hits]
         );
+        setFoundValue(data.found || 0)
         // if(reset){
         //   setResults([data.hits])
         // } else{
@@ -657,9 +713,10 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
     return () => observer.current?.disconnect();
   }, []);
 
-  useEffect(() => {
-    dispatch(setFilter(filters));
-  }, [filters]);
+  // useEffect(() => {
+  //   dispatch(setFilter(filters));
+  // }, [filters]);
+
 
   useEffect(() => {
     dispatch(resetFilters())
@@ -723,41 +780,74 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   //     fetchResults();
   //   }, [filters, priceBetween]);
 
+  // useEffect(() => {
+  //   // Create an IntersectionObserver instance
+  //   const observer = new IntersectionObserver((entries) => {
+  //     // Loop through each entry (in case multiple elements are being observed)
+  //     entries.forEach((entry) => {
+  //       if (entry.isIntersecting) {
+  //         // Trigger the event when the footer is visible
+  //         console.log('Footer is visible!');
+  //         const ele = document.getElementById('filter-sec')
+  //         ele.classList.add('!absolute')
+  //         // You can trigger any custom function here
+  //         // Example: call a function or update state
+  //       }else{
+  //         const ele = document.getElementById('filter-sec')
+  //         ele.classList.remove('!absolute')
+  //       }
+  //     });
+  //   }, {
+  //     threshold: 0.1, // This means 10% of the footer must be visible for the event to be triggered
+  //   });
+
+  //   // Target the element with id "footer"
+  //   const footerElement = document.getElementById('footer');
+  //   if (footerElement) {
+  //     observer.observe(footerElement); // Start observing the footer
+  //   }
+
+  //   // Cleanup observer when the component is unmounted
+  //   return () => {
+  //     if (footerElement) {
+  //       observer.unobserve(footerElement); // Stop observing on unmount
+  //     }
+  //   };
+  // }, []); // Empty dependency array to run this only once on mount
+
+
+  let sortByOptions = [
+    { text: 'Select Sort By', value: '' },
+    { text: 'Created Date', value: 'created_date' },
+    { text: 'Price low to high', value: 'rate:asc' },
+    { text: 'Price high to low', value: 'rate:desc' },
+    { text: 'Stock low to high', value: 'stock:asc' },
+    { text: 'Stock high to low', value: 'stock:desc' },
+    { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
+    { text: 'Least Sold', value: 'sold_last_30_days:asc' },
+  ]
+
+  const handleSortBy = async(e)=>{
+    console.log('targetvalue',e.target.value)
+    setFilters((prevFilters) => ({
+      ...prevFilters,
+      sort_by: e.target.value
+    }));
+    console.log('sort', filters)
+    setResults([])
+    setpageNo(1)
+    // fetchResults()
+  }
+
   useEffect(() => {
-    // Create an IntersectionObserver instance
-    const observer = new IntersectionObserver((entries) => {
-      // Loop through each entry (in case multiple elements are being observed)
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          // Trigger the event when the footer is visible
-          console.log('Footer is visible!');
-          const ele = document.getElementById('filter-sec')
-          ele.classList.add('!absolute')
-          // You can trigger any custom function here
-          // Example: call a function or update state
-        }else{
-          const ele = document.getElementById('filter-sec')
-          ele.classList.remove('!absolute')
-        }
-      });
-    }, {
-      threshold: 0.1, // This means 10% of the footer must be visible for the event to be triggered
-    });
-
-    // Target the element with id "footer"
-    const footerElement = document.getElementById('footer');
-    if (footerElement) {
-      observer.observe(footerElement); // Start observing the footer
+    if (initialLoad) {
+      setInitialLoad(false);
+      return;
+    } else {
+      fetchResults()
     }
-
-    // Cleanup observer when the component is unmounted
-    return () => {
-      if (footerElement) {
-        observer.unobserve(footerElement); // Stop observing on unmount
-      }
-    };
-  }, []); // Empty dependency array to run this only once on mount
-
+  }, [filters.sort_by])
+  
   return (
 
     <>
@@ -794,23 +884,35 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
       </div> */}
 
 
-      <div className='md:hidden main-width pt-3 flex justify-end'>
+      <div className='md:hidden main-width pt-3 flex justify-end gap-4'>
         <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-end gap-[7px] cursor-pointer border border-[1px] border-[#ddd] rounded-[5px] p-[5px_10px]'>
           <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
           <span className={`text-[14px] font-normal line-clamp-1`}>{productBoxView == 'Grid View' ? 'List' : 'Grid'}</span>
+        </div>
+
+        <div className=''>
+          {/* <label htmlFor="" className={`${label_classname}`}>Sort by</label> */}
+          <select value={filters.sort_by} onChange={(e) => handleSortBy(e)} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
+            {
+              sortByOptions.map((item, i) => (
+                <option value={item.value}>{item.text}</option>
+              ))
+            }
+          </select>
         </div>
       </div>
 
 
 
-      <div class={`md:mb-[60px] lg:flex main-width lg:py-5 lg:gap-[17px] md:gap-[10px] `}>
+      <div class={`md:mb-[60px] lg:flex  lg:py-5 lg:gap-[17px] md:gap-[10px] `}>
 
         {/* <div className="md:hidden flex-[0_0_calc(20%_-_7px)] mr-[10px] sticky top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
           {filtersList && <Filters filtersList={filtersList} ProductFilter={ProductFilter} />}
         </div> */}
 
-        <div id='filter-sec' className="md:hidden transition-all delay-300 duration-300 ease-in flex-[0_0_calc(20%_-_7px)] mr-[10px] fixed top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
-          {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} />}
+        {/* flex-[0_0_calc(20%_-_7px)] */}
+        <div id='filter-sec' className="md:hidden border-r border-r-[1px] border-r-[#0000001F] fixed w-[20%] transition-all delay-300 duration-300 ease-in  mr-[10px] top-[124px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]">
+          {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
         </div>
 
         <div className="lg:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
@@ -864,7 +966,8 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
         </div> */}
 
 
-        <div className="lg:flex-[0_0_calc(80%_-_7px)] md:w-full">
+        {/* lg:flex-[0_0_calc(80%_-_7px)] */}
+        <div className="lg:w-[80%] lg:ml-[20%] md:w-full main-width">
           <>
             {productFilters.selectedAttributes.length != 0 &&
               <div className='md:hidden flex gap-[8px] items-center flex-wrap mb-[10px]'>
@@ -890,13 +993,14 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
               <Skeleton />
               :
               <div className='min-h-screen'>
-                {((results.length != 0 && Array.isArray(results)) && productBoxView) ? <ProductBox productList={results} rowCount={'flex-[0_0_calc(25%_-_8px)]'} productBoxView={productBoxView} /> :
+                {console.log('check',results)}
+                {((results.length != 0 && Array.isArray(results))) ? <ProductBox productList={results} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} /> :
                   <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
                 }
               </div>
             }
             {/* <div className='more' ref={cardref}></div> */}
-            <div className="more" ref={lastResultRef}></div>
+            <div className="" ref={lastResultRef}></div>
 
             {loading &&
               <div id="wave">
@@ -1094,13 +1198,14 @@ export async function getServerSideProps(req) {
     q: '*',
     query_by: "item_name,item_description,brand",
     page: "1",
-    per_page: "12",
+    per_page: "15",
     query_by_weights: "1,2,3",
     filter_by: buildFilterQuery(),
   });
 
   const data = await typesense_search_items(queryParams);
   const initialData = data.hits || [];
+  const found = data.found || 0
 
 
 
@@ -1112,7 +1217,7 @@ export async function getServerSideProps(req) {
 
   return {
     // props: { productRoute, filterInfo, currentId, params, mastersData }
-    props: { mastersData, initialData }
+    props: { mastersData, initialData, found }
   }
 
 }

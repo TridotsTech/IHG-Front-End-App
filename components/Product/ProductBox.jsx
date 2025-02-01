@@ -27,7 +27,7 @@ import Link from 'next/link'
 // })
 
 export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg }) {
-   console.log('produ', productList)
+  console.log('produ', productList)
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const cartItems = useSelector((state) => state.cartSettings.cartItems)
   const wishlistItems = useSelector((state) => state.cartSettings.wishlistItems)
@@ -155,7 +155,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
   }
 
   useMemo(() => {
-    setProductQty();
+    // setProductQty();
     // console.log('routetproduct')
   }, [cartItems, productList])
 
@@ -393,7 +393,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
         <div className={`${!scroll_button && 'hidden'} absolute top-[40%] left-[-22px] h-[35px] w-[35px] z-10 bg-[#fff] text-black border-[1px]  border-slate-100 rounded-full flex items-center justify-center  cursor-pointer md:hidden`} onClick={() => sctollTo('prev')} id={'prev_' + (scroll_id ? scroll_id : '')}> <Image className='h-[12px] object-contain' alt="Prev" src={'/rightArrow.svg'} width={35} height={35} /></div>
 
-        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={`${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'flex-wrap'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px]' : ''} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
+        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={` ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'flex-wrap'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] lg:grid lg:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-4 2xl:grid-cols-5 lg:gap-3'} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
 
           {leftHorizontalImage && <Image src={check_Image(leftHorizontalImage)} width={400} height={400} alt="icon1" className="lg:hidden h-[300px] w-[200px] object-cover" />}
 
@@ -401,27 +401,27 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
           {(productList && productList.length != 0 && Array.isArray(productList)) && productList.map((item, index) => {
             return (
               // onMouseEnter={() => { setQuick(index) }} onMouseLeave={() => { setQuick(-1) }}
-              <li key={index} className={`${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] ')} pb-[15px] relative your-element border`} >
+              <li key={index} className={`${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] ')} relative your-element border`} >
 
 
-                <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[230px]  relative ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:h-[170px]' : 'md:h-[170px] md:w-[100%] pb-[10px] '} your-element `}>
-                  <Link href={'/pr/' + item.route} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:h-[170px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 130 : 170) : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[160px]' : ''} lg:h-[210px] md:h-[125px] md:w-[125px] object-contain your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
+                <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[230px]  relative ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:h-[140px]' : 'md:h-[170px] md:w-[100%] pb-[10px] '} your-element `}>
+                  <Link href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:h-[170px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 130 : 170) : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[130px]' : 'lg:h-[220px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
                 </div>
 
                 <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%]' : ''} p-[10px]`}>
-                  <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link>
+                  {/* <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link> */}
 
-                  <p className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
+                  <p className={`line-clamp-2 pt-[5px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
 
-                  <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`} />
+                  {/* <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`} /> */}
 
-                  <p className={`line-clamp-1 uppercase py-[5px] text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>IN STOCK ({item.document.stock ? item.document.stock : '0'} PCS)</p>
-
-                  <div className='flex items-center gap-5 justify-between'>
-                    {(webSettings && webSettings.currency) && <h3 className={`text-[13px] primary_color float-left font-semibold openSens `}>{currencyFormatter1(item.document.rate, webSettings.currency)}</h3>}
+                  <div className='flex items-center gap-5 justify-between mt-2'>
+                    {(webSettings && webSettings.currency) && <h3 className={`text-[14px] primary_color float-left font-semibold openSens `}>{currencyFormatter1(item.document.rate, webSettings.currency)}</h3>}
 
                     {(item.discount_percentage && item.discount_percentage != '' && item.discount_percentage != 0) ? <h6 className='additional_bg text-[#fff] p-[3px_13px] rounded-[5px] text-[12px]'>Save {item.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% </span> </h6> : <></>}
                   </div>
+                  <p className={`line-clamp-1 uppercase py-[5px] text-[13px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>IN STOCK ({item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''})</p>
+
                 </div>
               </li>
             )

@@ -35,7 +35,7 @@ export const checkMobile = () => {
 export const currencyFormatter1 = (amount, currencyCode = 'INR') => {
     return new Intl.NumberFormat('en-US', {
         style: 'currency',
-        currency: 'INR',
+        currency: 'AED',
         // currency: currencyCode,
     }).format(amount);
 };
@@ -555,7 +555,7 @@ export async function pincode_availability(zipcode) {
 
 export async function typesense_search_items(queryParams) {
     let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
-    const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz" })
+    const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz","Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
@@ -571,6 +571,14 @@ export async function get_all_masters() {
 export async function get_all_category() {
     let api = `http://178.128.108.196/api/resource/Item%20Group?filters=[[%22name%22,%22!=%22,%22All%20Item%20Groups%22]]`
     const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
+    const response = await fetch(api, { method: 'GET', headers: myHead, })
+    return await response.json()
+}
+
+
+export async function get_product_details(code) {
+    let api = `http://178.128.108.196/api/method/igh_search.igh_search.api.get_product_info?item_code=${code}`
+    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c","x-typesense-api-key": "xyz" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }

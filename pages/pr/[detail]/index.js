@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useRef } from 'react'
 import { useRouter } from 'next/router'
-import { get_product_detail, get_product_other_info, check_Image, seo_Image, getCurrentUrl, currencyFormatter1, validate_attributes_stock, delete_cart_items, insert_cart_items, get_cart_items, checkMobile } from '@/libs/api';
+import { get_product_detail, get_product_other_info, check_Image, seo_Image, getCurrentUrl, currencyFormatter1, validate_attributes_stock, delete_cart_items, insert_cart_items, get_cart_items, checkMobile, typesense_search_items, get_product_details } from '@/libs/api';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 const CardButton = dynamic(()=> import('@/components/Product/CardButton'))
@@ -32,11 +32,12 @@ import Tabs from '@/components/Common/Tabs';
 import ChooseCategory from '@/components/Common/ChooseCategory';
 import Brands from '@/components/Common/Brands'
 
-const Detail = ({ productDetail}) => {
+const Detail = ({ productDetail,details}) => {
     const router = useRouter();
     const address = useSelector((state) => state.webSettings.adddressInfo);
 
-
+console.log(productDetail,"productDetail")
+console.log(details,"details")
     
     useEffect(()=>{
        let breadcrumb = [{'name' :'Home' , route:'/'}]
@@ -70,14 +71,14 @@ const Detail = ({ productDetail}) => {
       </Head>
 
 
-      {productDetail && <DetailPage productDetail={productDetail} toast={toast} />}
+      {productDetail && <DetailPage productDetail={productDetail} toast={toast} details={details} />}
     </RootLayout>
    )
 }
 
 // export default function Detail({metaData, productDetail}) {
 
-const DetailPage = ({productDetail,toast}) =>{
+const DetailPage = ({productDetail,toast,details}) =>{
 
     let [data, setData] = useState();
     let [additionalInfo, setAdditionalInfo] = useState({});
@@ -194,12 +195,12 @@ const DetailPage = ({productDetail,toast}) =>{
        data['stock'] = res.message.stock
        data['discount_percentage'] = res.message.discount_percentage
      }else{
-       setVariantStockMsg(res.message.message)
+    //    setVariantStockMsg(res.message.message)
      }
      
 
-     setData(data)
-     setSample(sample + 1)
+    //  setData(data)
+    //  setSample(sample + 1)
    }
 
    const loadLightGallery = () =>{
@@ -317,36 +318,6 @@ const DetailPage = ({productDetail,toast}) =>{
     }
 
 
-
-    function setImagesList(productDetail){
-         if(productDetail.product_attributes && productDetail.product_attributes.length != 0){
-            let array = []
-            productDetail.product_attributes.map(res=>{
-                if(res.options && res.options.length != 0){
-                    res.options.map(r=>{
-                       if(r.is_pre_selected == 1){
-                        array = [...array,...r.images]
-                        array = [...array,...r.videos]
-                       }
-                    })
-                }
-            }) 
-            productDetail.images = array.length == 0 ? productDetail.mainImages : array
-            if(productDetail.images.length != 0){
-                let count = productDetail.images.findIndex(res=>{return res.is_primary == 1});
-                if(count >= 0){
-                    productDetail.images.map((r,i)=>{
-                        if(count != i) {
-                          r.is_primary = 0
-                        }
-                     })
-                }else{
-                    productDetail.images[0].is_primary = 1 
-                }   
-            }
-        }
-
-    }
 
     const changeMainImage = (index, value) => {
         value.images.map((res, i) => {
@@ -538,7 +509,7 @@ const DetailPage = ({productDetail,toast}) =>{
     }
 
     function checkVariantInfo(productDetail){
-        setImagesList(productDetail)
+
         let ids = '';
         let selected_attribute = '';
         productDetail['product_attributes'].map(res => {
@@ -583,7 +554,7 @@ const DetailPage = ({productDetail,toast}) =>{
     return (
 
         <>
-          <div ref={cardref} className='main-width'>
+          <div ref={cardref} className='main-width lg:w-[90%] max-w-[1300px]'>
 
     {loader ? <Skeleton />:
     <>{(data && Object.keys(data).length != 0) && 
@@ -591,7 +562,7 @@ const DetailPage = ({productDetail,toast}) =>{
 
      {<MobileHeader back_btn={true} title={data.item} search={true} share={true} />}
 
-      {(data && data.breadcrumb &&  data.breadcrumb.length != 0) ? <div className={`md:hidden flex items-center container p-[10px_0_0_0] gap-[7px]`}>
+      {/* {(data && data.breadcrumb &&  data.breadcrumb.length != 0) ? <div className={`md:hidden flex items-center container p-[10px_0_0_0] gap-[7px]`}>
         { data.breadcrumb.map((res, index) => {
          return (
             <div className='flex items-center gap-[7px]' key={index}>
@@ -600,11 +571,11 @@ const DetailPage = ({productDetail,toast}) =>{
             </div>
          )
         })}
-       </div> : <></>}
+       </div> : <></>} */}
 
         <div className={`lg:flex lg:m-[15px_0] gap-[10px] justify-between `}>
 
-            <div className='flex lg:flex-[0_0_calc(60%_-_10px)] lg:sticky lg:top-[182px] lg:h-[450px] border p-3'>
+            <div className='flex lg:flex-[0_0_calc(60%_-_10px)] lg:sticky lg:top-[150px] lg:h-[450px] border p-3'>
                 {!isMobile && <div className={`mr-[10px] md:hidden h-[408px] w-[165px] overflow-auto scrollbarHide`}>
                     {(data.images && data.images.length != 0) &&
                         data.images.map((res, index) => {
@@ -655,11 +626,13 @@ const DetailPage = ({productDetail,toast}) =>{
                                      }
                                     </>
                                 )
-                            }) : <Image
+                            }) : <a href={check_Image(data.website_image_url)}>
+                                <Image
                                 className={'h-[400px]'}
                                 height={200} width={300} alt={data.item}
-                                src="/empty-states.png"
+                                src={check_Image(data.website_image_url)}
                             />
+                                </a>
                         }
                         </div>}
                 </div>
@@ -670,132 +643,49 @@ const DetailPage = ({productDetail,toast}) =>{
                 </div>}
             </div>
 
-            <div className='flex-[0_0_calc(40%_-_10px)] lg:pl-[40px] md:p-[20px_10px_10px] md:rounded-[20px_20px_0_0]'>
+            <div className='flex-[0_0_calc(40%_-_10px)] lg:px-[20px] md:p-[20px_10px_10px] md:rounded-[20px_20px_0_0]'>
                 {!isMobile ? <>
-                    <h6 className='text-[12px] font-semibold primary_color capitalize'>{data.centre}</h6>
-                    <span className='text-lg text-[#1F1F1F]'>{data.name}</span>
-                    <h3 className='text-2xl py-[5px] font-bold capitalize'>{data.item}</h3>
-                    {data.show_inventory == 1  ? (!variantStockMsg && data.stock && data.stock > data.count) ?
-                    <p className='text-base text-[#1A9A62] font-semibold mt-1'>IN STOCK ({data.stock} PCS)</p> : <p className='text-base font-semibold mt-1 text-[#d11111]'>No Stock</p> : <></>}
-                    {/* <div className={`flex items-center gap-[5px] mb-[8px]`}>
-                        {[0.2, 0.4, 0.6, 0.8, 1].map((res, i) => {
-                        return (
-                            <Image src={(data.approved_total_reviews > 0) && (res <= data.approved_total_reviews) ? '/detail/star-f-01.svg' : '/detail/star-01.svg'} className={`h-[12px] w-[12px] object-contain`} height={30} width={30} alt={'star'} />
-                        )
-                        })}
-                    </div> */}
-                     {/* {data.brands && data.brands.length != 0 && data.brands.map((item,i)=>{return(
-                        <Link key={i} href={'/' + item.route} className='block text-[11px] cursor-pointer'>by <span className='secondary_text text-[14px] font-semibold'> {item.brand_name}</span></Link>
-                     )}) } */}
-                     {/* line-clamp-3 */}
-                    {data.short_description && <p className={`text-[14px] gray_color font-[400] mt-[10px] `}>{data.short_description}</p>}
-                    {(webSettings && webSettings.currency) && <div className='flex justify-between items-center gap-[10px] mt-5 border-b pb-3'>
-                        {/* ${open_Sans.className}
-${open_Sans.className} */}
-                        {(data.discount_percentage != 0) && <div><h6 className='additional_bg text-[#fff] p-[4px_8px] rounded-[3px] font-bold text-sm'>Save {data.discount_percentage}<span className='px-[0px] text-[#fff] font-bold text-sm'>% Off</span> </h6></div>}
+                    {/* <h6 className='text-[12px] font-semibold primary_color capitalize'>{data.centre}</h6> */}
+                    {/* <span className='text-lg text-[#1F1F1F]'>{data.item_code}</span> */}
+                    <h3 className='text-2xl py-[5px] font-bold capitalize'>{data.item_name}</h3>
+                   
+                    {data.item_description && <p className={`text-[14px] gray_color font-[400] mt-[10px] `} dangerouslySetInnerHTML={{__html: data.item_description}} />}
+                    
                         <div className='flex items-center gap-3'>
-                            {data.old_price ? <h3 className={`text-lg font-medium text-[#A5A5A5] line-through  openSens`}>{currencyFormatter1(data.old_price,webSettings.currency)}</h3> : <></>}
-                            <h3 className={`md:text-[13px] text-lg  font-semibold  openSens`}>{currencyFormatter1(data.price,webSettings.currency)}</h3>
+                            <h3 className={`md:text-[13px] text-[20px]  font-semibold  openSens`}>{currencyFormatter1(data.rate,'')}</h3>
                         </div>
-                    </div>}
+
+                        {(data.stock && data.stock > 0) ? <p className='text-base text-[#1A9A62] font-semibold mt-1'>IN STOCK ({data.stock} PCS)</p> : <p className='text-base font-semibold mt-1 text-[#d11111]'>No Stock</p>}
+                    
 
                 </> :
                     <>
-                        {(wishList && wishList['name']) && 
+                       
                           <div className='flex justify-between gap-5'>
                             <div>
-                                {data.centre && <h6 className='text-[14px] font-semibold primary_color capitalize'>{data.centre}</h6>}
-                                <span className='text-[#1F1F1F] text-sm'>{data.name}</span>
-                                <h3 className='text-[18px] py-[5px] font-semibold line-clamp-2 capitalize'>{data.item}</h3>
-                                {data.show_inventory == 1  ? (!variantStockMsg && data.stock && data.stock > data.count) ?
-                                <p className='text-base text-[#1A9A62] font-semibold mt-1'>IN STOCK ({data.stock} PCS)</p> : <p className='text-base font-semibold mt-1 text-[#d11111]'>Out Of Stock</p> : <></>}
+                                {/* {data.centre && <h6 className='text-[14px] font-semibold primary_color capitalize'>{data.centre}</h6>} */}
+                                {/* <span className='text-[#1F1F1F] text-sm'>{data.item_code}</span> */}
+                                <h3 className='text-[18px] py-[5px] font-semibold line-clamp-2 capitalize'>{data.item_name}</h3>
+                                {(data.stock && data.stock > 0) ?
+                                <p className='text-base text-[#1A9A62] font-semibold mt-1'>IN STOCK ({data.stock} PCS)</p> : <p className='text-base font-semibold mt-1 text-[#d11111]'>Out Of Stock</p>}
                                 {/* {data.stock && <p>{data.stock}</p>} */}
                             </div>
-
-                            {/* { (webSettings && webSettings.app_settings) ? <div onClick={() => addRemovewish(wishList)} className='h-[36px] w-[60px] rounded-[5px] grid place-content-center'><Image className='cursor-pointer object-contain h-[25px] w-[30px]' src={check_Image(wishList['wish_count'] == 1 ? webSettings.app_settings.list_wishlist_filled : webSettings.app_settings.list_wishlist)} height={100} width={200} alt='wish' /></div> : <></>} */}
-
-                            {/* <div onClick={() => addRemovewish(wishList)} className='h-[36px] w-[60px] rounded-[5px] grid place-content-center'><Image className='cursor-pointer object-contain h-[25px] w-[30px]' src={wishList['wish_count'] == 1 ? '/detail/wishlist-fill.svg' : '/detail/wishlist-line.svg'} height={100} width={200} alt='wish' /></div> */}
-                        </div>}
-
-                        {/* <div className='flex items-center justify-between '>
-                                    {data.brands && data.brands.length != 0 &&
-                                     data.brands.map((item,i)=>{return(
-                                        // onClick={()=>{router.push('/' + item.route)}}
-                                        <Link href={'/' + item.route} key={i}  className='block text-[11px] cursor-pointer'>by <span className='secondary_text text-[14px] font-semibold'> {item.brand_name}</span></Link>
-                                     )})}
-                        </div> */}
+                            
+                        </div>
                         
-                        <p className={`text-[11px] gray_color font-[400] mt-[10px] `}>{data.short_description}</p>
-                        {(webSettings && webSettings.currency) && <div className='flex flex-row-reverse justify-between items-center gap-[10px] mt-3 border-b pb-3'>
-                        {/* ${open_Sans.className}
-${open_Sans.className} */}
-                        <div>
-                            {(data.discount_percentage != 0) && <h6 className='additional_bg text-[#fff] p-[4px_8px] rounded-[3px] font-semibold lg:font-bold text-xs lg:text-sm'>Save {data.discount_percentage}<span className='px-[0px] text-[#fff] font-semibold lg:font-bold text-xs lg:text-sm'>% Off</span> </h6>}
-                        </div>
+                        <p className={`text-[11px] gray_color font-[400] mt-[10px] `} dangerouslySetInnerHTML={{__html: data.item_description}} />
+                       
+                        
                         <div className='flex flex-row-reverse items-center gap-3'>
-                            {data.old_price ? <h3 className={`md:text-sm text-lg font-medium text-[#A5A5A5] line-through  openSens`}>{currencyFormatter1(data.old_price,webSettings.currency)}</h3> : <></>}
-                            <h3 className={`md:text-[14px] text-lg  font-semibold  openSens`}>{currencyFormatter1(data.price,webSettings.currency)}</h3>
+                            <h3 className={`md:text-[14px] text-lg  font-semibold  openSens`}>{currencyFormatter1(data.rate,'')}</h3>
                         </div>
-                    </div>}
+                    
                     </>}
 
-                {/* onClick={()=>{router.push('/vendor-products/'+ data.business_route)}} */}
-
-                {/* {data.vendor_price_list && data.vendor_price_list.length != 0 && data.vendor_price_list[0] && <Link href={'/vendor-products/'+ data.business_route} className='block mt-[5px] text-[14px] font-semibold gray_color cursor-pointer hover:text-[#000]'><span> Sold By : </span>{data.vendor_price_list[0].vendor_name}</Link>} */}
-                {/* {data.show_inventory == 1  ? (!variantStockMsg && data.stock && data.stock > data.count) ?
-                    <p className='text-[13px] bg-[#15a53c40] m-[7px_0] p-[2px_8px] inline-block font-[500] rounded-[5px] text-[#15a53c]'>In Stock</p> : <p className='text-[13px] bg-[#ff000029] m-[7px_0] p-[2px_8px] inline-block font-[500] rounded-[5px] text-[#d11111]'>No Stock</p> : <></>} */}
-                {/* Add to Cart */}
-
-                {/* {variantStockMsg && <p className='text-[12px] bg-red-100 text-red-600 p-[10px_12px] rounded-[5px] my-[7px]'>{variantStockMsg}</p>}
-               
-                {data.has_variants == 1 ? <Attributes data={data} setData={setData} styles={styles} checkVariantInfo={checkVariantInfo} /> : <></>}
                 
-                {!isMobile && <div className='flex m-[10px_0] gap-[15px] items-center styles={styles}  md:hidden'>
-                    <div><CardButton item={data} index={varActive} text_btn={true} is_big={true} /></div>
-                    { ((wishList && wishList['name']) && (webSettings && webSettings.app_settings)) ? <div onClick={() => addRemovewish(wishList)} className='h-[36px] w-[60px] light_bg rounded-[5px] grid place-content-center'><Image className='cursor-pointer object-contain h-[25px] w-[27px]' src={check_Image(wishList['wish_count'] == 1 ? webSettings.app_settings.list_wishlist_filled : webSettings.app_settings.list_wishlist)} height={100} width={200} alt='wish' /></div> : <></>}
-
-                    <Modals />
-                </div>} */}
-
-
-                {false && (data.vendor_price_list && data.vendor_price_list.length != 0 && data.vendor_price_list[0] && data.vendor_price_list[0].variants && data.vendor_price_list[0].variants.length != 0) && <div className='md:my-5'>
-                    <h3 className='text-[14px] md:text-[15px] font-semibold md:font-[500] md:mb-[5px] mb-[8px]'>Select Variants</h3>
-                    {data.vendor_price_list[0].variants.map((res, i) => {
-                        return (
-                            <div key={i} className='cursor-pointer px-[10px]' onClick={() => changeVariants(res, i)}>
-                                <div className='flex items-center gap-[10px]'>
-                                    <input className={`checkBox`} checked={varActive == i} type="radio" />
-                                    <p className='text-[14px] font-[500]'>{res.variant_text}</p>
-                                </div>
-                                {(webSettings && webSettings.currency) && <div className='flex gap-[10px] items-center p-[5px_25px]'>
-                                    {/* ${open_Sans.className}
-${open_Sans.className} */}
-                                    <h3 className={`text-[13px] font-semibold md:text-[15px] md:font-[500]  openSens`}>{currencyFormatter1(res.product_price,webSettings.currency)}</h3>
-                                    {res.old_price ? <h3 className={`text-[12px] md:text-[14px] gray_color line-through  openSens`}>{currencyFormatter1(res.old_price,webSettings.currency)}</h3> : <></>}
-                                    {(res.discount_percentage != 0) && <h6 className=' primary_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{res.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>}
-                                </div>}
-                            </div>
-                        )
-                    })}
-                </div>}
-
-                {false && (data.vendor_price_list && data.vendor_price_list.length > 1) && <p className='pb-[5px] md:text-[14px] lg:text-[15px] font-semibold md:font-[500] lg:mt-[10px]'>Compare with other sellar</p>}
-                {data.vendor_price_list && data.vendor_price_list.length != 0 && <div className={`lg:flex items-center gap-[10px] flex-wrap m-[0_10px]`}>
-                    {data.vendor_price_list.map((res, i) => {
-                        return (
-                            <div key={i} onClick={() => changeVendor(res, i)} className={`${i == 0 ? 'hidden' : ''} border rounded-[10px] border-[#cccccc7a] p-[10px] lg:flex-[0_0_calc(33.333%_-_10px)] cursor-pointer md:mb-[10px]`}>
-                                <p className='text-[14px] font-semibold gray_color capitalize'>{res.vendor_name}</p>
-                                <p className='text-[14px]'>{res.price_model}</p>
-                                {/*  ${open_Sans.className} */}
-                                {(webSettings && webSettings.currency) && <p className={`font-semibold openSens`}>{currencyFormatter1(res.product_price,webSettings.currency)}</p>}
-                            </div>
-                        )
-                    })}
-                </div>}
-
-                {(accordionData && accordionData.length != 0) ? <>
+                {data || (details && details.stock && details.stock.length != 0) ? <>
                     {/* <Accordions items={accordionData} product={data} setData={(val)=>{setDataAValue(val)}} /> */}
-                        <Tabs />
+                        <Tabs stockDetails={details.stock} productDetails={data} />
                 </> :
                 <></>
                 }
@@ -900,11 +790,11 @@ ${open_Sans.className} */}
 
        {/* Now Easier To Choose */}
 
-        <ChooseCategory />
+        {/* <ChooseCategory customCss={'lg:w-[90%] max-w-[1300px]'} /> */}
 
        {/* Shop By Brands */}
 
-        <Brands />
+        {/* <Brands customCss={'lg:w-[90%] max-w-[1300px]'} /> */}
     </>
 
     )
@@ -1154,25 +1044,33 @@ const Skeleton = () => {
 export async function getServerSideProps(context) {
          
         let { detail } = context.params;
-        let customer_id = context.req.cookies.customerRefId ? context.req.cookies.customerRefId :""
+        
+       
 
-        if(detail && detail.includes('?')){
-            let data = detail.split('?')
-            detail = data[0]
-        }
+          const queryParams = new URLSearchParams({
+            q: '*',
+            // query_by: "item_name,item_description,brand",
+            // page: "1",
+            // per_page: "1",
+            // query_by_weights: "1,2,3",
+            filter_by: `item_code:${detail}`,
+          });
+        
+          const data = await typesense_search_items(queryParams);
 
-        let data = {route: detail,centre: "",customer_id:customer_id}
-
-        const resp = await get_product_detail(data);
-
-        let productDetail = resp.message;
-        if(resp.message.images && resp.message.images.length != 0){
-            productDetail.meta_image = resp.message.images[0].detail_image
+        const resp = await get_product_details("LB1121.W.830.SSS.30");
+        const details = await resp.message
+        
+        // console.log(queryParams,"queryParams")
+        // let productDetail = data.hits;
+        let productDetail = (data.hits && data.hits.length > 0) ? data.hits[0].document : {};
+        if(data.hits && data.hits.length > 0 && data.hits[0].document && data.hits[0].document.website_image_url){
+            productDetail.meta_image = data.hits[0].document.website_image_url
         }
 
         return {
-          props: { productDetail},   
-    }
+          props: { productDetail,details},   
+        }
 }
 
 export default Detail;
