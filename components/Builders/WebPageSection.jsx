@@ -178,7 +178,7 @@ export default function WebPageSection({ data, i,isLast }) {
         {
           data.section_name == "Shop By Categories" && data.categories && data.categories.length > 0 && (
             <div>
-              <div className="main-width lg:max-w-[1350px] py-10  bg-white">
+              <div className="main-width lg:max-w-[1350px] lg:py-10 md:p-[10px]  bg-white">
                 <ViewAll data={{ title: "Browse our Categories" }} viewAll={false} />
 
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12">
@@ -229,7 +229,7 @@ export default function WebPageSection({ data, i,isLast }) {
           //  <ImageLoader src={data.image} slide={true} isMobile={isMobile}  width={00} height={260}  className="h-[260px] w-[100%] object-cover your-element" style={"w-full h-full "} />
           //  </div>
 
-          <div className="main-width lg:max-w-[1350px] lg:pb-10">
+          <div className="main-width lg:max-w-[1350px] md:p-[10px] lg:pb-5">
             <Image src={check_Image(data.banner)} width={600} height={100} title="cta_banner_image" className="w-[100%]   md:object-contain lg:object-fit"
             />
           </div>

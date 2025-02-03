@@ -100,7 +100,7 @@ const Brands = ({customCss="",data}) => {
         },
     ]
   return (
-    <div className={`main-width lg:max-w-[1350px] py-10 md:px-[10px] ${customCss}`}>
+    <div className={`main-width lg:max-w-[1350px] lg:py-10 md:p-[10px] ${customCss}`}>
         <div className=''>
           <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} navigationLink={'/brand'} />
 

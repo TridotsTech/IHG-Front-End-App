@@ -589,7 +589,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     // if (rest.sort_by) filterParams.push(`sort_by:=${rest.sort_by}`);
 
     [
-      "brand", "color_temp_","item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
+      "brand", "color_temp_", "item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
       "power", "input", "material", "body_finish", "warranty_",
       "output_voltage", "output_current", "category_list"
     ].forEach(key => {
@@ -617,13 +617,13 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     // dispatch(resetFilters())
     if (category) {
       setFilters((prevFilters) => ({
-        ...initialValue, 
+        ...initialValue,
         item_group: prevFilters.item_group,
       }));
-    } 
+    }
     if (brand) {
       setFilters((prevFilters) => ({
-        ...initialValue, 
+        ...initialValue,
         brand: prevFilters.brand,
       }));
     }
@@ -700,7 +700,10 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       ...buildFilterQuery() && { filter_by: buildFilterQuery() },
       sort_by: filters.sort_by
     });
-     if( initialPageNo) setpageNo(1)
+    if (initialPageNo) {
+      setpageNo(1)
+      setResults([])
+    }
     try {
       setLoading(true);
       console.log('query', buildFilterQuery);
@@ -719,9 +722,9 @@ export default function List({ productRoute, filterInfo, currentId, params, init
           reset ? data.hits : [...prevResults, ...data.hits]
         );
       }
-      
+
       setFoundValue(data.found || 0);
-      
+
     } catch (err) {
       setError(err.message || "An error occurred while fetching data.");
       setResults([])
@@ -748,13 +751,13 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   useEffect(() => {
     if (category) {
       setFilters((prevFilters) => ({
-        ...initialValue, 
+        ...initialValue,
         item_group: prevFilters.item_group,
       }));
-    } 
+    }
     if (brand) {
       setFilters((prevFilters) => ({
-        ...initialValue, 
+        ...initialValue,
         brand: prevFilters.brand,
       }));
     }
@@ -770,7 +773,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
           setpageNo((prevPage) => prevPage + 1);
-          setPageLoad((prev)=> !prev);
+          setPageLoad((prev) => !prev);
         }
       });
 
@@ -788,18 +791,21 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       return;
     }
 
-    const timeout = setTimeout(() => {
-      fetchResults();
-      console.log('pageNo', pageNo);
-    }, 0);
 
-    return () => clearTimeout(timeout);
+    fetchResults();
+
   }, [pageLoad]);
 
 
+  // useEffect(()=>{
+  //   if(filters.item_group.length === 0){
+  //     router.push('/')
+  //   }
+  // },[category, brand])
+
   const handleFilterClick = () => {
     setResults([]);
-   
+
     // setpageNo(1)
 
     fetchResults(true, true);
@@ -886,6 +892,10 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       setInitialLoad(false);
       return;
     } else {
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
       fetchResults(false, true)
     }
   }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item])
@@ -914,7 +924,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       </div>
       }
 
-      {(theme_settings && currentRoute) && <MobileHeader titleClick={titleClick} titleDropDown={true} back_btn={true} title={currentRoute.category_name} search={true} theme_settings={theme_settings} />}
+      {<MobileHeader titleClick={titleClick} titleDropDown={true} back_btn={true} search={true} theme_settings={theme_settings} />}
 
 
       {/* Baner Section */}
@@ -946,7 +956,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
 
 
-      <div class={`md:mb-[60px] lg:flex  lg:py-5 lg:gap-[17px] md:gap-[10px] `}>
+      <div class={`md:mb-[60px] lg:flex  lg:py-5 lg:gap-[17px] md:gap-[10px]`}>
 
         {/* <div className="md:hidden flex-[0_0_calc(20%_-_7px)] mr-[10px] sticky top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
           {filtersList && <Filters filtersList={filtersList} ProductFilter={ProductFilter} />}

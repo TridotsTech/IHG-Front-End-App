@@ -571,7 +571,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
 
         <div className={`lg:flex lg:m-[15px_0] gap-[10px] justify-between `}>
 
-            <div className='flex lg:flex-[0_0_calc(60%_-_10px)] lg:sticky lg:top-[150px] lg:h-[450px] border p-3'>
+            <div className='flex lg:flex-[0_0_calc(50%_-_10px)] lg:sticky lg:top-[150px] lg:h-[450px] border p-3'>
 
                 <div className='w-full'>
                     {isMobile ? <>
@@ -579,7 +579,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
                             <Image
                                 className={'w-full h-[400px]'}
                                 height={200} width={300} alt={data.item}
-                                src="/empty_state.jpg"
+                                src={check_Image(data.website_image_url)}
 
                             />}
                     </> :
@@ -618,19 +618,19 @@ const DetailPage = ({productDetail,toast,details}) =>{
                 </div>}
             </div>
 
-            <div className='flex-[0_0_calc(40%_-_10px)] lg:px-[20px] md:p-[20px_10px_10px] md:rounded-[20px_20px_0_0]'>
+            <div className='flex-[0_0_calc(50%_-_10px)] lg:px-[20px] md:p-[20px_10px_10px] md:rounded-[20px_20px_0_0]'>
                 {!isMobile ? <>
                     {/* <h6 className='text-[12px] font-semibold primary_color capitalize'>{data.centre}</h6> */}
                     {/* <span className='text-lg text-[#1F1F1F]'>{data.item_code}</span> */}
-                    <h3 className='text-[24px] md:text-[16px] py-[5px] font-bold capitalize'>{data.item_name}</h3>
+                    <h3 className='text-[20px] md:text-[16px] py-[5px] font-bold capitalize'>{data.item_name}</h3>
                    
-                    {data.item_description && <p className={`text-[14px] gray_color font-[400] mt-[10px] `} dangerouslySetInnerHTML={{__html: data.item_description}} />}
+                    {data.item_description && <p className={`text-[14px] gray_color font-[400] mb-[10px] `} dangerouslySetInnerHTML={{__html: data.item_description}} />}
                     
                         <div className='flex items-center gap-3'>
-                            <h3 className={`md:text-[13px] text-[20px]  font-semibold  openSens`}>{currencyFormatter1(data.rate,'')}</h3>
+                            <h3 className={`md:text-[13px] text-[18px]  font-semibold  openSens`}>{currencyFormatter1(data.rate,'')}</h3>
                         </div>
 
-                        {(data.stock && data.stock > 0) ? <p className='text-base text-[#1A9A62] font-semibold mt-1'>IN STOCK ({data.stock} PCS)</p> : <p className='text-base font-semibold mt-1 text-[#d11111]'>No Stock</p>}
+                        {(data.stock && data.stock > 0) ? <p className='text-base text-[#1A9A62] lg:text-[16px] md:text-[13px] font-semibold mt-1'>IN STOCK ({data.stock} PCS)</p> : <p className='text-base lg:text-[16px] md:text-[13px] font-semibold mt-1 text-[#d11111]'>No Stock</p>}
                     
 
                 </> :

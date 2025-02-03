@@ -101,7 +101,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`py-2 text-[15px] lg:text-[18px] font-medium border-b-2 transition-all duration-300 ${activeTab === tab.id
+            className={`py-2 text-[15px] lg:text-[16px] font-medium border-b-2 transition-all duration-300 ${activeTab === tab.id
               ? "text-black border-black"
               : "text-[#7C8184] border-transparent"
               }`}

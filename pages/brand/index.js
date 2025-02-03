@@ -9,12 +9,12 @@ export default function index({ details }) {
   const router = useRouter();
 
   useEffect(() => {
-    // console.log(details, "details")
+    console.log(details, "details")
   }, [details])
 
   return (
     <>
-      <div className='py-10 md:py-3 main-width'>
+      <div className='py-10 md:py-3 main-width lg:max-w-[1350px]'>
         <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
           {
             details.map((item, i) => (

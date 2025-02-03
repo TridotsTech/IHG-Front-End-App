@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import ProductBox from '../Product/ProductBox'
 import ViewAll from '../Common/ViewAll'
 
-const ProductSection = ({ data,isMobile }) => {
+const ProductSection = ({ data,isMobile,i }) => {
     const [products, setProducts] = useState([])
 
     useEffect(() => {
@@ -26,7 +26,7 @@ const ProductSection = ({ data,isMobile }) => {
 
     return (
         <>
-            {products && products.length > 0 && <div className="main-width lg:max-w-[1350px] ">
+            {products && products.length > 0 && <div className="main-width lg:max-w-[1350px] md:p-[10px]">
                 <ViewAll data={data} viewAll={false} />
                 <ProductBox
                     productList={products}

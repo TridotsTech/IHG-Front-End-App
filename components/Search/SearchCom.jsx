@@ -138,13 +138,13 @@ export default function SearchCom({ searchRoute = '', title, type }) {
 
   return (
     <>
-      <div className='flex items-center md:hidden pt-[10px] main-width'>
+      <div className='flex items-center md:hidden pt-[10px] main-width '>
         {/* <BreadCrumb /> */}
       </div>
 
       <MobileHeader back_btn={true} title={title ? title : (searchRoute == '' ? 'Search' : 'Search(' + searchRoute + ')')} search={searchRoute == '' ? false : true} empty_div={searchRoute == '' ? true : false} />
 
-      <div class={`lg:flex main-width lg:py-[10px] gap-[10px]`}>
+      <div class={`lg:flex main-width lg:max-w-[1350px] lg:py-[10px] gap-[10px]`}>
 
         {searchRoute == '' ?
 
