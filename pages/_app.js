@@ -255,8 +255,8 @@ export default function App({ Component, pageProps }) {
               {(masterValue && masterValue['item_group']) && (router.pathname != "/login" && router.pathname != "/[...list]") && <>
                 <div className="bg-[#F0F0F0] py-[30px]" >
 
-                  <BrandCategory title={'Categories'} keys={'item_group'} masterValue={masterValue} />
-                  <BrandCategory title={'Brands'} keys={'brand'} masterValue={masterValue} sliceKey={30} />
+                  <BrandCategory title={'Popular Categories'} keys={'item_group'} masterValue={masterValue} />
+                  <BrandCategory title={'Popular Brands'} keys={'brand'} masterValue={masterValue} sliceKey={30} />
 
                 </div>
                 <div className='border-t border-t-[#ddd] w-full text-center bg-[#F0F0F0] py-2'>
