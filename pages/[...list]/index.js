@@ -700,7 +700,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       ...buildFilterQuery() && { filter_by: buildFilterQuery() },
       sort_by: filters.sort_by
     });
-
+     if( initialPageNo) setpageNo(1)
     try {
       setLoading(true);
       console.log('query', buildFilterQuery);
