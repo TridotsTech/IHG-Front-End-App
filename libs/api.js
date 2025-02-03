@@ -214,7 +214,7 @@ export async function get(api) {
 
 
 export async function HomePage(data) {
-    let api = methodUrl + apiUrl_common + 'get_page_content_with_pagination';
+    let api = methodUrl + 'go1_cms.go1_cms.api.get_page_content';
     // let api = methodUrl + 'ecommerce_business_store.ecommerce_business_store.v2.common.get_page_content_with_pagination';
     return await postMethod(api, data)
 }
@@ -554,31 +554,68 @@ export async function pincode_availability(zipcode) {
 }
 
 export async function typesense_search_items(queryParams) {
+    let apikey;
+    let secret;
+    if (typeof window !== 'undefined') {
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+    }
     let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
-    const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz","Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
+    const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
 
 export async function get_all_masters() {
-    let api = `http://178.128.108.196/api/method/igh_search.igh_search.api.get_all_masters`
-    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
+    let apikey;
+    let secret;
+    if (typeof window !== 'undefined') {
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+    }
+    let api = `https://${domain}/api/method/igh_search.igh_search.api.get_all_masters`
+    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": `token ${apikey}:${secret}` })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
 
 
 export async function get_all_category() {
-    let api = `http://178.128.108.196/api/resource/Item%20Group?filters=[[%22name%22,%22!=%22,%22All%20Item%20Groups%22]]`
-    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c" })
+    let apikey;
+    let secret;
+    if (typeof window !== 'undefined') {
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+    }
+    let api = `https://${domain}/api/resource/Item%20Group?filters=[[%22name%22,%22!=%22,%22All%20Item%20Groups%22]]`
+    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": `token ${apikey}:${secret}` })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
 
 
 export async function get_product_details(code) {
-    let api = `http://178.128.108.196/api/method/igh_search.igh_search.api.get_product_info?item_code=${code}`
-    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": "token 0c7f0496a397762:129e090259b7d0c","x-typesense-api-key": "xyz" })
+    let apikey;
+    let secret;
+    if (typeof window !== 'undefined') {
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+    }
+    let api = `https://${domain}/api/method/igh_search.igh_search.api.get_product_info?item_code=${code}`
+    const myHead = new Headers({ "Authorization": `token ${apikey}:${secret}`, "Content-Type": "application/json","x-typesense-api-key": "xyz" })
+    const response = await fetch(api, { method: 'GET', headers: myHead, })
+    return await response.json()
+}
+
+export async function get_brands_list(keys="token 0c7f0496a397762:199919c53cd169d") {
+    let apikey;
+    let secret;
+    if (typeof window !== 'undefined') {
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+    }
+    let api = `https://${domain}/api/method/get_brands`
+    const myHead = new Headers({ "Authorization": keys ? keys : `token ${apikey}:${secret}`, "Content-Type": "application/json", })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }

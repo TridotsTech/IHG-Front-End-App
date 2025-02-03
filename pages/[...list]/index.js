@@ -1,13 +1,11 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { get_category_products, get_category_filters, seo_Image, getCurrentUrl, typesense_search_items, get_all_masters } from '@/libs/api';
+import { seo_Image, getCurrentUrl, typesense_search_items, get_all_masters } from '@/libs/api';
 import dynamic from 'next/dynamic';
 const ProductBox = dynamic(() => import('@/components/Product/ProductBox'))
-const SortBy = dynamic(() => import('@/components/Product/SortBy'))
 const Filters = dynamic(() => import('@/components/Product/filters/Filters'))
 const CurrentProductFilter = dynamic(() => import('@/components/Product/filters/CurrentProductFilter'))
 const NoProductFound = dynamic(() => import('@/components/Common/NoProductFound'))
-const BreadCrumb = dynamic(() => import('@/components/Common/BreadCrumb'))
 const MobileHeader = dynamic(() => import('@/components/Headers/mobileHeader/MobileHeader'))
 const MobileCategoryFilter = dynamic(() => import('@/components/Product/filters/MobileCategoryFilter'))
 import { useRouter } from 'next/router'
@@ -15,16 +13,14 @@ import Image from 'next/image';
 import Rodal from 'rodal';
 // import 'rodal/lib/rodal.css';
 import { setBoxView } from '@/redux/slice/websiteSettings'
-import { setFilters, resetSetFilters, setLoad } from '@/redux/slice/ProductListFilters'
-import { resetFilters, setFilter } from "@/redux/slice/filtersList";
+import { resetSetFilters, setLoad } from '@/redux/slice/ProductListFilters'
+import { resetFilters } from "@/redux/slice/filtersList";
 import Head from 'next/head'
-import Brands from '@/components/Common/Brands';
-import Typesense from '@/components/Product/filters/Typesense';
 
 
-export default function List({ productRoute, filterInfo, currentId, params, mastersData, initialData, found }) {
+export default function List({ productRoute, filterInfo, currentId, params, initialData, found }) {
 
-  console.log('maste', initialData)
+  // console.log('maste', mastersData)
   const router = useRouter();
 
   const initialValue = {
@@ -38,7 +34,7 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
     brand: [],
     price_range: { min: 0, max: 1000 },
     stock_range: { min: 0, max: 1000 },
-    product_type: [],
+    product_type: '',
     has_variants: false,
     custom_in_bundle_item: false,
     category_list: [],
@@ -68,6 +64,22 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   }, [router])
 
   console.log("foundValue", foundValue)
+
+  const [mastersData, setMastersData] = useState([]);
+
+  useEffect(() => {
+    const getMasterData = async () => {
+      const mastersRes = await get_all_masters();
+      // console.log('master', mastersRes)
+      if (mastersRes.message) {
+        setMastersData(mastersRes.message)
+      }
+    }
+
+    getMasterData()
+  }, [])
+
+  console.log('maste', mastersData)
 
 
 
@@ -554,6 +566,12 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
   console.log('querFilter', filters)
 
+  // useEffect(()=>{
+  //   if(filters.item_group.length === 0){
+  //     router.replace('/list?category=')
+  //   }
+  // },[filters.item_group])
+
 
   const buildFilterQuery = () => {
     const filterParams = [];
@@ -561,17 +579,17 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
     // if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
     if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
+    if (rest.product_type) filterParams.push(`product_type:${rest.product_type}`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
     if (rest.hot_product) filterParams.push(`hot_product:=${rest.hot_product ? 1 : 0}`);
     if (rest.show_promotion) filterParams.push(`show_promotion:=${rest.show_promotion ? 1 : 0}`);
-    if (rest.in_stock) filterParams.push(`in_stock:=${rest.in_stock ? 1 : 0}`);
+    if (rest.in_stock) filterParams.push(`stock:>0`);
     if (rest.has_variants) filterParams.push(`has_variants:=${rest.has_variants ? 1 : 0}`);
-    if (rest.custom_in_bundle_item) filterParams.push(`custom_in_bundle_item:=${rest.custom_in_bundle_item ? 1 : 0}`);
+    if (rest.custom_in_bundle_item) filterParams.push(`is_bundle_item:=${rest.custom_in_bundle_item ? 1 : 0}`);
     // if (rest.sort_by) filterParams.push(`sort_by:=${rest.sort_by}`);
 
     [
-      "brand", "color_temp_", "product_type",
-      "item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
+      "brand", "color_temp_","item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
       "power", "input", "material", "body_finish", "warranty_",
       "output_voltage", "output_current", "category_list"
     ].forEach(key => {
@@ -595,10 +613,21 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
   const removeFilter = () => {
     console.log('filter')
-    dispatch(resetFilters())
-    setFilters({...initialValue, price_range: { min: 0, max: 1000 },
-    stock_range: { min: 0, max: 1000 },});
-    router.replace('/list?category=')
+    setpageNo(1)
+    // dispatch(resetFilters())
+    if (category) {
+      setFilters((prevFilters) => ({
+        ...initialValue, 
+        item_group: prevFilters.item_group,
+      }));
+    } 
+    if (brand) {
+      setFilters((prevFilters) => ({
+        ...initialValue, 
+        brand: prevFilters.brand,
+      }));
+    }
+    router.replace(`/list?category=${filters.item_group[0]}`)
   }
 
   // useEffect(()=>{
@@ -655,17 +684,17 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   //   }
   // }, [no_product, results]);
 
-  
 
 
-  const fetchResults = async (reset = false) => {
+
+  const fetchResults = async (reset = false, initialPageNo) => {
     setError(null);
     console.log("queryfilter", filters)
     // const perPage = window.innerWidth >= 1400 ? "15" : "12";
     const queryParams = new URLSearchParams({
       q: '*',
       query_by: "item_name,item_description,brand",
-      page: pageNo,
+      page: initialPageNo ? 1 : pageNo,
       per_page: "15",
       // query_by_weights: "1,2,3",
       ...buildFilterQuery() && { filter_by: buildFilterQuery() },
@@ -677,24 +706,22 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
       console.log('query', buildFilterQuery);
       console.log('queParam', filters)
       const data = await typesense_search_items(queryParams);
-      if (data.hits.length === 0 && pageNo > 1) {
-        setResults((prev)=> [...prev])
-        setHasMore(false);
-      } else if(data.hits.length === 0 && pageNo < 2){
-         setResults([])
-         setHasMore(false)
-      }else {
+      if (data.hits.length === 0) {
+        if (pageNo > 1) {
+          setHasMore(false);
+        } else {
+          setResults([]);
+          setHasMore(false);
+        }
+      } else {
         setHasMore(true);
         setResults((prevResults) =>
           reset ? data.hits : [...prevResults, ...data.hits]
         );
-        setFoundValue(data.found || 0)
-        // if(reset){
-        //   setResults([data.hits])
-        // } else{
-        //   setResults((prevResults) => [...prevResults, ...data.hits]);
-        // }
       }
+      
+      setFoundValue(data.found || 0);
+      
     } catch (err) {
       setError(err.message || "An error occurred while fetching data.");
       setResults([])
@@ -714,13 +741,26 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
   }, []);
 
   // useEffect(() => {
-  //   dispatch(setFilter(filters));
+  //   resetFilters
   // }, [filters]);
 
 
   useEffect(() => {
-    dispatch(resetFilters())
+    if (category) {
+      setFilters((prevFilters) => ({
+        ...initialValue, 
+        item_group: prevFilters.item_group,
+      }));
+    } 
+    if (brand) {
+      setFilters((prevFilters) => ({
+        ...initialValue, 
+        brand: prevFilters.brand,
+      }));
+    }
   }, [router.query])
+
+  const [pageLoad, setPageLoad] = useState(false)
 
   const lastResultRef = useCallback(
     (node) => {
@@ -729,13 +769,14 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
 
       observer.current = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          setpageNo((prevPage) => prevPage + 1); // Increment page number
+          setpageNo((prevPage) => prevPage + 1);
+          setPageLoad((prev)=> !prev);
         }
       });
 
-      if (node) observer.current.observe(node); // Observe the last result element
+      if (node) observer.current.observe(node);
     },
-    [hasMore] // Add loading and hasMore as dependencies
+    [hasMore]
   );
 
 
@@ -753,18 +794,19 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
     }, 0);
 
     return () => clearTimeout(timeout);
-  }, [pageNo]);
+  }, [pageLoad]);
 
 
   const handleFilterClick = () => {
-    const scrollPosition = window.scrollY;
-
-    fetchResults(true);
     setResults([]);
-    setpageNo(1);
+   
+    // setpageNo(1)
 
-    requestAnimationFrame(() => {
-      window.scrollTo(0, scrollPosition);
+    fetchResults(true, true);
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
     });
   };
 
@@ -827,15 +869,15 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
   ]
 
-  const handleSortBy = async(e)=>{
-    console.log('targetvalue',e.target.value)
+  const handleSortBy = async (e) => {
+    console.log('targetvalue', e.target.value)
     setFilters((prevFilters) => ({
       ...prevFilters,
       sort_by: e.target.value
     }));
     console.log('sort', filters)
     setResults([])
-    setpageNo(1)
+    // setpageNo(1)
     // fetchResults()
   }
 
@@ -846,8 +888,8 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
     } else {
       fetchResults()
     }
-  }, [filters.sort_by])
-  
+  }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item])
+
   return (
 
     <>
@@ -993,7 +1035,7 @@ export default function List({ productRoute, filterInfo, currentId, params, mast
               <Skeleton />
               :
               <div className='min-h-screen'>
-                {console.log('check',results)}
+                {console.log('check', results)}
                 {((results.length != 0 && Array.isArray(results))) ? <ProductBox productList={results} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} /> :
                   <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
                 }
@@ -1208,16 +1250,9 @@ export async function getServerSideProps(req) {
   const found = data.found || 0
 
 
-
-  let mastersData = []
-  const mastersRes = await get_all_masters();
-  if (mastersRes && mastersRes.message) {
-    mastersData = mastersRes.message
-  }
-
   return {
     // props: { productRoute, filterInfo, currentId, params, mastersData }
-    props: { mastersData, initialData, found }
+    props: { initialData, found }
   }
 
 }

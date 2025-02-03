@@ -10,13 +10,13 @@ export default function ViewAll({ data, viewAll, categoryTab, categories, filter
             <>
                 <div className="flex items-center mb-[10px] justify-between">
                     {/* <h6 className={`text-[12px] font-medium text-center primary_color`}>{data.title}</h6> */}
-                    <h2 className="text-left text-[16px] lg:text-[36px] font-semibold lg:font-bold">{data.title ? data.title : data.section_name}</h2>
+                    <h2 className="text-left text-[16px] lg:text-[24px] font-semibold lg:font-bold">{data.title ? data.title : data.section_name}</h2>
                     
                     {viewAll &&
 
-                    <Link href={navigationLink ? navigationLink : '#'} className='flex items-center gap-[8px] border rounded-full px-3 lg:px-4 py-1 lg:py-2 cursor-pointer'>
-                        <h6 className='text-[12px] lg:text-[16px] font-semibold lg:font-bold text-[#000]'>See More</h6>
-                        <Image style={{ objectFit: 'contain' }} className='h-[17px] w-[17px]' height={25}  width={25} alt='vantage' src={'/Arrow/roundArrow.png'}></Image>
+                    <Link href={navigationLink ? navigationLink : '#'} className='flex items-center gap-[8px] border rounded-full px-3 lg:px-[10px] py-1 lg:py-[5px] cursor-pointer'>
+                        <h6 className='text-[12px] lg:text-[15px] font-semibold lg:font-bold text-[#000]'>See More</h6>
+                        <Image style={{ objectFit: 'contain' }} className='h-[16px] w-[16px]' height={15}  width={15} alt='vantage' src={'/Arrow/roundArrow.png'}></Image>
                     </Link>
                       
                     //   <button

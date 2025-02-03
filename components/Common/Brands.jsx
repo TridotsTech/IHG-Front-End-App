@@ -1,9 +1,11 @@
 import React from 'react'
 import ViewAll from './ViewAll'
 import Image from 'next/image'
+import { check_Image } from '@/libs/api'
+import { useRouter } from 'next/router'
 
-const Brands = ({customCss=""}) => {
-
+const Brands = ({customCss="",data}) => {
+    const router = useRouter()
 
     const brandsData = [
         {
@@ -98,21 +100,21 @@ const Brands = ({customCss=""}) => {
         },
     ]
   return (
-    <div className={`main-width md:px-[10px] ${customCss}`}>
-        <div className='py-5'>
-          <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} />
+    <div className={`main-width lg:max-w-[1350px] py-10 md:px-[10px] ${customCss}`}>
+        <div className=''>
+          <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} navigationLink={'/brand'} />
 
           <div className='py-3 '>
               <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
                 {
-                    brandsData.map((item,i)=>(
-                        <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer'>
+                    data.map((item,i)=>(
+                        <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer' onClick={()=> router.push(`/list?brand=${item.name}`)}>
                            <div className='py-4 px-5'>
-                           <Image src={item.logo} width={100} height={50} className='w-full' />
+                           <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' />
                            </div>
 
                            <div className='bg-[#F0F0F0] py-1 px-3'>
-                               <p className='text-[#565656] text-xs lg:text-sm'>{item.no_of_product} + {item.cate}</p>
+                               <p className='text-[#565656] text-xs lg:text-sm'>{item.item_count} + {"Products"}</p>
                            </div>
                         </div>
                     ))

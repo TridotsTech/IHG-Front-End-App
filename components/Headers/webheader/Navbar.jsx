@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
 // import { check_Image } from '@/libs/api';
@@ -146,8 +145,8 @@ export default function Navbar({ all_categories, categoryData }) {
             {mega_menu == 1 &&
               // onMouseLeave={() => enbleAllMenuSection('')} onMouseEnter={() => { enbleAllMenuSection('Enter') }}
               <div className={`relative cursor-pointer pb-[2px]  hoverMenuSec ${allMenu == 1 ? 'active_parent' : ''}`}>
-                <span className='flex item-center mb-[0] gap-[5px] pb-[6px]'>
-                  <h6 className={`border-b-[3px] border-b-[#fff] text-left font-medium navigation_c lg:text-[15px] tracking-wide `}>All Categories</h6>
+                <span className='flex item-center uppercase mb-[0] gap-[5px] pb-[6px]'>
+                  <h6 className={`border-b-[3px] uppercase border-b-[#fff] text-left font-medium navigation_c lg:text-[15px] tracking-wide `}>All Categories</h6>
                 </span>
               </div>
             }
@@ -166,8 +165,8 @@ export default function Navbar({ all_categories, categoryData }) {
                   {/* onMouseEnter={() => { enbleDropdown('enter', index), setAllMenu(-1) }} */}
                   <div onClick={() => { leaveFormnav(), navigateToDetail1(item) }} className={`flex items-center gap-[5px] relative  first:p-[0_15px_6px_0px] p-[0_15px_6px_15px] text-[#976563]  `}>
                     {/* <Image style={{ objectFit: 'contain' }} className='h-[30px] w-[30px]' height={35}  width={35} alt='vantage' src={check_Image(item.mobile_image)} /> */}
-                    <div className={`hoverMenuSec relative cursor-pointer ${(allMenu != 1 && router.asPath.split('/')[1] == item.route) ? 'active_parent' : ''} `}>
-                      <h6 onClick={() => router.push('/list?category=' + item.name)} className={`font-medium text-[#000000B2] text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item.category_name}>{item.name}</h6>
+                    <div className={`hoverMenuSec relative cursor-pointer ${(allMenu != 1 && router.asPath.split('/')[1] == item) ? 'active_parent' : ''} `}>
+                      <h6 onClick={() => router.push('/list?category=' + item)} className={`font-medium text-[#000000B2] uppercase text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item}>{item}</h6>
                     </div>
 
 
@@ -180,7 +179,7 @@ export default function Navbar({ all_categories, categoryData }) {
                           <>
 
                             <span key={sub1} onClick={() => { navigateToDetail(submenu) }} onMouseEnter={() => enbleDropdown1('enter', sub1)} className={`${dropdown1 == sub1 ? 'hoverNav_1' : ''} transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} >
-                              <h6 className='text-left text-[14px] text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu.category_name}</h6>
+                              <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu.category_name}</h6>
                               {/* <Image style={{ objectFit: 'contain' }} className='h-[11px] w-[13px]' height={25}  width={25} alt='vantage' src={dropdown1 == sub1 ? '/Arrow/arrowWhite.svg' : '/Arrow/arrowBlack.svg'}></Image> */}
                             </span>
 
@@ -189,7 +188,7 @@ export default function Navbar({ all_categories, categoryData }) {
                                 {submenu.child.map((sub, sub2) => (
 
                                   <span key={sub2} onClick={() => { navigateToDetail(sub) }} onMouseEnter={() => enbleDropdown2('enter', sub2)} onMouseLeave={() => enbleDropdown2('leave', sub2)} className={`${dropdown2 == sub2 ? 'hoverNav_1' : ''} p-[7px_8px] rounded-[5px] transition-colors ease-in duration-200 delay-50 flex items-center cursor-pointer hoverNav relative justify-between`}>
-                                    <h6 className='text-left text-[14px] text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{sub.category_name}</h6>
+                                    <h6 className='text-left text-[14px] text-[#000] uppercase p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{sub.category_name}</h6>
                                     {/* <Image style={{ objectFit: 'contain' }} className='h-[11px] w-[13px]' height={25}  width={25} alt='vantage' src={dropdown2 == sub2 ? '/Arrow/arrowWhite.svg' : '/Arrow/arrowBlack.svg'}></Image> */}
                                   </span>
                                 ))}
@@ -230,14 +229,14 @@ export default function Navbar({ all_categories, categoryData }) {
             {categoryData.length > 10 &&
               <div className={`relative pb-[2px] cursor-pointer hoverMenuSec ${moreMenu == 1 ? 'active_parent' : ''}`} onMouseEnter={() => { enbleDropdownMore('enter'), setDropdown(-1) }} onMouseLeave={() => enbleDropdownMore('leave')}>
                 <span className='flex item-center mb-[0] gap-[5px] pb-[4px]'>
-                  <a className={`text-left font-medium navigation_c lg:text-[15px] tracking-wide`}>More</a>
+                  <a className={`text-left font-medium navigation_c lg:text-[15px] tracking-wide uppercase`}>More</a>
                 </span>
                 {moreMenu == 1 && (categoryData && categoryData.length != 0) &&
                   <div className="w-[241px] dropdown top-[32px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-99">
                     {categoryData.slice(10, categoryData.length).map((submenu, sub1) => (
                       <>
-                        <Link href={('/list?category=' + submenu.name)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
-                          <h6 className='text-left text-[14px] text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu.name}</h6>
+                        <Link href={('/list?category=' + submenu)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
+                          <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>
                         </Link>
                       </>
                     ))}

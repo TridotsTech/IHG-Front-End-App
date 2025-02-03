@@ -6,7 +6,6 @@ import store from '@/redux/store'
 import dynamic from 'next/dynamic';
 const BottomTabs = dynamic(() => import('@/components/Common/BottomTabs'))
 const WebHeader = dynamic(() => import('@/components/Headers/WebHeader'))
-const MainFooter = dynamic(() => import('@/components/Footer/MainFooter'))
 import RootLayout from '@/layouts/RootLayout'
 // const RootLayout = dynamic(() => import('@/layouts/RootLayout'))
 import Head from 'next/head'
@@ -24,7 +23,7 @@ import 'tailwindcss/tailwind.css';
 const BrandCategory = dynamic(() => import('@/components/Common/BrandCategory'))
 import settig from '@/libs/websiteSettings'
 import ScrollToTopButton from '@/components/Common/ScrollToTop';
-console.log('setting', settig.message)
+// console.log('setting', settig.message)
 
 // import { GoogleOAuthProvider } from '@react-oauth/google';
 // import { Poppins } from 'next/font/google'
@@ -120,19 +119,19 @@ export default function App({ Component, pageProps }) {
 
   const [categoryData, setCategoryData] = useState([])
 
-  const getCategoryList = async () => {
-    try {
-      const data = await get_all_category()
-      setCategoryData(data.data)
-      console.log('catego', data.data)
-    } catch {
+  // const getCategoryList = async () => {
+  //   try {
+  //     const data = await get_all_category()
+  //     setCategoryData(data.data)
+  //     console.log('catego', data.data)
+  //   } catch {
 
-    }
-  }
+  //   }
+  // }
 
 
   useEffect(() => {
-    getCategoryList()
+    // getCategoryList()
     getValue()
   }, [])
 
@@ -219,12 +218,14 @@ export default function App({ Component, pageProps }) {
   const getValue = async () => {
     const mastersRes = await get_all_masters();
     if (mastersRes && mastersRes.message) {
+      // console.log("master", mastersRes.message)
       // console.log(mastersRes.message, "mastersRes.message")
       setMasterValues(mastersRes.message)
+      setCategoryData(mastersRes.message.item_group)
     }
   }
 
-  console.log(router,"router")
+
   return (
     <>
       <script src="https://cdn.jsdelivr.net/npm/typesense-instantsearch-adapter@2/dist/typesense-instantsearch-adapter.min.js"></script>
@@ -233,9 +234,7 @@ export default function App({ Component, pageProps }) {
       <ErrorBoundary >
         <Provider store={store}>
           <ToastContainer position={'bottom-right'} autoClose={2000} />
-
-          {/* <GoogleOAuthProvider clientId="630423705748-pg41popq5up1nsvs08i7n0ia47fkpt01.apps.googleusercontent.com"> */}
-          <RootLayout website_settings={website_settings} >
+          <RootLayout >
             {website_settings && website_settings.app_settings.favicon &&
               <Head>
                 {/* <link rel="shortcut icon" href={check_Image(website_settings.app_settings.favicon)} /> */}
@@ -266,14 +265,9 @@ export default function App({ Component, pageProps }) {
 
               </>}
             </div>
-            {/* {router.pathname != "/login" && router.pathname != "/seller/[login]" &&
-              <div className='md:hidden lg:min-h-[345px] lg:w-full your-element'>
-                <MainFooter />
-              </div>} */}
-              <ScrollToTopButton />
 
+            <ScrollToTopButton />
           </RootLayout>
-          {/* </GoogleOAuthProvider> */}
         </Provider>
       </ErrorBoundary>
 

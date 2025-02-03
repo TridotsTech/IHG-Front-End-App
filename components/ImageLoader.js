@@ -22,7 +22,7 @@ export default function ImageLoader({ height, width, src, title, style, route, s
 
             <LazyLoadImage
                 effect="blur" // You can choose different effects here
-                src={(isMobile && !load && slide) ? '/Home/slide_mob.png' : (!isMobile && !load && slide) ? '/Home/slide_web.webp' : !load ? '/empty-states.png' : check_Image(src)}
+                src={(isMobile && !load && slide) ? '/Home/slide_mobile.png' : (!isMobile && !load && slide) ? '/Home/slide_web.png' : !load ? '/empty-states.png' : check_Image(src)}
                 // src={!load ? '/empty-states.png' : check_Image(src)}
                 height={height}
                 width={width}

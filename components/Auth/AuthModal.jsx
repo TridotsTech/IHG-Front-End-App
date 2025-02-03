@@ -3,9 +3,7 @@ import Rodal from 'rodal';
 // import 'rodal/lib/rodal.css';
 import dynamic from 'next/dynamic';
 const Login = dynamic(() => import('./Login'), { ssr: false });
-const SignUp = dynamic(() => import('./SignUp'), { ssr: false });
 const Forget = dynamic(() => import('./Forget'), { ssr: false });
-const OTP = dynamic(() => import('./OTP'), { ssr: false });
 // import Login from './Login'
 // import SignUp from './SignUp'
 // import Forget from './Forget'
@@ -94,9 +92,7 @@ const LoginScreen = ({ webSettings, modal, checkModal, hide, cssClass, visible, 
             {webSettings && <div className={`flex w-full flex-col justify-center items-center md:px-[10px]`}>
                 <div className='w-full lg:w-[450px] lg:h-[450px]'>
                 {modal == 'login' ? <Login checkModal={(mod) => checkModal(mod)} hide={hide} />
-                    : modal == 'signup' ? <SignUp webSettings={webSettings.websiteSettings} checkModal={(mod) => checkModal(mod)} hide={hide} />
                         : modal == 'forget' ? <Forget checkModal={(mod) => checkModal(mod)} hide={hide} visible={visible} setVisible={setVisible} />
-                            : modal == 'otp' ? <OTP checkModal={(mod) => checkModal(mod)} hide={hide} />
                                 : <>{modal}</>}
                 </div>
                 {/* <div> */}

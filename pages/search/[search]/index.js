@@ -1,23 +1,24 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useEffect } from 'react';
 import SearchCom from '@/components/Search/SearchCom'
 import { useRouter } from 'next/router'
 
 
-export default function index({ }) {
+export default function index() {
 
   const router = useRouter();
-  const [searchRoute,setSearchRoute] = useState()
 
-  useEffect(()=>{
-    if(router.query.search){
-      setSearchRoute(router.query.search);
-    }
-  },[])
+  useEffect(() => {
+    // if (router.query.search) {
+    //   // setSearchRoute(router.query.search);
+    // }
+  }, [router])
+
+
 
   return (
     <>
 
-     {searchRoute && <SearchCom searchRoute={searchRoute} />}
+      {router.query.search && <SearchCom searchRoute={router.query.search} />}
 
       {/* <div className='flex items-center md:hidden pt-[10px] main-width'>
         <BreadCrumb />

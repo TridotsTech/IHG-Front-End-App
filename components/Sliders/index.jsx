@@ -39,7 +39,7 @@ export default function Sliders({ data, perView, imgClass, event, isMobile }) {
   return (
     <>
       {
-        false && (
+        (
           <>
             {data.length != 0 ?
               <Carousel
@@ -73,7 +73,7 @@ export default function Sliders({ data, perView, imgClass, event, isMobile }) {
         )
       }
 
-      <div className="main-width bg-cover lg:mt-10">
+      {/* <div className="main-width bg-cover lg:mt-10">
         <div className="p-4 lg:p-[60px] bg-cover" style={{ backgroundImage: 'url("/Home/Hero.png")' }}>
           <div>
             <h1 className="font-bold text-[24px] lg:text-[48px]">Elevate Your Shopping Experience</h1>
@@ -108,7 +108,7 @@ export default function Sliders({ data, perView, imgClass, event, isMobile }) {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </>
   )
 }

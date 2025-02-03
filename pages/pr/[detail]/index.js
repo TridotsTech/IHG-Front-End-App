@@ -32,12 +32,11 @@ import Tabs from '@/components/Common/Tabs';
 import ChooseCategory from '@/components/Common/ChooseCategory';
 import Brands from '@/components/Common/Brands'
 
-const Detail = ({ productDetail,details}) => {
+const Detail = ({ productDetail,detail}) => {
     const router = useRouter();
     const address = useSelector((state) => state.webSettings.adddressInfo);
+    const [details,setDetails] = useState({})
 
-console.log(productDetail,"productDetail")
-console.log(details,"details")
     
     useEffect(()=>{
        let breadcrumb = [{'name' :'Home' , route:'/'}]
@@ -49,8 +48,25 @@ console.log(details,"details")
 
        breadcrumb.push({'name' : productDetail.item})
        productDetail['breadcrumb'] = breadcrumb;
+       getDetail()
        
     },[address])
+
+    const getDetail = async () => {
+        const resp = await get_product_details(detail);
+        const details = await resp.message || {}
+
+        if(details && details.stock && details.stock.length > 0){
+            setDetails(details)
+        }else{
+            setDetails([])
+        }
+
+        // const resp = await get_product_details(router.query.detail);
+        // const details = await resp.message || []
+    }
+
+
 
     
    return(
@@ -130,7 +146,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
         return () => {
           window.removeEventListener('scroll', handleScroll);
         };
-      }, [apiCall,data]); 
+      }, [apiCall,data,details]); 
 
     //   console.log(data,'data')
 
@@ -171,37 +187,12 @@ const DetailPage = ({productDetail,toast,details}) =>{
                data['count'] = 0
            }
    
-           validate_attributes_stock_check(data)
    
          }
     }
 
 
-   const validate_attributes_stock_check = async (value) =>{
-       // console.log('dasdas',value)
-     let param = {
-           "attribute_id": value.attribute_id ? value.attribute_id : '',
-           "business": value.business ? value.business : '',
-           'cart_qty' :value.count,
-           "product": value.name,
-           "customer": localStorage['customerRefId'],
-           "variant_html": "",
-     }
-     let res = await validate_attributes_stock(param)
-     if(res && res.message && res.message.status && res.message.status == 'Success'){
-       setVariantStockMsg()
-       data['price'] = res.message.price
-       data['old_price'] = res.message.old_price
-       data['stock'] = res.message.stock
-       data['discount_percentage'] = res.message.discount_percentage
-     }else{
-    //    setVariantStockMsg(res.message.message)
-     }
-     
-
-    //  setData(data)
-    //  setSample(sample + 1)
-   }
+   
 
    const loadLightGallery = () =>{
     setTimeout(() => {
@@ -573,30 +564,14 @@ const DetailPage = ({productDetail,toast,details}) =>{
         })}
        </div> : <></>} */}
 
+       <div className='md:hidden pt-3 flex items-center gap-[5px] w-fit cursor-pointer' onClick={()=> router.push('/list')}>
+            <Image className='size-[14px]' src={'/rightArrow.svg'} height={15} width={15} alt='back'></Image>
+            <h6 className='capitalize text-[14px]'>Back to List</h6>
+       </div>
+
         <div className={`lg:flex lg:m-[15px_0] gap-[10px] justify-between `}>
 
             <div className='flex lg:flex-[0_0_calc(60%_-_10px)] lg:sticky lg:top-[150px] lg:h-[450px] border p-3'>
-                {!isMobile && <div className={`mr-[10px] md:hidden h-[408px] w-[165px] overflow-auto scrollbarHide`}>
-                    {(data.images && data.images.length != 0) &&
-                        data.images.map((res, index) => {
-                            return (
-                             <>
-                                {(res.video_type && (res.video_type == 'Youtube' || res.video_type == 'Vimeo' || res.video_type == 'Other')) ? 
-                                    <div onMouseEnter={() => changeMainImage(index, data)} key={index} className={`${res.is_primary == 1 ? 'border-black' : null} h-[100px] w-[100px] cursor-pointer mb-[10px] border rounded-[5px] p-[5px] flex-items-center justify-center flex`}>
-                                       <LoadVideo cssClass={'w-[100px] h-[100px] p-[5px] m-[-6px]'} res={res} index={index} videoLink={videoLink}/> 
-                                    </div>
-                                    :
-                                    <div onMouseEnter={() => changeMainImage(index, data)} key={index} className={`${res.is_primary == 1 ? 'border-black' : null} h-[100px] w-[100px] cursor-pointer mb-[10px] border rounded-[5px] p-[5px] flex-items-center justify-center flex`}>
-                                     {/* <ImageLoader height={90} width={90} style={`h-[90px] object-contain`} src={res.detail_thumbnail} title={res.title ? res.title : 's'}  ></ImageLoader> */}
-                                     <Image priority={true} className={`h-[90px] object-contain`} src={check_Image(res.detail_thumbnail)} alt={res.title} height={90} width={90} />
-                                    </div>
-                                }
-                             </>
-                               
-                            )
-                    })}
-                   
-                </div>}
 
                 <div className='w-full'>
                     {isMobile ? <>
@@ -628,7 +603,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
                                 )
                             }) : <a href={check_Image(data.website_image_url)}>
                                 <Image
-                                className={'h-[400px]'}
+                                className={'h-[400px] mx-auto'}
                                 height={200} width={300} alt={data.item}
                                 src={check_Image(data.website_image_url)}
                             />
@@ -637,7 +612,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
                         </div>}
                 </div>
                 {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
-                {<div className='md:hidden absolute top-4 right-[-3px] flex'>
+                {false &&<div className='md:hidden absolute top-4 right-[-3px] flex'>
                     <Image src="/vector.png" height={37} width={20} alt="vector" />
                     <p className=' text-white text-lg py-1 pr-2 bg-[#44C46F]'>Best Seller</p>
                 </div>}
@@ -647,7 +622,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
                 {!isMobile ? <>
                     {/* <h6 className='text-[12px] font-semibold primary_color capitalize'>{data.centre}</h6> */}
                     {/* <span className='text-lg text-[#1F1F1F]'>{data.item_code}</span> */}
-                    <h3 className='text-2xl py-[5px] font-bold capitalize'>{data.item_name}</h3>
+                    <h3 className='text-[24px] md:text-[16px] py-[5px] font-bold capitalize'>{data.item_name}</h3>
                    
                     {data.item_description && <p className={`text-[14px] gray_color font-[400] mt-[10px] `} dangerouslySetInnerHTML={{__html: data.item_description}} />}
                     
@@ -1041,11 +1016,13 @@ const Skeleton = () => {
 //   };
 // }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps({req,params}) {
          
-        let { detail } = context.params;
+        let { detail } = params;
         
-       
+        // const apikey = req.cookies.api_key;
+        // const apisecret = req.cookies.api_secret;
+        // const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"
 
           const queryParams = new URLSearchParams({
             q: '*',
@@ -1058,8 +1035,9 @@ export async function getServerSideProps(context) {
         
           const data = await typesense_search_items(queryParams);
 
-        const resp = await get_product_details("LB1121.W.830.SSS.30");
-        const details = await resp.message
+        //   const resp = await get_product_details(detail,token);
+        //   const details = await resp.message || []
+        
         
         // console.log(queryParams,"queryParams")
         // let productDetail = data.hits;
@@ -1069,7 +1047,7 @@ export async function getServerSideProps(context) {
         }
 
         return {
-          props: { productDetail,details},   
+          props: { productDetail,detail},   
         }
 }
 

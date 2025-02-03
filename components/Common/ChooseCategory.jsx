@@ -1,39 +1,40 @@
-import React from 'react'
 import ViewAll from './ViewAll'
 import Image from 'next/image'
 
-const ChooseCategory = ({customCss}) => {
+const ChooseCategory = ({ customCss }) => {
 
     const chooseData = [
         {
-          "logo": "/Home/choose/1.png",
-          "title": "Popular Product",
-          "cate": "Product",
-          "stock": 341,
-          "bg": "#BF5AE0"
+            "logo": "/Home/choose/1.png",
+            "title": "Popular Product",
+            "cate": "Product",
+            "stock": 341,
+            "bg": "#BF5AE0"
         },
         {
-          "logo": "/Home/choose/2.png",
-          "title": "Most Wanted",
-          "cate": "Product",
-          "stock": 341,
-          "bg": "#06BEB6"
+            "logo": "/Home/choose/2.png",
+            "title": "Most Wanted",
+            "cate": "Product",
+            "stock": 341,
+            "bg": "#06BEB6"
         },
         {
-          "logo": "/Home/choose/3.png",
-          "title": "Bestseller",
-          "cate": "Product",
-          "stock": 341,
-          "bg": "#FE8C00"
+            "logo": "/Home/choose/3.png",
+            "title": "Bestseller",
+            "cate": "Product",
+            "stock": 341,
+            "bg": "#FE8C00"
         },
         {
-          "logo": "/Home/choose/4.png",
-          "title": "Best Shop 2022",
-          "cate": "Product",
-          "stock": 341,
-          "bg": "#F857A6"
+            "logo": "/Home/choose/4.png",
+            "title": "Best Shop 2022",
+            "cate": "Product",
+            "stock": 341,
+            "bg": "#F857A6"
         },
-      ]
+    ]
+
+
 
 
     return (

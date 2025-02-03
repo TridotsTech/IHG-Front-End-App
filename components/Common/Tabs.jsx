@@ -1,5 +1,5 @@
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Tabs = ({ stockDetails, productDetails }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -19,6 +19,10 @@ const Tabs = ({ stockDetails, productDetails }) => {
   //   "Stock Uom": "Nos",
   // };
 
+  useEffect(()=>{
+
+  },[stockDetails])
+
   const tabs = [
     { id: 0, label: "Product Details" },
     { id: 1, label: "Stock Details" },
@@ -30,28 +34,28 @@ const Tabs = ({ stockDetails, productDetails }) => {
         <div className="space-y-2">
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[16px] font-normal"> Barcode :</span>
-            <span className="font-bold lg:text-[16px]">{' - '}</span>
+            <span className="lg:text-[15px] md:text-[14px] font-normal"> Barcode :</span>
+            <span className="font-bold lg:text-[15px] md:text-[14px]">{' - '}</span>
           </div>
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[16px] font-normal"> Product Code :</span>
-            <span className="font-bold lg:text-[16px]">{productDetails.item_code}</span>
+            <span className="lg:text-[15px] md:text-[14px] font-normal"> Product Code :</span>
+            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.item_code}</span>
           </div>
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[16px] font-normal"> Brand :</span>
-            <span className="font-bold lg:text-[16px]">{productDetails.brand}</span>
+            <span className="lg:text-[15px] md:text-[14px] font-normal"> Brand :</span>
+            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.brand}</span>
           </div>
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[16px] font-normal"> Group :</span>
-            <span className="font-bold lg:text-[16px]">{productDetails.item_group}</span>
+            <span className="lg:text-[15px] md:text-[14px] font-normal"> Group :</span>
+            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.item_group}</span>
           </div>
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[16px] font-normal"> Stock Uom :</span>
-            <span className="font-bold lg:text-[16px]">{productDetails.stock_uom}</span>
+            <span className="lg:text-[15px] md:text-[14px] font-normal"> Stock Uom :</span>
+            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.stock_uom}</span>
           </div>
 
         </div>
@@ -71,9 +75,9 @@ const Tabs = ({ stockDetails, productDetails }) => {
               <tbody>
                 {stockDetails.map((res, index) => (
                   <tr key={res.warehouse} className="text-gray-700 text-center">
-                    <td className="border border-gray-300 px-4 py-2">{index + 1}</td>
-                    <td className="border border-gray-300 px-4 py-2 text-start">{res.warehouse}</td>
-                    <td className="border border-gray-300 px-4 py-2 font-bold">{res.actual_qty}</td>
+                    <td className="border  border-gray-300 px-4 py-2">{index + 1}</td>
+                    <td className="border  border-gray-300 px-4 py-2 text-start">{res.warehouse}</td>
+                    <td className="border  border-gray-300 px-4 py-2 font-bold">{res.actual_qty}</td>
                   </tr>
                 ))}
               </tbody>

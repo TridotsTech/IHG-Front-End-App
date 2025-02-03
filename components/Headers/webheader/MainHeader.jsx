@@ -1,13 +1,9 @@
-import React, { useEffect, useMemo, useState, useRef } from 'react'
+import { useEffect, useMemo, useState, useRef } from 'react'
 import Image from 'next/image';
 import { useRouter } from 'next/router'
-import { check_Image, currencyFormatter1, stored_customer_info, clear_cartitem, get_cart_items, move_all_tocart, get_search_products } from '@/libs/api';
+import { check_Image, currencyFormatter1, stored_customer_info, clear_cartitem, get_cart_items, move_all_tocart, get_search_products, typesense_search_items } from '@/libs/api';
 import { useSelector, useDispatch } from 'react-redux';
-import YourCart from '@/components/Product/YourCart'
-import WishList from '@/components/Product/WishList'
-import Rodal from 'rodal';
-// import 'rodal/lib/rodal.css';
-import { setCartItems } from '@/redux/slice/cartSettings'
+
 import AlertUi from '@/components/Common/AlertUi';
 import AuthModal from '@/components/Auth/AuthModal'
 import SearchProduct from '@/components/Search/SearchProduct';
@@ -16,6 +12,7 @@ import { resetCust } from '@/redux/slice/customerInfo';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
+import SearchCom from '@/components/Search/SearchCom';
 
 export default function MainHeader({ header_template, theme_settings, website_settings, all_categories }) {
 
@@ -178,15 +175,16 @@ export default function MainHeader({ header_template, theme_settings, website_se
     if (localStorage && localStorage['api_key']) {
 
     } else {
-      visible = true
-      setVisible(visible)
+      router.push('/login')
+      // visible = true
+      // setVisible(visible)
     }
   }
 
   const [searchProducts, setSearchProducts] = useState([]);
 
 
-  async function getSearchValues(inputText,query_bg="name,description") {
+  async function getSearchValues(inputText) {
     // let data = { "search_text": inputText, "page_no": 1, "page_len": 15 }
     // let res = await get_search_products(data);
     // setLoader(false)
@@ -195,11 +193,27 @@ export default function MainHeader({ header_template, theme_settings, website_se
     // } else {
     //   setSearchProducts([])
     // }
-    let api = `http://<TYPESENSE_HOST>:<PORT>/collections/product/documents/search?q=${inputText}&query_by=${query_bg}`
 
-    const myHead = new Headers({ "Content-Type": "application/json","X-TYPESENSE-API-KEY": "<API_KEY>" })
-    const response = await fetch(api, { method: 'GET', headers: myHead, })
-    console.log(response,"response")
+
+      const queryParams = new URLSearchParams({
+        q: `*`,
+        query_by: "item_name,item_description,brand",
+        // page: "1",
+        // per_page: "15",
+        query_by_weights: "1,2,3",
+        filter_by: `item_code:${inputText}* || item_description:${inputText}*`
+      });
+    
+      const data = await typesense_search_items(queryParams);
+      const initialData = data.hits || [];
+      setLoader(false)
+      if(initialData && initialData.length > 0){
+        setSearchProducts(initialData);
+      }else{
+        setSearchProducts([]);
+      }
+      console.log(initialData,"initialData")
+
   }
 
   function getSearchTxt(eve) {
@@ -224,7 +238,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
       setLoader(true)
       getSearchValues(inputText)
       // console.log('Perform search for:', inputText);
-    }, 300); // Adjust the debounce delay (in milliseconds) 
+    }, 600); // Adjust the debounce delay (in milliseconds) 
   };
 
   async function handleKeyDown(event) {
@@ -341,7 +355,15 @@ export default function MainHeader({ header_template, theme_settings, website_se
                 }
 
                 {(res.section_name == 'Header Menu' && res.section_type == 'Menu') &&
-                  <div className={`flex items-center gap-[10px]`}>
+                  <div className={`flex-[0_0_calc(45%_-_0px)]`}>
+                    <div key={index} className={`${website_settings.enable_multi_store == 1 ? 'w-full' : 'w-full'} relative flex justify-end`}>
+                      <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
+                        <input value={searchValue} id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
+                        <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
+                      </div>
+                      {(activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
+                        <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
+                    </div>
                   </div>
                 }
 
@@ -358,19 +380,11 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
                     <div onClick={() => {checkUser()}} onMouseEnter={() => customerName ? setCustomerMenu(true) : null} onMouseLeave={() => customerName ? setCustomerMenu(false) : null} class="relative  cursor-pointer flex flex-row-reverse items-center">
                       <div className='headerBtbs'>
-                        {theme_settings.user_icon && <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={check_Image(theme_settings.user_icon)}></Image>}
+                        <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={'/profile.svg'}></Image>
                       </div>
                       <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? customerName : 'Login'}</p>
 
-                      {(customerName && customerMenu) &&
-                        <div className='shadow-[0_0_5px_#ddd] rounded-[5px] w-[145px] absolute top-[47px] right-0 bg-[#fff] z-[999] p-[5px]'>
-                          {dropDownList.map((res, i) => {
-                            return (
-                              <h5 key={i + 'drop'} onClick={() => { moveToProfile(res) }} className={`${res.title == 'Logout' ? 'hover:bg-red-300 hover:text-red-800' : 'hover:bg-slate-100'} hover:opacity-[0.9] opacity-[0.7] rounded-[5px]  text-[15px] cursor-pointer font-medium p-[5px_10px] border-b-[1px] border-b-slate-100`}>{res.title}</h5>
-                            )
-                          })}
-                        </div>
-                      }
+                      
                     </div>
                   </div>
                 }

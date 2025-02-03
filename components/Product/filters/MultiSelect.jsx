@@ -157,18 +157,18 @@ import React from 'react';
 import Select from 'react-select';
 // import { colourOptions } from '../data';
 
-const MultiSelectBox = ({options, filters, type, onSelectionChange, label, label_classname}) => {
+const MultiSelectBox = ({ options, filters, type, onSelectionChange, label, label_classname }) => {
   return (
     <div className='my-3'>
       <label htmlFor="" className={`${label_classname}`}>{label}</label>
       <Select
-            isMulti
-            placeholder="Select the value"
-            options={options.map((opt) => ({ value: opt, label: opt }))}
-            value={filters[type]?.map((val) => ({ value: val, label: val })) || []}
-            onChange={(selected) => onSelectionChange(type, selected.map((s) => s.value))}
-            className='!outline-none'
-        />
+        isMulti
+        placeholder="Select the value"
+        options={options && options.map((opt) => ({ value: opt, label: opt }))}
+        value={filters[type]?.map((val) => ({ value: val, label: val })) || []}
+        onChange={(selected) => onSelectionChange(type, selected.map((s) => s.value))}
+        className='!outline-none'
+      />
     </div>
   )
 }

@@ -27,7 +27,7 @@ import Link from 'next/link'
 // })
 
 export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg }) {
-  console.log('produ', productList)
+  // console.log('produ', productList)
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const cartItems = useSelector((state) => state.cartSettings.cartItems)
   const wishlistItems = useSelector((state) => state.cartSettings.wishlistItems)

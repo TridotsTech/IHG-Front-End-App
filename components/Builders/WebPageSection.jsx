@@ -6,6 +6,8 @@ import dynamic from "next/dynamic";
 import { useSelector } from "react-redux";
 import Brands from "../Common/Brands";
 import ChooseCategory from "../Common/ChooseCategory";
+import { useRouter } from "next/router";
+import ProductSection from "./ProductSection";
 
 const ImageLoader = dynamic(() => import('../ImageLoader'));
 const Faq = dynamic(() => import('@/components/Builders/Faq'));
@@ -38,10 +40,10 @@ const Sliders = dynamic(() => import('@/components/Sliders/index'));
 // import HorizontalSlider from "./HorizontalSlider";
 
 
-export default function WebPageSection({ data, i }) {
+export default function WebPageSection({ data, i,isLast }) {
   // console.log(data)
-  data = []
 
+  const router = useRouter()
   let [isMobile, setIsMobile] = useState(false);
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
 
@@ -117,80 +119,44 @@ export default function WebPageSection({ data, i }) {
 
   const categoryData = [
     {
-      "img" : "/Home/category/1.png",
-      "name" : "Lighting & Electrical"
+      "img": "/Home/category/1.png",
+      "name": "Lighting & Electrical"
     },
     {
-      "img" : "/Home/category/2.png",
-      "name" : "Electrical & Wiring"
+      "img": "/Home/category/2.png",
+      "name": "Electrical & Wiring"
     },
     {
-      "img" : "/Home/category/3.png",
-      "name" : "Home & Office Furniture"
+      "img": "/Home/category/3.png",
+      "name": "Home & Office Furniture"
     },
     {
-      "img" : "/Home/category/4.png",
-      "name" : "Home Decor & Accessories"
+      "img": "/Home/category/4.png",
+      "name": "Home Decor & Accessories"
     },
     {
-      "img" : "/Home/category/5.png",
-      "name" : "Signage & Fabrication"
+      "img": "/Home/category/5.png",
+      "name": "Signage & Fabrication"
     },
     {
-      "img" : "/Home/category/6.png",
-      "name" : "Tools & Kits"
+      "img": "/Home/category/6.png",
+      "name": "Tools & Kits"
     },
     {
-      "img" : "/Home/category/7.png",
-      "name" : "Digital & IT"
+      "img": "/Home/category/7.png",
+      "name": "Digital & IT"
     },
     {
-      "img" : "/Home/category/1.png",
-      "name" : "Miscellaneous"
+      "img": "/Home/category/1.png",
+      "name": "Miscellaneous"
     },
   ]
 
-  const memoziedState = useMemo(() => {
+  return (
+    <>
+      <div className={`mb-[20px] ${isLast ? 'lg:pb-10' : ''} your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background') ? 'md:min-h-[390px] md:w-full' : data.section_name == 'Category Product' ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[400px] lg:max-h-[405px] lg:!mb-0 home_slide w-full md:min-h-[229px]' : ''}`}>
 
-    return (
-      <>
         {/* <div className={`mb-[20px] your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background' || data.section_name == 'Category Product') ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[700px] w-full md:min-h-[200px]' : ''}`}> */}
-        <div className="main-width bg-cover lg:mt-10">
-        <div className="p-4 lg:p-[60px] bg-cover" style={{ backgroundImage: 'url("/Home/Hero.png")' }}>
-          <div>
-            <h1 className="font-bold text-[24px] lg:text-[48px]">Elevate Your Shopping Experience</h1>
-            <p className="mt-2 text-sm lg:text-[20px] font-medium text-[#606060] w-full lg:w-[55%] leading-[24px] lg:leading-[36px]">Explore a world of innovation with our handpicked selection of iPhones and top-notch smartphones. Elevate your daily routine with the latest in mobile technology.</p>
-
-            <button className="py-1 lg:py-2 px-2 lg:px-3 rounded bg-black font-bold text-xs lg:text-lg text-white mt-4">
-              ⚡Shop Now
-            </button>
-          </div>
-
-          <div className="lg:flex space-y-3 justify-between mt-8">
-            <div className="lg:flex gap-4 space-y-2 items-center">
-              <div className="flex items-center gap-2">
-                <Image src="/Home/shield.png" width={13} height={16} alt="" />
-                <p className="lg:text-lg font-bold">Certifiied Sellers</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Image src="/Home/star.png" width={13} height={16} alt="" />
-                <p className="lg:text-lg font-bold">12 Months Warranty</p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Image src="/Home/calendar.png" width={13} height={16} alt="" />
-                <p className="lg:text-lg font-bold">14 Days Returns</p>
-              </div>
-            </div>
-
-            <div className="border rounded bg-white py-1 lg:py-2 px-2 lg:px-3 flex gap-1 w-fit">
-              <p className="text-sm lg:text-base">Loved by <span className="font-bold">30,00,000</span> Customers</p>
-              <Image src="/Home/Heart.png" width={24} height={24} />
-            </div>
-          </div>
-        </div>
-      </div>
         {
           data.section_name == "Content Slider" &&
           data.sliders &&
@@ -210,36 +176,41 @@ export default function WebPageSection({ data, i }) {
 
 
         {
-          true && (
+          data.section_name == "Shop By Categories" && data.categories && data.categories.length > 0 && (
             <div>
-              <div className="main-width py-10  bg-white">
-                 <ViewAll data={{ title: "Browse our Categories" }} viewAll={true} />
+              <div className="main-width lg:max-w-[1350px] py-10  bg-white">
+                <ViewAll data={{ title: "Browse our Categories" }} viewAll={false} />
 
-                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12">
-                    {
-                      categoryData.map((item,i)=>(
-                        <div className="flex-[0_0_auto] lg:px-[14px] justify-center flex flex-col space-y-2 items-center cursor-pointer" key={i}>
-                           <Image src={item.img} width={100} height={10} className="w-[55px] lg:w-[70px] h-[55px] lg:h-[70px]" />
-                           <p className="text-sm lg:text-lg font-semibold">{item.name}</p>
-                        </div>
-                      ))
-                    }
-                 </div>
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12">
+                  {
+                    data.categories.map((item, i) => (
+                      <div onClick={() => router.push("/" + item.redirect_url)} className="flex-[0_0_auto] lg:px-[14px] justify-center flex flex-col space-y-2 items-center cursor-pointer" key={item.title}>
+                        <Image src={check_Image(item.icon)} width={100} height={10} className="w-[55px] lg:w-[70px] h-[55px] lg:h-[70px]" />
+                        <p className="text-sm lg:text-lg font-semibold">{item.title}</p>
+                      </div>
+                    ))
+                  }
+                </div>
               </div>
             </div>
           )
         }
 
         {
-          true && (
-           <ChooseCategory />
+          data.section_name == "Dynamic Product Section" && data.filters && (
+            <>
+              {/* <ChooseCategory data={data} /> */}
+              <ProductSection data={data} isMobile={isMobile} />
+            </>
           )
         }
 
 
+
+
         {
-          true && (
-            <Brands />
+          data.section_name == "Shop By Brands" && data.data && data.data.length > 0 && (
+            <Brands data={data.data} />
           )
         }
 
@@ -252,14 +223,14 @@ export default function WebPageSection({ data, i }) {
             <ContactInfo data={data} />
           )}
         </div>
-        {data.section_name == "CTA Banner" &&
+        {data.section_name == "CTA Banner" || data.section_name == "Single Column Banner" &&
           // console.log(data)
           //   <div className="overflow-hidden main-width">
           //  <ImageLoader src={data.image} slide={true} isMobile={isMobile}  width={00} height={260}  className="h-[260px] w-[100%] object-cover your-element" style={"w-full h-full "} />
           //  </div>
 
-          <div className="main-width">
-            <Image src={(isMobile && data.image == "") ? '/Home/slide_mob.png' : (!isMobile && data.image == "") ? '/Home/slide_web.webp' : check_Image(data.image)} width={600} height={100} title="cta_banner_image" className="w-[100%]   md:object-contain lg:object-fit"
+          <div className="main-width lg:max-w-[1350px] lg:pb-10">
+            <Image src={check_Image(data.banner)} width={600} height={100} title="cta_banner_image" className="w-[100%]   md:object-contain lg:object-fit"
             />
           </div>
         }
@@ -347,8 +318,6 @@ export default function WebPageSection({ data, i }) {
           </div>
 
         )}
-
-
 
         {data.section_name == "Best Sellers" && (
 
@@ -711,15 +680,7 @@ export default function WebPageSection({ data, i }) {
           data.section_name && (data.section_name == "List Style 1" || data.section_name == "List Style 2" || data.section_name == "List Style 3" || data.section_name == "List Style 4" || data.section_name == "List Style 5" || data.section_name == "List Style 6") && <ListStyle data={data} />}
 
         {/* </div> */}
-      </>
-    )
 
-  }, [isMobile])
-
-  return (
-    <>
-      <div className={`mb-[20px] your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background') ? 'md:min-h-[390px] md:w-full' : data.section_name == 'Category Product' ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[450px] home_slide w-full md:min-h-[229px]' : ''}`}>
-        {memoziedState}
       </div>
     </>
   )
