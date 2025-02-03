@@ -560,7 +560,7 @@ export async function typesense_search_items(queryParams) {
         apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
     }
-    let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
+    let api = `https://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
     const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
