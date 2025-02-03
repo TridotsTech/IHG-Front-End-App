@@ -154,7 +154,7 @@ export default function WebPageSection({ data, i,isLast }) {
 
   return (
     <>
-      <div className={`mb-[20px] ${isLast ? 'lg:pb-10' : ''} your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background') ? 'md:min-h-[390px] md:w-full' : data.section_name == 'Category Product' ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[400px] lg:max-h-[405px] lg:!mb-0 home_slide w-full md:min-h-[229px]' : ''}`}>
+      <div className={`mb-[20px] ${isLast ? 'lg:pb-10' : ''} your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background') ? 'md:min-h-[390px] md:w-full' : data.section_name == 'Category Product' ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[400px] lg:max-h-[440px] lg:overflow-hidden lg:!mb-0 home_slide w-full md:min-h-[229px]' : ''}`}>
 
         {/* <div className={`mb-[20px] your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background' || data.section_name == 'Category Product') ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[700px] w-full md:min-h-[200px]' : ''}`}> */}
         {

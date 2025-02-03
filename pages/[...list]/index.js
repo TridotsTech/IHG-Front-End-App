@@ -886,7 +886,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       setInitialLoad(false);
       return;
     } else {
-      fetchResults()
+      fetchResults(false, true)
     }
   }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item])
 
