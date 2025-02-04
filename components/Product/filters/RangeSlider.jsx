@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 
-const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges, ranges }) => {
+const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges, ranges, filters }) => {
+    console.log('priceRange', filters);
     const COLOR_TRACK = "#CBD5E1";
     const COLOR_RANGE = "#000";
 
+    
 
     // Create references for sliders and tooltips
     const fromSliderRef = useRef(null);
@@ -18,6 +20,12 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
     // State to control tooltip visibility
     const [showFromTooltip, setShowFromTooltip] = useState(false);
     const [showToTooltip, setShowToTooltip] = useState(false);
+
+    useEffect(()=>{
+        setFromValue(ranges.min)
+        setToValue(ranges.max)
+        console.log("range", fromValue, toValue)
+      },[ranges])
 
     // Update the slider background to represent the range
     const fillSlider = (from, to) => {

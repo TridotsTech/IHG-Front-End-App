@@ -276,14 +276,14 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           </div>
 
           <div className='py-4 md:py-2'>
-            <RangeSlider MIN={0} MAX={100000} ranges={filters.price_range} setRanges={(ranges) => {
+            <RangeSlider MIN={0} MAX={100000} filters={filters} ranges={filters.price_range} setRanges={(ranges) => {
               setFilters({ ...filters, price_range: { ...ranges } });
             }
             } label={'Price'} label_classname={label_classname} />
           </div>
 
           <div className='py-4 md:py-2'>
-            <RangeSlider MIN={0} MAX={100000} ranges={filters.stock_range}
+            <RangeSlider MIN={0} MAX={100000} filters={filters} ranges={filters.stock_range}
               setRanges={(ranges) =>
                 setFilters({ ...filters, stock_range: ranges })
               } label={'Stock'} label_classname={label_classname} />

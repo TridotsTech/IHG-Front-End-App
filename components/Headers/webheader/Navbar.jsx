@@ -124,6 +124,32 @@ export default function Navbar({ all_categories, categoryData }) {
     }
   };
 
+
+  const [tabView,setTabView] = useState(false)
+
+  const checkScreenSize = () => {
+    // Define tab (mobile) size, for example, 768px is typical for mobile views
+    if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
+      setTabView(true);  // Mobile screen
+    } else {
+      setTabView(false); // Desktop or larger screen
+    }
+  };
+
+  // Step 3: Hook to run checkScreenSize on window resize
+  useEffect(() => {
+    // Initial check when component mounts
+    checkScreenSize();
+
+    // Add event listener to check on window resize
+    window.addEventListener("resize", checkScreenSize);
+
+    // Cleanup on component unmount
+    return () => {
+      window.removeEventListener("resize", checkScreenSize);
+    };
+  }, []); // Empty array ensures it only runs once on mount
+
   return (
     <>
 
@@ -154,7 +180,7 @@ export default function Navbar({ all_categories, categoryData }) {
 
 
             {/* {all_categories.slice(0, 5).map((item, index) => { */}
-            {categoryData.slice(0, 10).map((item, index) => {
+            {categoryData.slice(0, tabView ? 6 : 10).map((item, index) => {
               return (
                 // onMouseLeave={() => enbleDropdown('leave', index)} 
                 // (dropdown == index) || 
@@ -233,7 +259,7 @@ export default function Navbar({ all_categories, categoryData }) {
                 </span>
                 {moreMenu == 1 && (categoryData && categoryData.length != 0) &&
                   <div className="w-[241px] dropdown top-[32px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-99">
-                    {categoryData.slice(10, categoryData.length).map((submenu, sub1) => (
+                    {categoryData.slice(tabView ? 6 : 10, categoryData.length).map((submenu, sub1) => (
                       <>
                         <Link href={('/list?category=' + submenu)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
                           <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>

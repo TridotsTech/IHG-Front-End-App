@@ -65,6 +65,20 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
     // }
   }
 
+  const [showSearch,setShowSearch] = useState(false)
+  let [searchValue, setSearchValue] = useState('')
+  function getSearchTxt(eve) {
+    searchValue = eve.target.value
+    // console.log(searchValue)
+    setSearchValue(searchValue);
+  }
+
+  function navigateToSearch(route) {
+    router.push(route)
+    setSearchValue('')
+  }
+
+
   return (
     <>
 
@@ -92,7 +106,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
                 <Image className='h-[25px] w-[25px] object-contain' height={40} width={40} alt='logo' src={'/menu.svg'}></Image>
               </div>
               <div className='flex items-center justify-start'>
-                {theme_settings.website_logo && <Image className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={check_Image(theme_settings.website_logo)}></Image>}
+                {theme_settings.website_logo && <Image className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>}
               </div>
 
             </div>
@@ -101,7 +115,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
               <div onClick={() => { router.push('/search') }} className='flex items-center justify-end'>
                 <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[20px] object-contain' height={40} width={40} alt='vantage' src={'/search.svg'}></Image>
               </div>
-{/* 
+              {/* 
               <div onClick={() => { router.push('/tabs/yourcart') }} className='relative flex items-center justify-end'>
                 <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[22px] w-[22px] object-contain' height={40} width={40} alt='vantage' src={'/cart_h.svg'}></Image>
                 <p className='primary_bg text-[12px] text-[#fff] rounded-[50%] absolute h-[20px] w-[20px] flex items-center justify-center top-[-12px] right-[-10px]'>{cartCount}</p>
@@ -112,48 +126,41 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
         {!home &&
           <div className={`flex items-center justify-between p-[10px] min-h[40px]`}>
             {back_btn &&
-              <div onClick={() => { navigateLink ? router.push(navigateLink) : router.back() }} className='flex items-center justify-center  h-[30px] w-[30px] cursor-pointer primary_bg rounded-[50%]'>
-                <Image style={{ objectFit: 'contain' }} className='h-[15px] object-contain' height={40} width={40} alt='vantage' src={'/Arrow/rightArrowWhite.svg'}></Image>
+              <div className='flex items-center gap-5'>
+                <div onClick={() => { navigateLink ? router.push(navigateLink) : router.back() }} className='flex items-center justify-center  h-[30px] w-[30px] cursor-pointer primary_bg rounded-[50%]'>
+                  <Image style={{ objectFit: 'contain' }} className='h-[15px] object-contain' height={40} width={40} alt='vantage' src={'/Arrow/rightArrowWhite.svg'}></Image>
+                </div>
+                <Image className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>
               </div>
             }
+
             {title &&
               <div onClick={() => { titleClick && titleClick() }} className={`flex items-center justify-center gap-[3px] ${clear_cart ? 'w-[50%]' : 'w-[70%]'}`}>
                 <h6 className={`text-[15px] text-center font-semibold line-clamp-1`}>{title} </h6>
                 {titleDropDown && <Image style={{ objectFit: 'contain' }} className='h-[10px] object-contain' height={20} width={20} alt='vantage' src={'/Arrow/downArrowBlack.svg'}></Image>}
               </div>
             }
-            {(search || cart || share) &&
-              <div className='flex items-center gap-[8px]'>
+
+            {(search && !router.asPath.includes('search')) &&
+              <div className={`flex items-center gap-[8px] transition-all ease-in duration-500 delay-100 ${showSearch ? 'w-[180px]' : ''}`}>
                 {search &&
-                  <div onClick={() => { router.push('/search') }} className='flex items-center justify-end'>
-                    <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[20px] object-contain' height={40} width={40} alt='vantage' src={'/search.svg'}></Image>
-                  </div>
+                  <>
+                  {/* router.push('/search') */}
+                    {!showSearch && <div onClick={() => { setShowSearch(!showSearch) }} className='flex transition-all ease-in duration-500 delay-100 items-center justify-end'>
+                      <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[20px] object-contain' height={40} width={40} alt='vantage' src={'/search.svg'}></Image>
+                    </div>}
+
+                    <div className={`transition-all ease-in duration-500 delay-100 ${!showSearch ? 'h-0 w-0 opacity-0' : 'opacity-100 p-[5px_10px] h-[30px] flex items-center w-full border_color rounded-[20px]'} `}>
+                      <input id='search' value={searchValue} spellcheck="false" onChange={(eve) => { getSearchTxt(eve) }}  className='w-[95%] text-[14px]' placeholder='Search Products' />
+                      <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
+                    </div>
+                  </>
                 }
 
-                {cart &&
-                  <div onClick={() => { router.push('/tabs/yourcart') }} className='relative flex items-center justify-end'>
-                    <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[20px] w-[22px] object-contain' height={40} width={40} alt='vantage' src={'/cart_h.svg'}></Image>
-                    <p className='primary_bg text-[12px] text-[#fff] rounded-[50%] absolute h-[25px] w-[25px] flex items-center justify-center top-[-12px] right-[-10px]'>{cartCount}</p>
-                  </div>
-                }
 
-                {share &&
-                  <Modals headerCss={'h-[23px] w-[23px] object-contain opacity-[0.4] mt-[-2px]'} />
-                  //  <div onClick={()=>{router.push('/tabs/yourcart')}} className='relative flex items-center justify-end'>
-                  //   <Image onClick={()=>{}} style={{ objectFit: 'contain' }} className='h-[23px] w-[23px] object-contain' height={40}  width={40} alt='vantage' src={'/detail/share.svg.svg'}></Image>
-                  //  </div>
-                }
               </div>
             }
 
-            {(clear_cart && cartCount > 0) ?
-              <button onClick={() => { ClearCart() }} className='flex items-center rounded-[5px] p-[5px_10px] cursor-pointer light_bg'>
-                <span className='text-[11px] '>Clear Cart</span>
-                <Image style={{ objectFit: 'contain' }} className='ml-[7px] h-[20px] w-[14px] opacity-60' height={25} width={25} alt='Delete' src={'/Cart/delete.svg'}></Image>
-              </button>
-              :
-              <div></div>
-            }
 
             {empty_div &&
               <div></div>

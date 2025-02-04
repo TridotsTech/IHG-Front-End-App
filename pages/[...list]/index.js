@@ -32,8 +32,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     show_promotion: false,
     in_stock: false,
     brand: [],
-    price_range: { min: 0, max: 1000 },
-    stock_range: { min: 0, max: 1000 },
+    price_range: { min: 0, max: 100000 },
+    stock_range: { min: 0, max: 100000 },
     product_type: '',
     has_variants: false,
     custom_in_bundle_item: false,
@@ -611,23 +611,37 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   };
 
 
+
   const removeFilter = () => {
     console.log('filter')
     setpageNo(1)
-    // dispatch(resetFilters())
+    dispatch(resetFilters())
     if (category) {
       setFilters((prevFilters) => ({
         ...initialValue,
         item_group: prevFilters.item_group,
+        price_range: { min: 0, max: 100000 },
+        stock_range: { min: 0, max: 100000 },
       }));
     }
-    if (brand) {
+    else if (brand) {
       setFilters((prevFilters) => ({
         ...initialValue,
         brand: prevFilters.brand,
+        price_range: { min: 0, max: 100000 },
+        stock_range: { min: 0, max: 100000 },
       }));
     }
-    router.replace(`/list?category=${filters.item_group[0]}`)
+    else {
+      setFilters((prevFilters) => ({
+        ...initialValue,
+        price_range: { min: 0, max: 100000 },
+        stock_range: { min: 0, max: 100000 },
+      }));
+    }
+
+    console.log("checkRange",filters)
+    router.replace(`/list?category=`)
   }
 
   // useEffect(()=>{
@@ -727,7 +741,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
     } catch (err) {
       setError(err.message || "An error occurred while fetching data.");
-      setResults([])
+      // setResults([])
     } finally {
       setLoading(false);
     }
@@ -875,14 +889,20 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
   ]
 
-  const handleSortBy = async (e) => {
-    console.log('targetvalue', e.target.value)
+  const handleSortBy = (e, type="") => {
+    // console.log('targetvalue', e.target.value)
+    let sortByValue = ""
+    if(type == "select"){
+      sortByValue = e.target.value;
+    } else{
+      sortByValue = e
+    }
     setFilters((prevFilters) => ({
       ...prevFilters,
-      sort_by: e.target.value
+      sort_by: sortByValue
     }));
     console.log('sort', filters)
-    setResults([])
+    // setResults([])
     // setpageNo(1)
     // fetchResults()
   }
@@ -944,7 +964,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
         <div className=''>
           {/* <label htmlFor="" className={`${label_classname}`}>Sort by</label> */}
-          <select value={filters.sort_by} onChange={(e) => handleSortBy(e)} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
+          <select value={filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
             {
               sortByOptions.map((item, i) => (
                 <option value={item.value}>{item.text}</option>
@@ -969,7 +989,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
         <div className="lg:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
           {filtersList && <CurrentProductFilter isMobile={true} category_list={filtersList.category_list} />}
-          {(productList.length != 0 && filtersList && productBoxView) && <MobileFilters filtersList={filtersList} productBoxView={productBoxView} ProductFilter={ProductFilter} clearFilter={clearFilter} />}
+          {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
         </div>
 
 
@@ -1092,7 +1112,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
 }
 
-const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter }) => {
+const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, setFilters, handleSortBy, mastersData, filters, fetchResults, foundValue }) => {
 
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenSort, setIsOpenSort] = useState(false)
@@ -1107,14 +1127,14 @@ const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter
     <>
       {isOpen && <div className='filtersPopup'>
         <Rodal visible={isOpen} enterAnimation='slideDown' animation='' onClose={closeModal}>
-          <Filters filtersList={filtersList} ProductFilter={ProductFilter} closeModal={closeModal} clearFilter={clearFilter} />
+          <Filters mastersData={mastersData || []} filters={filters} setFilters={setFilters} filtersList={filtersList} ProductFilter={ProductFilter} closeModal={closeModal} clearFilter={clearFilter} fetchResults={fetchResults} foundValue={foundValue} />
         </Rodal>
       </div>
       }
 
       {isOpenSort && <div className='sortByPopup'>
         <Rodal visible={isOpenSort} enterAnimation='slideDown' animation='' onClose={closeModal}>
-          <SortByFilter ProductFilter={ProductFilter} closeModal={closeModal} />
+          <SortByFilter setFilters={setFilters} handleSortBy={handleSortBy} closeModal={closeModal} />
         </Rodal>
       </div>
       }
@@ -1138,14 +1158,17 @@ const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter
 }
 
 
-const SortByFilter = ({ ProductFilter, closeModal }) => {
+const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) => {
 
-  let sortings = [
-    { text: 'Relevance', role: '' },
-    { text: 'Name: A-Z', role: 'name_asc' },
-    { text: 'Name: Z-A', role: 'name_desc' },
-    { text: 'Price: Low-High', role: 'price_asc' },
-    { text: 'Price: High-Low', role: 'price_desc' }
+  let sorting = [
+    { text: 'Select Sort By', value: '' },
+    { text: 'Created Date', value: 'created_date' },
+    { text: 'Price low to high', value: 'rate:asc' },
+    { text: 'Price high to low', value: 'rate:desc' },
+    { text: 'Stock low to high', value: 'stock:asc' },
+    { text: 'Stock high to low', value: 'stock:desc' },
+    { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
+    { text: 'Least Sold', value: 'sold_last_30_days:asc' },
   ]
 
 
@@ -1153,9 +1176,9 @@ const SortByFilter = ({ ProductFilter, closeModal }) => {
     <>
       <h5 className='text-[15px] font-semibold p-[10px]'>Sort By</h5>
 
-      {sortings.map((res, index) => {
+      {sorting.map((res, index) => {
         return (
-          <h6 onClick={() => { closeModal(), ProductFilter({ 'sort': res.role }) }} className='text-[15px] font-medium p-[10px]'>{res.text}</h6>
+          <h6 onClick={() => { closeModal(), handleSortBy(res.value, "") }} className='text-[15px] font-medium p-[10px]'>{res.text}</h6>
         )
       })}
     </>

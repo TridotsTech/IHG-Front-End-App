@@ -146,19 +146,19 @@ export default function SearchCom({ searchRoute = '', title, type }) {
 
       <div class={`lg:flex main-width lg:max-w-[1350px] lg:py-[10px] gap-[10px]`}>
 
-        {searchRoute == '' ?
+        {/* {searchRoute == '' ? */}
 
           <>
             <div className='lg:hidden flex items-center justify-center sticky py-[10px] border-b-[1px] border-b-slate-100 top-[50px] bg-[#fff] z-[99]'>
               <div className="p-[5px_10px] h-[38px] flex items-center w-[75%] mx-auto border_color rounded-[20px]">
                 <input value={searchValue} id='search' spellcheck="false" onKeyDown={handleKeyDown} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
-                {(theme_settings && theme_settings.header_search_icon) && <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={check_Image(theme_settings.header_search_icon)}></Image>}
+                {(theme_settings && theme_settings.header_search_icon) && <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>}
               </div>
             </div>
             {/* {webSettings.all_categories && <SearchProduct router={router} loader={loader} all_categories={webSettings.all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={productList} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> } */}
           </>
 
-          :
+          {/* : */}
 
           <div className="w-full md:mb-[65px]">
             {loader ? <Skeleton />
@@ -182,7 +182,7 @@ export default function SearchCom({ searchRoute = '', title, type }) {
 
           </div>
 
-        }
+        {/* } */}
       </div>
     </>
   )

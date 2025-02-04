@@ -136,7 +136,6 @@ const DetailPage = ({productDetail,toast,details}) =>{
             setPageLoading(true)
             apiCall = false
             setApicall(apiCall)
-            getProductOtherInfo(data);
             // console.log('API called!');
           }
         };
@@ -292,22 +291,6 @@ const DetailPage = ({productDetail,toast,details}) =>{
           get_product_details()
         }
     }, [cartValue])
-
-
-    const getProductOtherInfo = async (data) => {
-        let params = {
-            item: data.name,
-            customer:localStorage['customerRefId']
-        }
-        const res = await get_product_other_info(params);
-        setPageLoading(false)
-        if(res && res.message){
-            setAdditionalInfo(res.message)
-            data = {...data,...res.message};
-            setData(data);
-        }
-    }
-
 
 
     const changeMainImage = (index, value) => {
@@ -551,7 +534,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
     <>{(data && Object.keys(data).length != 0) && 
      <>
 
-     {<MobileHeader back_btn={true} title={data.item} search={true} share={true} />}
+     {<MobileHeader back_btn={true} title={data.item} empty_div={false} search={true} share={true} />}
 
       {/* {(data && data.breadcrumb &&  data.breadcrumb.length != 0) ? <div className={`md:hidden flex items-center container p-[10px_0_0_0] gap-[7px]`}>
         { data.breadcrumb.map((res, index) => {
@@ -575,9 +558,9 @@ const DetailPage = ({productDetail,toast,details}) =>{
 
                 <div className='w-full'>
                     {isMobile ? <>
-                        {(data.images && data.images.length != 0) ? <ImageSlider height={'h-[400px]'} width={'w-full'} data={data.images} perView={1} /> :
+                        {(data.images && data.images.length != 0) ? <ImageSlider height={'h-[200px]'} width={'w-full'} data={data.images} perView={1} /> :
                             <Image
-                                className={'w-full h-[400px]'}
+                                className={'w-full h-[170px] object-contain'}
                                 height={200} width={300} alt={data.item}
                                 src={check_Image(data.website_image_url)}
 
@@ -652,7 +635,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
                        
                         
                         <div className='flex flex-row-reverse items-center gap-3'>
-                            <h3 className={`md:text-[14px] text-lg  font-semibold  openSens`}>{currencyFormatter1(data.rate,'')}</h3>
+                            <h3 className={`md:text-[18px] text-lg  font-semibold  openSens`}>{currencyFormatter1(data.rate,'')}</h3>
                         </div>
                     
                     </>}
