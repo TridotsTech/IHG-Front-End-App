@@ -3,8 +3,10 @@ import Image from 'next/image';
 import { check_Image } from '@/libs/api';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router'
+import { useDispatch } from "react-redux";
+import { setFilter } from "@/redux/slice/filtersList";
 
-export default function MobileCategoryFilter({ category_list, closeModal }) {
+export default function MobileCategoryFilter({ category_list, closeModal, data }) {
 
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
   let [current_category, setCurrent_category] = useState()
@@ -26,25 +28,36 @@ export default function MobileCategoryFilter({ category_list, closeModal }) {
   }
 
 
+  const dispatch = useDispatch()
+
+  const changeCategory = (item) => {
+      router.push("/list")
+      // router.push("/" + item.redirect_url)
+      // const val = item.redirect_url.split("=")[1]
+      // console.log(val, "val")
+      dispatch(setFilter([item]))
+    }
+
+
   return (
     <>
-      {current_category &&
+      {data &&
         <div className='h-full overflow-auto scrollbarHide'>
-          {current_category.length != 0 &&
-            current_category.map((child1, index1) => {
+          {data.length != 0 &&
+            data.map((child1, index1) => {
               return (
                 <div className='border-[1px] border-slate-100 rounded-[5px] p-[10px] m-[10px]'>
 
                   <div className='flex items-center'>
                     <h6 key={index1} className="flex items-center w-full gap-[5px] min-h-[65px]">
-                      <Image className='cursor-pointer h-[50px] w-[50px] pr-[7px] object-contain rounded-[7px]' height={80} width={80} alt='logo' src={check_Image(child1.mobile_image)}></Image>
-                      <span onClick={() => { child1.route ? (router.push('/' + child1.route), (closeModal && closeModal())) : null }} className={`${(router.asPath == ('/' + child1.route)) ? 'primary_color' : ''} w-full cursor-pointer text-[13px] font-medium line-clamp-1`}>{child1.category_name}</span>
+                      {/* <Image className='cursor-pointer h-[50px] w-[50px] pr-[7px] object-contain rounded-[7px]' height={80} width={80} alt='logo' src={check_Image(child1.mobile_image)}></Image> */}
+                      <span onClick={() => { changeCategory(child1) }} className={`${(router.asPath == ('/' + child1)) ? 'primary_color' : ''} w-full cursor-pointer text-[13px] font-medium line-clamp-1`}>{child1}</span>
                     </h6>
-                    <Image onClick={() => { navigate('/' + child1.route, child1), setChild({ ...child, activeChild: (child.activeChild && child.activeChild == (index1 + 1)) ? -1 : (index1 + 1) }) }} className='cursor-pointer h-[10px] object-contain opacity-60' height={14} width={14} alt='logo' src={'/Arrow/arrowBlack.svg'}></Image>
+                    <Image onClick={() => { changeCategory(child1) }} className='cursor-pointer h-[10px] object-contain opacity-60' height={14} width={14} alt='logo' src={'/Arrow/arrowBlack.svg'}></Image>
                   </div>
 
 
-                  {(child && child.activeChild == (index1 + 1)) && child1.child.length != 0 &&
+                  {/* {(child && child.activeChild == (index1 + 1)) && child1.child.length != 0 &&
                     child1.child.map((child2, index2) => {
                       return (
                         <>
@@ -65,7 +78,7 @@ export default function MobileCategoryFilter({ category_list, closeModal }) {
 
                       )
 
-                    })}
+                    })} */}
 
                 </div>
               )

@@ -27,7 +27,7 @@ import { useRouter } from 'next/router';
 //   subsets: ['latin']
 // })
 
-export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg }) {
+export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg,openFilter,tabView }) {
   // console.log('produ', productList)
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const cartItems = useSelector((state) => state.cartSettings.cartItems)
@@ -376,6 +376,12 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
   }
 
   const router = useRouter()
+
+  const navigateDetail = (item) => {
+    localStorage['product_detail'] = JSON.stringify(item.document)
+    router.push('/pr/' + item.document.item_code)
+  }
+
   return (
     <>
       {(isOpen && variantItems) && <div className='varinatspopup'>
@@ -396,7 +402,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
         <div className={`${!scroll_button && 'hidden'} absolute top-[40%] left-[-22px] h-[35px] w-[35px] z-10 bg-[#fff] text-black border-[1px]  border-slate-100 rounded-full flex items-center justify-center  cursor-pointer md:hidden`} onClick={() => sctollTo('prev')} id={'prev_' + (scroll_id ? scroll_id : '')}> <Image className='h-[12px] object-contain' alt="Prev" src={'/rightArrow.svg'} width={35} height={35} /></div>
 
-        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={` ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'flex-wrap'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] lg:grid lg:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-4 2xl:grid-cols-5 lg:gap-3'} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
+        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={` ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'flex-wrap'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] lg:grid lg:grid-cols-2 tab:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-4 tab:grid-cols-3 2xl:grid-cols-5 lg:gap-3'} ${openFilter && tabView ? (productBoxView && productBoxView == 'List View') ? 'tab:!grid-cols-1' : 'tab:!grid-cols-2' : ''} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
 
           {leftHorizontalImage && <Image src={check_Image(leftHorizontalImage)} width={400} height={400} alt="icon1" className="lg:hidden h-[300px] w-[200px] object-cover" />}
 
@@ -408,13 +414,13 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[230px]  relative ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:!h-[120px]' : 'md:h-[170px] md:w-[100%] pb-[10px] '} your-element `}>
-                  <Link href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[220px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
+                  <Link onClick={()=> navigateDetail(item)} href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[220px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
                 </div>
 
                 <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%]' : ''} p-[10px]`}>
                   {/* <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link> */}
 
-                  <p onClick={()=> router.push('/pr/' + item.document.item_code)} className={`line-clamp-2 cursor-pointer pt-[5px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer pt-[5px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
 
                   {/* <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`} /> */}
 

@@ -87,10 +87,10 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   ]
 
   const productTypeOptions = [
-    {label : "Select the value", value:""},
-    {label: "Listed", value: "Listed"},
-    {label: "Unlisted" ,value: "Unlisted"},
-    {label: "Obsolete", value: "Obsolete"}
+    { label: "Select the value", value: "" },
+    { label: "Listed", value: "Listed" },
+    { label: "Unlisted", value: "Unlisted" },
+    { label: "Obsolete", value: "Obsolete" }
   ]
 
   const multiSelectOptions = [
@@ -207,16 +207,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
               ))
             }
           </select>
-          {/* <Select
-            className="basic-single"
-            classNamePrefix="select"
-            value={filters.product_type}
-            placeholder="Select the value"
-            onChange={(e) => setFilters((prev)=> ({...prev, product_type: e.value}))}
-            options={productTypeOptions && productTypeOptions.map((opt) => ({ value: opt, label: opt }))}
-          /> */}
         </div>
-        <div className='mb-20'>
+        <div className='tab:mb-28 lg:mb-20'>
           {multiSelectOptions.map(({ type, label, options }) => (
             <MultiSelectBox
               key={type}
@@ -243,7 +235,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
     width: 20%;
 } */}
       </div >
-      <div className='fixed bottom-0 w-[20%] p-[12px_10px] bg-[#F0F0F0] z-[99]' style={{ boxShadow: '-1px 0px 1px 2px #eeeeee' }}>
+      <div className={`fixed bottom-0 md:hidden tab:w-[35%] lg:w-[20%]  p-[12px_10px] bg-[#F0F0F0] z-[99]`} style={{ boxShadow: '-1px 0px 1px 2px #eeeeee' }}>
         <div className='w-full flex items-center gap-[10px] justify-between'>
           <button className='w-[50%] text-[#fff] bg-[#f56c6c] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter()}>Clear All</button>
           <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => fetchResults()}>Filter</button>
@@ -294,16 +286,17 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
             <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
           </div>
 
-          <div>
-            <select value={filters.product_type} onChange={(e) => setFilters((prev) => ({ ...prev, product_type: e.target.value }))} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
+          <div className='my-3 flex flex-col'>
+            <label htmlFor="" className={`${label_classname}`}>Product Type</label>
+            <select value={filters.product_type} onChange={(e) => setFilters((prev) => ({ ...prev, product_type: e.target.value }))} className={` outline-none border-[1px] p-2 py-3 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
               {
                 productTypeOptions.map((item, i) => (
-                  <option value={item.value}>{item.text}</option>
+                  <option value={item.value} key={i}>{item.label}</option>
                 ))
               }
             </select>
           </div>
-          <div className='mb-20'>
+          <div className=''>
             {multiSelectOptions.map(({ type, label, options }) => (
               <MultiSelectBox
                 key={type}
@@ -326,8 +319,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
         </div>
 
         <div className={'flex gap-[5px] p-[10px] mt-[10px] border-t-[1px] border-t-slate-100 bg-[#F0F0F0]'}>
-          <button onClick={() => { closeModal(), clearFilter('', 'clearAll') }} className={`secondary_btn p-[5px_10px] h-[40px] w-[50%]`}>Clear All</button>
-          <button onClick={closeModal} className={`primary_btn p-[5px_10px] h-[40px] w-[50%]`}>Filter</button>
+          <button className='w-[50%] text-[#fff] bg-[#f56c6c] rounded-[5px] h-[35px] px-[10px]' onClick={() => { clearFilter(), closeModal() }}>Clear All</button>
+          <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => {fetchResults(), closeModal() }}>Filter</button>
         </div>
 
       </div>

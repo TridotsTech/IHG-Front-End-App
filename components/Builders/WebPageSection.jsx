@@ -3,11 +3,12 @@ import Image from 'next/image';
 import { check_Image } from '@/libs/api';
 import Link from 'next/link'
 import dynamic from "next/dynamic";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Brands from "../Common/Brands";
 import ChooseCategory from "../Common/ChooseCategory";
 import { useRouter } from "next/router";
 import ProductSection from "./ProductSection";
+import { setFilter } from "@/redux/slice/filtersList";
 
 const ImageLoader = dynamic(() => import('../ImageLoader'));
 const Faq = dynamic(() => import('@/components/Builders/Faq'));
@@ -40,13 +41,13 @@ const Sliders = dynamic(() => import('@/components/Sliders/index'));
 // import HorizontalSlider from "./HorizontalSlider";
 
 
-export default function WebPageSection({ data, i,isLast }) {
+export default function WebPageSection({ data, i, isLast }) {
   // console.log(data)
 
   const router = useRouter()
   let [isMobile, setIsMobile] = useState(false);
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
-
+  const dispatch = useDispatch()
   useEffect(() => {
     const handleResize = () => {
       const mobileWidth = 768; // Adjust this value to define your mobile width threshold
@@ -116,7 +117,6 @@ export default function WebPageSection({ data, i,isLast }) {
 
   }
 
-
   const categoryData = [
     {
       "img": "/Home/category/1.png",
@@ -152,9 +152,17 @@ export default function WebPageSection({ data, i,isLast }) {
     },
   ]
 
+  const changeCategory = (item) => {
+    router.push("/list")
+    // router.push("/" + item.redirect_url)
+    const val = item.redirect_url.split("=")[1]
+    // console.log(val, "val")
+    dispatch(setFilter([val]))
+  }
+
   return (
     <>
-      <div className={`mb-[20px] ${isLast ? 'lg:pb-10' : ''} your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background') ? 'md:min-h-[390px] md:w-full' : data.section_name == 'Category Product' ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[400px] lg:max-h-[440px] lg:overflow-hidden lg:!mb-0 home_slide w-full md:min-h-[229px]' : ''}`}>
+      <div className={`mb-[20px] ${isLast ? 'lg:pb-10' : ''} your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background') ? 'md:min-h-[390px] md:w-full' : data.section_name == 'Category Product' ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'tab:min-h-[280px] tab:max-h-[300px] lg:min-h-[400px] lg:max-h-[440px] lg:overflow-hidden lg:!mb-0 home_slide w-full md:min-h-[229px]' : ''}`}>
 
         {/* <div className={`mb-[20px] your-element ${data.section_name == "Two Column Layout with background down products" ? 'md:min-h-[800px] md:w-full' : (data.section_name == 'Category Products With Horizontal Background' || data.section_name == 'Category Product') ? 'md:min-h-[390px] md:w-full' : ''} md:mb-[10px] ${data.section_name == "Content Slider" ? 'lg:min-h-[700px] w-full md:min-h-[200px]' : ''}`}> */}
         {
@@ -184,7 +192,7 @@ export default function WebPageSection({ data, i,isLast }) {
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12">
                   {
                     data.categories.map((item, i) => (
-                      <div onClick={() => router.push("/" + item.redirect_url)} className="flex-[0_0_auto] lg:px-[14px] justify-center flex flex-col space-y-2 items-center cursor-pointer" key={item.title}>
+                      <div onClick={() => changeCategory(item)} className="flex-[0_0_auto] text-center lg:px-[14px] justify-center flex flex-col space-y-2 items-center cursor-pointer" key={item.title}>
                         <Image src={check_Image(item.icon)} width={100} height={10} className="w-[55px] lg:w-[70px] h-[55px] lg:h-[70px]" />
                         <p className="text-sm lg:text-lg font-semibold">{item.title}</p>
                       </div>

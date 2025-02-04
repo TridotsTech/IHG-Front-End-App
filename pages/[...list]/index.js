@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, Fragment } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { seo_Image, getCurrentUrl, typesense_search_items, get_all_masters } from '@/libs/api';
 import dynamic from 'next/dynamic';
@@ -16,13 +16,17 @@ import { setBoxView } from '@/redux/slice/websiteSettings'
 import { resetSetFilters, setLoad } from '@/redux/slice/ProductListFilters'
 import { resetFilters } from "@/redux/slice/filtersList";
 import Head from 'next/head'
+import { Switch } from '@headlessui/react';
+import clsx from 'clsx'
+import SearchCom from '@/components/Search/SearchCom';
+import useTabView from '@/libs/hooks/useTabView';
+import SearchProduct from '@/components/Search/SearchProduct';
 
 
 export default function List({ productRoute, filterInfo, currentId, params, initialData, found }) {
 
   // console.log('maste', mastersData)
   const router = useRouter();
-
   const initialValue = {
     q: "*",
     page_no: 1,
@@ -54,6 +58,11 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     output_current: [],
     color_temp_: []
   }
+  const [filters, setFilters] = useState({
+    ...initialValue,
+    price_range: { min: 0, max: 100000 },
+    stock_range: { min: 0, max: 100000 }
+  });
 
   const [foundValue, setFoundValue] = useState(0);
 
@@ -63,9 +72,10 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     setFoundValue(found)
   }, [router])
 
-  console.log("foundValue", foundValue)
+  // console.log("foundValue", foundValue)
 
   const [mastersData, setMastersData] = useState([]);
+  const tabView = useTabView();
 
   useEffect(() => {
     const getMasterData = async () => {
@@ -79,7 +89,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     getMasterData()
   }, [])
 
-  console.log('maste', mastersData)
+  // console.log('maste', mastersData)
 
 
 
@@ -93,14 +103,17 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
   const productBoxView = useSelector((state) => state.webSettings.productBoxView)
   let productFilters = useSelector((state) => state.ProductListFilters.filtersValue)
+  const productFilter = useSelector((state) => state.FiltersList.filtersValue)
   let loadData = useSelector((state) => state.ProductListFilters.filtersValue.loadData)
   const address = useSelector((state) => state.webSettings.adddressInfo);
   const dispatch = useDispatch();
   let [top, setTop] = useState(true)
   let cardref = useRef();
 
+
+
   const filtersData = useSelector((state) => state.FiltersList)
-  console.log('filterdata', filtersData)
+  // console.log('filterdata', filtersData)
 
   let [loadSpinner, setLoadSpinner] = useState(false);
   let [no_product, setNoProduct] = useState(true);
@@ -542,20 +555,16 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const observer = useRef();
 
   const { category, brand } = router.query;
-  console.log(category, brand)
+  // console.log(category, brand)
 
-  const [filters, setFilters] = useState({
-    ...initialValue,
-    price_range: { min: 0, max: 100000 },
-    stock_range: { min: 0, max: 100000 }
-  });
 
-  console.log("fiterValue", filters)
+
+  // console.log("fiterValue", filters)
 
   useEffect(() => {
     if (!router.isReady) return;
 
-    console.log('Query Params:', router.query);
+    // console.log('Query Params:', router.query);
 
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -564,7 +573,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }));
   }, [router.isReady, category, brand, router]);
 
-  console.log('querFilter', filters)
+  // console.log('querFilter', filters)
 
   // useEffect(()=>{
   //   if(filters.item_group.length === 0){
@@ -594,10 +603,12 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       "output_voltage", "output_current", "category_list"
     ].forEach(key => {
       if (rest[key]?.length) {
-        const values = rest[key].map(v => `"${v}"`).join(",");
+        const values = rest[key].map(v => `"${v}"`).join(",")
         filterParams.push(`${key}:=[${values}]`);
       }
     });
+
+
 
     if (price_range?.min > 0 && price_range?.max) {
       filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
@@ -606,104 +617,45 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
     }
 
-    console.log("params", filterParams);
+    // console.log("params", filterParams);
     return filterParams.length > 0 ? filterParams.join(" && ") : "";
   };
 
 
 
   const removeFilter = () => {
-    console.log('filter')
+    // console.log('filter')
     setpageNo(1)
-    dispatch(resetFilters())
-    if (category) {
+    // dispatch(resetFilters())
+    // if (category) {
+    //   setFilters((prevFilters) => ({
+    //     ...initialValue,
+    //     item_group: prevFilters.item_group,
+    //     price_range: { min: 0, max: 100000 },
+    //     stock_range: { min: 0, max: 100000 },
+    //   }));
+    // }
+    // else if (brand) {
+    //   setFilters((prevFilters) => ({
+    //     ...initialValue,
+    //     brand: prevFilters.brand,
+    //     price_range: { min: 0, max: 100000 },
+    //     stock_range: { min: 0, max: 100000 },
+    //   }));
+    // }
       setFilters((prevFilters) => ({
         ...initialValue,
-        item_group: prevFilters.item_group,
         price_range: { min: 0, max: 100000 },
         stock_range: { min: 0, max: 100000 },
       }));
-    }
-    else if (brand) {
-      setFilters((prevFilters) => ({
-        ...initialValue,
-        brand: prevFilters.brand,
-        price_range: { min: 0, max: 100000 },
-        stock_range: { min: 0, max: 100000 },
-      }));
-    }
-    else {
-      setFilters((prevFilters) => ({
-        ...initialValue,
-        price_range: { min: 0, max: 100000 },
-        stock_range: { min: 0, max: 100000 },
-      }));
-    }
 
-    console.log("checkRange",filters)
-    router.replace(`/list?category=`)
+    // console.log("checkRange",filters)
+    // router.replace(`/list?category=`)
   }
 
-  // useEffect(()=>{
-  //   removeFilter()
-  // }, [router.query])
-
-  // console.log('type',filters)
-
-  // useEffect(() => {
-  //   // no_product = false
-  //   // setNoProduct(no_product)
-  //   if (filters && filters.page_no) {
-  //     if (filters.page_no * 16 == results?.length) {
-  //       no_product = false
-  //     } else {
-  //       no_product = true
-  //     }
-  //   }
-  //   if (typeof window != 'undefined') {
-
-  //     const handleScroll = () => {
-  //       const cardElement = cardref.current;
-  //       const windowHeight = window.innerHeight;
-  //       const scrollY = window.scrollY;
-  //       const cardPosition = cardElement?.getBoundingClientRect().top;
-
-  //       if (cardPosition - windowHeight < 2000 && top) {
-  //         // Your logic here when the card is near the viewport
-  //         // Example: dispatch an action or call a function
-  //         // console.log(no_product, 'no_product');
-  //         if (!no_product) {
-  //           no_product = true
-  //           // setNoProduct(no_product)
-  //           // setTimeout(() => {
-  //           let updatedPageNo = pageNo + 1;
-  //           setpageNo(updatedPageNo)
-  //           console.log(pageNo)
-  //           let obj = { ...filters, page_no: updatedPageNo };
-  //           setPageLoading(true);
-  //           dispatch(setFilter(obj));
-  //           // dispatch(setLoad(loadData ? false : true))
-  //           // }, 800)
-  //         }
-  //       }
-  //     };
-
-  //     // Attach the scroll event listener
-  //     window.addEventListener('scroll', handleScroll);
-
-  //     // Cleanup: Remove the scroll event listener when the component unmounts
-  //     return () => {
-  //       window.removeEventListener('scroll', handleScroll);
-  //     };
-  //   }
-  // }, [no_product, results]);
-
-
-
-
-  const fetchResults = async (reset = false, initialPageNo) => {
+  const fetchResults = async (reset = false, initialPageNo, group_change = false) => {
     setError(null);
-    console.log("queryfilter", filters)
+    // console.log("queryfilter", filters)
     // const perPage = window.innerWidth >= 1400 ? "15" : "12";
     const queryParams = new URLSearchParams({
       q: '*',
@@ -711,7 +663,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       page: initialPageNo ? 1 : pageNo,
       per_page: "15",
       // query_by_weights: "1,2,3",
-      ...buildFilterQuery() && { filter_by: buildFilterQuery() },
+      filter_by: group_change ? `item_group:=[${productFilter.item_group[0]}]` : buildFilterQuery(),
+      // ...buildFilterQuery() && { filter_by: buildFilterQuery() },
       sort_by: filters.sort_by
     });
     if (initialPageNo) {
@@ -720,8 +673,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }
     try {
       setLoading(true);
-      console.log('query', buildFilterQuery);
-      console.log('queParam', filters)
+      // console.log('query', buildFilterQuery);
+      // console.log('queParam', filters)
       const data = await typesense_search_items(queryParams);
       if (data.hits.length === 0) {
         if (pageNo > 1) {
@@ -741,17 +694,34 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
     } catch (err) {
       setError(err.message || "An error occurred while fetching data.");
+      setHasMore(false)
+      setFoundValue(0)
       // setResults([])
     } finally {
       setLoading(false);
     }
   };
 
+
+  useMemo(() => {
+    if (productFilter && productFilter.item_group && productFilter.item_group.length > 0) {
+      console.log(productFilter, "productFilter")
+      setFilters((prevFilters) => ({
+        ...prevFilters,
+        item_group: productFilter.item_group,
+      }));
+
+      fetchResults(false, true, true)
+    }
+
+  }, [productFilter])
+
+
   // useEffect(()=>{
   //   fetchResults()
   // }, [filters])
 
-  console.log('result', filters)
+  // console.log('result', filters)
 
   useEffect(() => {
     return () => observer.current?.disconnect();
@@ -889,23 +859,25 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
   ]
 
-  const handleSortBy = (e, type="") => {
+  const handleSortBy = (e, type = "") => {
     // console.log('targetvalue', e.target.value)
     let sortByValue = ""
-    if(type == "select"){
+    if (type == "select") {
       sortByValue = e.target.value;
-    } else{
+    } else {
       sortByValue = e
     }
     setFilters((prevFilters) => ({
       ...prevFilters,
       sort_by: sortByValue
     }));
-    console.log('sort', filters)
+    // console.log('sort', filters)
     // setResults([])
     // setpageNo(1)
     // fetchResults()
   }
+
+  const [openFilter, setOpenFilter] = useState(false);
 
   useEffect(() => {
     if (initialLoad) {
@@ -920,6 +892,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }
   }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item])
 
+  console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
   return (
 
     <>
@@ -956,7 +929,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       </div> */}
 
 
-      <div className='md:hidden main-width pt-3 flex justify-end gap-4'>
+      <div className='md:hidden tab:hidden main-width pt-3 flex justify-end gap-4'>
         <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-end gap-[7px] cursor-pointer border border-[1px] border-[#ddd] rounded-[5px] p-[5px_10px]'>
           <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
           <span className={`text-[14px] font-normal line-clamp-1`}>{productBoxView == 'Grid View' ? 'List' : 'Grid'}</span>
@@ -976,20 +949,28 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
 
 
-      <div class={`md:mb-[60px] lg:flex  lg:py-5 lg:gap-[17px] md:gap-[10px]`}>
+      <div class={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in`}>
 
         {/* <div className="md:hidden flex-[0_0_calc(20%_-_7px)] mr-[10px] sticky top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
           {filtersList && <Filters filtersList={filtersList} ProductFilter={ProductFilter} />}
         </div> */}
 
         {/* flex-[0_0_calc(20%_-_7px)] */}
-        <div id='filter-sec' className="md:hidden border-r border-r-[1px] border-r-[#0000001F] fixed w-[20%] transition-all delay-300 duration-300 ease-in  mr-[10px] top-[124px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]">
-          {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+        {
+          ((tabView && openFilter) || !tabView) && (
+            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed  lg:w-[20%]  transition-all duration-300 ease-in  mr-[10px] lg:top-[124px] tab:top-[186px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]`}>
+              {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+            </div>
+          )
+        }
+
+        <div className="lg:hidden tab:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
+          {/* {filtersList && <CurrentProductFilter isMobile={true} category_list={filtersList.category_list} />} */}
+          {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
         </div>
 
-        <div className="lg:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
-          {filtersList && <CurrentProductFilter isMobile={true} category_list={filtersList.category_list} />}
-          {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+        <div className='md:hidden tab:block lg:hidden sticky top-[120px] bg-[#f1f5f9] z-[1000] w-full'>
+          {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} />}
         </div>
 
 
@@ -1039,34 +1020,13 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
 
         {/* lg:flex-[0_0_calc(80%_-_7px)] */}
-        <div className="lg:w-[80%] lg:ml-[20%] md:w-full main-width">
+        <div className={`${(tabView && openFilter) ? 'tab:ml-[36%] tab:w-[65%] flex-[0_0_auto]' : 'tab:w-full tab:ml-0'} lg:w-[80%] lg:ml-[20%]  md:w-full main-width transition-all duration-300 ease-in`}>
           <>
-            {productFilters.selectedAttributes.length != 0 &&
-              <div className='md:hidden flex gap-[8px] items-center flex-wrap mb-[10px]'>
-
-                <div onClick={() => { clearFilter('', 'clearAll') }} className={`cursor-pointer flex items-center bg-[#f1f1f157] gap-[8px] border-[1px] border-slate-100 rounded-[20px] p-[5px_15px] w-max`}>
-                  <h5 className='text-[13px]'>Clear All</h5>
-                  <Image className='h-[12px] w-[12px] object-contain' src={'/cancel.svg'} alt='Close' height={20} width={20} />
-                </div>
-
-
-                {productFilters.selectedAttributes.map((res, i) => {
-                  return (
-                    <div onClick={() => { productFilters.selectedAttributes.length == 1 ? clearFilter('', 'clearAll') : clearFilter(res, '') }} key={i} className={`cursor-pointer flex items-center bg-[#f1f1f157] gap-[8px] border-[1px] border-slate-100 rounded-[20px] p-[5px_15px] w-max`}>
-                      <h5 className='text-[13px]'>{res.option_value}</h5>
-                      <Image className=' h-[12px] w-[12px] object-contain' src={'/cancel.svg'} alt='Close' height={20} width={20} />
-                    </div>
-                  )
-                })}
-
-              </div>
-            }
             {loader ?
               <Skeleton />
               :
               <div className='min-h-screen'>
-                {console.log('check', results)}
-                {((results.length != 0 && Array.isArray(results))) ? <ProductBox productList={results} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} /> :
+                {((results.length != 0 && Array.isArray(results))) ? <ProductBox tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} /> :
                   <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
                 }
               </div>
@@ -1157,6 +1117,94 @@ const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter
   )
 }
 
+
+
+const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, setFilters, handleSortBy, mastersData, filters, fetchResults, foundValue, setOpenFilter, openFilter }) => {
+
+  const [isOpen, setIsOpen] = useState(false)
+  const [isOpenSort, setIsOpenSort] = useState(false)
+  const [searchValue, setSearchValue] = useState('')
+  const searchRef = useRef(null)
+  const dispatch = useDispatch();
+
+  function closeModal() {
+    setIsOpen(false);
+    setIsOpenSort(false);
+  }
+
+  async function handleKeyDown(event) {
+    if (event.key === 'Enter') {
+      if (searchValue && searchValue != '') {
+        navigateToSearch('/search/' + searchValue)
+      }
+    }
+  }
+
+  const label_classname = "text-[18px] md:text-[13px] font-semibold"
+
+  return (
+    <>
+      {isOpenSort && <div className='sortByPopup'>
+        <Rodal visible={isOpenSort} enterAnimation='slideDown' animation='' onClose={closeModal}>
+          <SortByFilter setFilters={setFilters} handleSortBy={handleSortBy} closeModal={closeModal} />
+        </Rodal>
+      </div>
+      }
+
+      <div className='flex items-center justify-between h-[45px] px-5 border-b-[1px] border-b-slate-100 bg-[#fff]'>
+
+        <div className=''>
+          <div className='flex items-center gap-5 justify-between'>
+            <h5 className={`${label_classname}`}>Filter</h5>
+            <Switch checked={openFilter} onChange={(e) => setOpenFilter(e)} as={Fragment}>
+              {({ checked, disabled }) => (
+                <button
+                  className={clsx(
+                    'group inline-flex h-6 w-11 items-center rounded-full',
+                    checked ? 'bg-[#000]' : 'bg-gray-200',
+                    disabled && 'cursor-not-allowed opacity-50'
+                  )}
+                >
+                  <span className="sr-only"></span>
+                  <span
+                    className={clsx('size-4 rounded-full bg-white transition', checked ? 'translate-x-6' : 'translate-x-1')}
+                  />
+                </button>
+              )}
+            </Switch>
+          </div>
+        </div>
+
+        <div>
+          {/* <div className={`flex-[0_0_calc(45%_-_0px)]`}>
+                    <div  className={`'w-full'} relative flex justify-end`}>
+                      <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
+                        <input value={searchValue} id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
+                        <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
+                      </div>
+                      {(activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
+                        <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
+                    </div>
+                  </div> */}
+        </div>
+        <div className='flex items-center'>
+          <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-center gap-[7px] mr-5'>
+            <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
+            <span className={`text-[16px] font-normal`}>{productBoxView == 'Grid View' ? 'List' : 'Grid'}</span>
+          </div>
+          <div onClick={() => { setIsOpenSort(true) }} className='h-full flex items-center justify-center border-r-slate-100  border-l-[1px] border-l-slate-100 gap-[7px]'>
+            <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={'/filters/sort-by.svg'}></Image>
+            <span className={`text-[14px] font-normal`}>Sort By</span>
+          </div>
+          {/* <div onClick={() => { setIsOpen(true) }} className='h-full flex items-center justify-center flex-[0_0_33.333%] gap-[7px]'>
+            <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={'/filters/filter.svg'}></Image>
+            <span className={`text-[14px] font-normal line-clamp-1`}>Filters</span>
+          </div> */}
+        </div>
+      </div>
+    </>
+  )
+}
 
 const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) => {
 

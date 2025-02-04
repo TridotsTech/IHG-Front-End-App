@@ -534,7 +534,7 @@ const DetailPage = ({productDetail,toast,details}) =>{
     <>{(data && Object.keys(data).length != 0) && 
      <>
 
-     {<MobileHeader back_btn={true} title={data.item} empty_div={false} search={true} share={true} />}
+     {<MobileHeader back_btn={true} title={data.item} empty_div={false} search={true} share={false} />}
 
       {/* {(data && data.breadcrumb &&  data.breadcrumb.length != 0) ? <div className={`md:hidden flex items-center container p-[10px_0_0_0] gap-[7px]`}>
         { data.breadcrumb.map((res, index) => {
@@ -1018,12 +1018,7 @@ export async function getServerSideProps({req,params}) {
         
           const data = await typesense_search_items(queryParams);
 
-        //   const resp = await get_product_details(detail,token);
-        //   const details = await resp.message || []
         
-        
-        // console.log(queryParams,"queryParams")
-        // let productDetail = data.hits;
         let productDetail = (data.hits && data.hits.length > 0) ? data.hits[0].document : {};
         if(data.hits && data.hits.length > 0 && data.hits[0].document && data.hits[0].document.website_image_url){
             productDetail.meta_image = data.hits[0].document.website_image_url

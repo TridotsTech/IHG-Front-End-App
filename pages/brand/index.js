@@ -1,12 +1,15 @@
-import {  useEffect } from 'react';
+import { useEffect } from 'react';
 import { useRouter } from 'next/router'
 import { check_Image, get_brands_list } from '@/libs/api';
 import Image from 'next/image';
+import MobileHeader from '@/components/Headers/mobileHeader/MobileHeader';
+import IsMobile from '@/libs/hooks/resize';
 
 
 export default function index({ details }) {
 
   const router = useRouter();
+  const isMobile = IsMobile()
 
   useEffect(() => {
     console.log(details, "details")
@@ -14,6 +17,7 @@ export default function index({ details }) {
 
   return (
     <>
+      {isMobile && <MobileHeader back_btn={true} title={'Brands'} empty_div={false} search={true} share={false} />}
       <div className='py-10 md:py-3 main-width lg:max-w-[1350px]'>
         <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
           {
@@ -38,7 +42,7 @@ export default function index({ details }) {
 
 
 
-export async function getServerSideProps({req}) {
+export async function getServerSideProps({ req }) {
   const apikey = req.cookies.api_key;
   const apisecret = req.cookies.api_secret;
   const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"

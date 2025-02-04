@@ -105,7 +105,7 @@ const Brands = ({customCss="",data}) => {
           <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} navigationLink={'/brand'} />
 
           <div className='py-3 '>
-              <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
+              <div className='grid grid-cols-3 tab:grid-cols-4 lg:grid-cols-6 gap-3'>
                 {
                     data.map((item,i)=>(
                         <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer' onClick={()=> router.push(`/list?brand=${item.name}`)}>

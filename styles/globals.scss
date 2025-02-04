@@ -446,6 +446,9 @@ input {
     .react-multi-carousel-item{
       // min-height: 450px !important;
     }
+    // .react-multi-carousel-list{
+    //   max-height: 440px;
+    // }
   }
 
   .home{
@@ -775,6 +778,18 @@ input {
   }
 }
 
+// @media screen and (max-width:1024px) and (min-width:768px) {
+//   .home_slide{
+//     .react-multi-carousel-item{
+//       // min-height: 450px !important;
+//     }
+//     .react-multi-carousel-list{
+//       // max-height: 300px !important;
+//     }
+//   }
+
+// }
+
 @media (max-width: 768px) {
   .home_slide{
     .react-multi-carousel-item{
@@ -921,14 +936,14 @@ input {
     }
   }
 
-  .sortByPopup {
-    .rodal-dialog {
-      padding: 0 !important;
-      height: fit-content !important;
-      width: 100% !important;
-      margin: auto auto 0 auto !important;
-    }
-  }
+  // .sortByPopup {
+  //   .rodal-dialog {
+  //     padding: 0 !important;
+  //     height: fit-content !important;
+  //     width: 100% !important;
+  //     margin: auto auto 0 auto !important;
+  //   }
+  // }
 
   .shippingPopup {
     .rodal-dialog {
@@ -1093,6 +1108,15 @@ input {
   }
 }
 
+
+.sortByPopup {
+  .rodal-dialog {
+    padding: 0 !important;
+    height: fit-content !important;
+    width: 100% !important;
+    margin: auto auto 0 auto !important;
+  }
+}
 // .custom-checkbox input[type="checkbox"]:checked {
 //   background-color: #54b41f;
 //   border-color: #54b41f;

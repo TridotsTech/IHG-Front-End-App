@@ -130,7 +130,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
                 <div onClick={() => { navigateLink ? router.push(navigateLink) : router.back() }} className='flex items-center justify-center  h-[30px] w-[30px] cursor-pointer primary_bg rounded-[50%]'>
                   <Image style={{ objectFit: 'contain' }} className='h-[15px] object-contain' height={40} width={40} alt='vantage' src={'/Arrow/rightArrowWhite.svg'}></Image>
                 </div>
-                <Image className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>
+                <Image onClick={()=> router.push('/')} className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>
               </div>
             }
 

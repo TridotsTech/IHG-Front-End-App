@@ -18,10 +18,13 @@ export default function middleware(req) {
 }
 
 export const config = {
-  matcher: [
-    '/login',                
-    // '/[...list]',        
-    // '/p',               
-    // '/p/:page*',
+  matcher: [            
+    '/:list',        
+    '/pr/:detail',               
+    '/',
+    '/brand',
+    '/search',
+    '/search/:search',
+    '/tabs/:tab',
   ],
 };

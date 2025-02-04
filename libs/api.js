@@ -429,7 +429,7 @@ export async function get_wallet_details() {
 }
 
 export async function login(data) {
-    let api = methodUrl + apiUrl_customer + 'login';
+    let api = methodUrl + "igh_search.igh_search.api.get_user_credentials";
     return await postMethod(api, data)
 }
 
@@ -557,8 +557,8 @@ export async function typesense_search_items(queryParams) {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
-        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
-        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : undefined;
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     // https://search-ihg.tridotstech.com
     let api = `https://search-ihg.tridotstech.com/collections/product/documents/search?${queryParams.toString()}`
@@ -571,8 +571,8 @@ export async function get_all_masters() {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
-        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
-        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : undefined;
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/method/igh_search.igh_search.api.get_all_masters`
     const myHead = new Headers({ "Content-Type": "application/json", "Authorization": `token ${apikey}:${secret}` })
@@ -585,8 +585,8 @@ export async function get_all_category() {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
-        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
-        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : undefined;
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/resource/Item%20Group?filters=[[%22name%22,%22!=%22,%22All%20Item%20Groups%22]]`
     const myHead = new Headers({ "Content-Type": "application/json", "Authorization": `token ${apikey}:${secret}` })
@@ -599,8 +599,8 @@ export async function get_product_details(code) {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
-        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
-        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : undefined;
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/method/igh_search.igh_search.api.get_product_info?item_code=${code}`
     const myHead = new Headers({ "Authorization": `token ${apikey}:${secret}`, "Content-Type": "application/json","x-typesense-api-key": "xyz" })
@@ -608,12 +608,12 @@ export async function get_product_details(code) {
     return await response.json()
 }
 
-export async function get_brands_list(keys="token 0c7f0496a397762:199919c53cd169d") {
+export async function get_brands_list(keys="token 1a9d8fa500753d9:2bc735eab415a99") {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
-        apikey = localStorage['api_key'] ? localStorage['api_key'] : "0c7f0496a397762";
-        secret = localStorage['api_secret'] ? localStorage['api_secret'] : "199919c53cd169d";
+        apikey = localStorage['api_key'] ? localStorage['api_key'] : undefined;
+        secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/method/get_brands`
     const myHead = new Headers({ "Authorization": keys ? keys : `token ${apikey}:${secret}`, "Content-Type": "application/json", })

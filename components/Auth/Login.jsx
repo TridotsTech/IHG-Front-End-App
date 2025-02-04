@@ -60,18 +60,20 @@ export default function LogIn({ hide, checkModal }) {
         // console.log(data)
         if (data) {
             let datas = {
-                usr: data.email,
+                email: data.email,
                 pwd: data.password
             }
             let val = await login(datas);
-            if (val.message.status == 'success') {
+            if (val.message.message == 'Success') {
                 const dateNow = new Date();
                 dateNow.setDate(dateNow.getDate() + 30);
                 Cookies.set('api_key',val.message.api_key, { expires: dateNow })
                 Cookies.set('api_secret',val.message.api_secret, { expires: dateNow })
-                // localStorage['api_secret'] = val.message.api_secret
-
-                getCustomerInfo({ email: data.email, guest_id: localStorage['customerRefId'] }, datas)
+                localStorage['api_key'] = val.message.api_key
+                localStorage['api_secret'] = val.message.api_secret
+                dispatch(setCustomerInfo(val));
+                dispatch(setDetail(val))
+                // getCustomerInfo({ email: data.email, guest_id: localStorage['customerRefId'] }, datas)
                 // localStorage['customerUser_id'] = val.message.user_id;
                 // localStorage['customer_id'] = val.message.customer_id;
                 localStorage['full_name'] = val.full_name;
@@ -256,7 +258,7 @@ export default function LogIn({ hide, checkModal }) {
                         {/* <span className={`${styles.checkmark}`}></span> */}
                         <span className='text-[13px]'>Remember Me</span>
                     </div>
-                    <p className='primary_color font-semibold text-[13px] cursor-pointer' onClick={() => checkModal('forget')}>Forgot Password</p>
+                    {/* <p className='primary_color font-semibold text-[13px] cursor-pointer' onClick={() => checkModal('forget')}>Forgot Password</p> */}
                 </div>
                 <button type="submit" className={`${styles.loginBtn} `}>Log In</button>
                 {/* {wrong && <p className='text-center pt-[5px] text-[#ff1010] font-semibold'>Please check your email or password</p>} */}

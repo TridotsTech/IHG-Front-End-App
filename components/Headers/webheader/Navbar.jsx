@@ -1,13 +1,16 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/router'
 import Link from 'next/link'
+import useTabView from '@/libs/hooks/useTabView';
+import { useDispatch } from 'react-redux';
+import { setFilter } from '@/redux/slice/filtersList';
 // import { check_Image } from '@/libs/api';
 
 export default function Navbar({ all_categories, categoryData }) {
 
   const router = useRouter();
   // const [isDropdownVisible, setDropdownVisible] = useState(false);
-
+  const dispatch = useDispatch()
   let [dropdown, setDropdown] = useState(-1);
   const [dropdown1, setDropdown1] = useState(-1);
   const [showMegamenu, setShowMegamenu] = useState(false);
@@ -125,30 +128,12 @@ export default function Navbar({ all_categories, categoryData }) {
   };
 
 
-  const [tabView,setTabView] = useState(false)
+  const tabView = useTabView(); // Use the custom hook
 
-  const checkScreenSize = () => {
-    // Define tab (mobile) size, for example, 768px is typical for mobile views
-    if (window.innerWidth >= 768 && window.innerWidth <= 1024) {
-      setTabView(true);  // Mobile screen
-    } else {
-      setTabView(false); // Desktop or larger screen
-    }
-  };
-
-  // Step 3: Hook to run checkScreenSize on window resize
-  useEffect(() => {
-    // Initial check when component mounts
-    checkScreenSize();
-
-    // Add event listener to check on window resize
-    window.addEventListener("resize", checkScreenSize);
-
-    // Cleanup on component unmount
-    return () => {
-      window.removeEventListener("resize", checkScreenSize);
-    };
-  }, []); // Empty array ensures it only runs once on mount
+  const changeCategory = (item) => {
+    !router.asPath.includes('list') ? router.push('/list') : null
+    dispatch(setFilter([item]))
+  }
 
   return (
     <>
@@ -156,7 +141,7 @@ export default function Navbar({ all_categories, categoryData }) {
       {(all_categories && all_categories.length != 0) &&
 
         // onMouseEnter={() => { setShowMegamenu(true) }} onMouseLeave={() => { setShowMegamenu(false), leaveFormnav() }}
-        <div className={`relative flex main-width !m-[0_auto] items-center justify-center`}>
+        <div className={`relative flex main-width !m-[0_auto] items-center justify-start`}>
           {/* <div className='flex items-center gap-[5px]'> */}
           {/* <div>
               <Image src={'/Navbar/premium-1.svg'} height={20} width={20} alt='premium' />
@@ -192,7 +177,8 @@ export default function Navbar({ all_categories, categoryData }) {
                   <div onClick={() => { leaveFormnav(), navigateToDetail1(item) }} className={`flex items-center gap-[5px] relative  first:p-[0_15px_6px_0px] p-[0_15px_6px_15px] text-[#976563]  `}>
                     {/* <Image style={{ objectFit: 'contain' }} className='h-[30px] w-[30px]' height={35}  width={35} alt='vantage' src={check_Image(item.mobile_image)} /> */}
                     <div className={`hoverMenuSec relative cursor-pointer ${(allMenu != 1 && router.asPath.split('/')[1] == item) ? 'active_parent' : ''} `}>
-                      <h6 onClick={() => router.push('/list?category=' + item)} className={`font-medium text-[#000000B2] uppercase text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item}>{item}</h6>
+                      <h6 onClick={() => changeCategory(item)} className={`font-medium text-[#000000B2] uppercase text-left navigation_c uppercase lg:text-[14px] tracking-[.25px] `} key={item}>{item}</h6>
+                      {/* <h6 onClick={() => router.push('/list?category=' + item)} className={`font-medium text-[#000000B2] uppercase text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item}>{item}</h6> */}
                     </div>
 
 
@@ -261,9 +247,12 @@ export default function Navbar({ all_categories, categoryData }) {
                   <div className="w-[241px] dropdown top-[32px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-99">
                     {categoryData.slice(tabView ? 6 : 10, categoryData.length).map((submenu, sub1) => (
                       <>
-                        <Link href={('/list?category=' + submenu)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
+                        <div onClick={() => changeCategory(submenu)} className={`hoverMore cursor-pointer transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
                           <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>
-                        </Link>
+                        </div>
+                        {/* <Link href={('/list?category=' + submenu)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
+                          <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>
+                        </Link> */}
                       </>
                     ))}
                   </div>

@@ -92,36 +92,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     filtersValue: {
-        q: "*",
-        page_no: 1,
-        item_code: "",
-        item_description: "",
-        sort_by: '',
-        hot_product: false,
-        show_promotion: false,
-        in_stock: false,
-        brand: [],
-        price_range: { min: 0, max: 1000 },
-        stock_range: { min: 0, max: 1000 },
-        product_type: [],
-        has_variants: false,
-        custom_in_bundle_item: false,
-        category_list: [],
         item_group: [],
-        beam_angle: [],
-        lumen_output: [],
-        mounting: [],
-        ip_rate: [],
-        lamp_type: [],
-        power: [],
-        input:[],
-        dimension: '',
-        material : [],
-        body_finish: [],
-        warranty_: [],
-        output_voltage: [],
-        output_current: [],
-        color_temp_ : []
     }
 };
 
@@ -131,15 +102,11 @@ const FiltersList = createSlice({
     reducers: {
         setFilter(state, action) {
             const payload = action.payload;
-            Object.keys(payload).forEach(key => {
-                if (state.filtersValue.hasOwnProperty(key)) {
-                    state.filtersValue[key] = payload[key];
-                }
-            });
+            state.filtersValue.item_group = payload
         },
-        
+
         resetFilters(state) {
-            state.filtersValue = { ...initialState.filtersValue };
+            state.filtersValue.item_group = [];
         },
     },
 });

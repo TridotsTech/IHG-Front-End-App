@@ -119,10 +119,9 @@ export default function MainHeader({ header_template, theme_settings, website_se
   }, [cartCount, wishlistCount, cartValue, tabs])
 
   useMemo(() => {
-    if ((loginInfo && loginInfo.full_name) || localStorage['CustomerName']) {
+    if ((loginInfo && loginInfo.full_name) || localStorage['full_name']) {
       // console.log(loginInfo,'loginInfo')
-      setCustomerName(localStorage['CustomerName'])
-      get_cart_item()
+      setCustomerName(localStorage['full_name'])
     } else {
       setCustomerName()
     }
@@ -173,9 +172,9 @@ export default function MainHeader({ header_template, theme_settings, website_se
   const checkUser = () => {
 
     if (localStorage && localStorage['api_key']) {
-
+      moveToProfile()
     } else {
-      router.push('/login')
+      
       // visible = true
       // setVisible(visible)
     }
@@ -195,24 +194,24 @@ export default function MainHeader({ header_template, theme_settings, website_se
     // }
 
 
-      const queryParams = new URLSearchParams({
-        q: `*`,
-        query_by: "item_name,item_description,brand",
-        // page: "1",
-        // per_page: "15",
-        query_by_weights: "1,2,3",
-        filter_by: `item_code:${inputText}* || item_description:${inputText}*`
-      });
-    
-      const data = await typesense_search_items(queryParams);
-      const initialData = data.hits || [];
-      setLoader(false)
-      if(initialData && initialData.length > 0){
-        setSearchProducts(initialData);
-      }else{
-        setSearchProducts([]);
-      }
-      console.log(initialData,"initialData")
+    const queryParams = new URLSearchParams({
+      q: `*`,
+      query_by: "item_name,item_description,brand",
+      // page: "1",
+      // per_page: "15",
+      query_by_weights: "1,2,3",
+      filter_by: `item_code:${inputText}* || item_description:${inputText}*`
+    });
+
+    const data = await typesense_search_items(queryParams);
+    const initialData = data.hits || [];
+    setLoader(false)
+    if (initialData && initialData.length > 0) {
+      setSearchProducts(initialData);
+    } else {
+      setSearchProducts([]);
+    }
+    console.log(initialData, "initialData")
 
   }
 
@@ -264,14 +263,11 @@ export default function MainHeader({ header_template, theme_settings, website_se
     { 'title': 'My Cart', route: '/profile?my_account=mycart' },
     { 'title': 'Logout', route: '' },
   ]
-  const moveToProfile = (res) => {
+  const moveToProfile = () => {
     // console.log(res, "res")
-    if (res.title == 'Logout') {
-      setAlertUi(true);
-      setAlertMsg({ message: 'Are you sure do you want to logout ?' });
-    } else {
-      router.push(res.route);
-    }
+
+    setAlertUi(true);
+    setAlertMsg({ message: 'Are you sure do you want to logout ?' });
   }
 
   function logout(value) {
@@ -281,7 +277,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
       dispatch(setCustomerInfo({ logout: true }));
       dispatch(resetCust({}));
       toast.success("You have successfully logged out!")
-      router.push('/');
+      router.push('/login');
     } else {
       setAlertUi(false);
     }
@@ -332,7 +328,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
       {/* <ToastContainer position={'bottom-right'} autoClose={2000}  /> */}
 
       {visible && <AuthModal visible={visible} hide={hide} setVisible={setVisible} />}
-        
+
       {enableModal &&
         <AlertUi isOpen={enableModal} closeModal={(value) => ModalClose(value)} headerMsg={'Alert'} button_1={'No'} button_2={'Yes'} alertMsg={alertMsg} />
       }
@@ -370,21 +366,21 @@ export default function MainHeader({ header_template, theme_settings, website_se
                 {(res.section_name == 'Header Button' && res.section_type == 'Static Section') &&
                   <div key={index} className='pl-[15px] flex gap-[25px] items-center justify-end'>
 
-                   
+
                     <div>
                       <Link href={"/scanner"}>
                         <Image src="/scanner.svg" height={20} width={20} />
                       </Link>
                     </div>
-                                       
 
-                    <div onClick={() => {checkUser()}} onMouseEnter={() => customerName ? setCustomerMenu(true) : null} onMouseLeave={() => customerName ? setCustomerMenu(false) : null} class="relative  cursor-pointer flex flex-row-reverse items-center">
+
+                    <div onClick={() => { checkUser() }} onMouseEnter={() => customerName ? setCustomerMenu(true) : null} onMouseLeave={() => customerName ? setCustomerMenu(false) : null} class="relative  cursor-pointer flex flex-row-reverse items-center">
                       <div className='headerBtbs'>
                         <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={'/profile.svg'}></Image>
                       </div>
                       <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? customerName : 'Login'}</p>
 
-                      
+
                     </div>
                   </div>
                 }
