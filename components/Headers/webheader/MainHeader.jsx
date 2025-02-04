@@ -174,7 +174,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
     if (localStorage && localStorage['api_key']) {
       moveToProfile()
     } else {
-      
+      router.push('/login')
       // visible = true
       // setVisible(visible)
     }

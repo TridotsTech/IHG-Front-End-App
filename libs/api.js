@@ -575,7 +575,7 @@ export async function get_all_masters() {
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/method/igh_search.igh_search.api.get_all_masters`
-    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": `token ${apikey}:${secret}` })
+    const myHead = new Headers((apikey && secret) ? { "Authorization": 'token ' + apikey + ':' + secret, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
@@ -589,7 +589,7 @@ export async function get_all_category() {
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/resource/Item%20Group?filters=[[%22name%22,%22!=%22,%22All%20Item%20Groups%22]]`
-    const myHead = new Headers({ "Content-Type": "application/json", "Authorization": `token ${apikey}:${secret}` })
+    const myHead = new Headers((apikey && secret) ? { "Authorization": 'token ' + apikey + ':' + secret, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
@@ -616,7 +616,7 @@ export async function get_brands_list(keys="token 1a9d8fa500753d9:2bc735eab415a9
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/method/get_brands`
-    const myHead = new Headers({ "Authorization": keys ? keys : `token ${apikey}:${secret}`, "Content-Type": "application/json", })
+    const myHead = new Headers((apikey && secret) ? { "Authorization": 'token ' + apikey + ':' + secret, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }

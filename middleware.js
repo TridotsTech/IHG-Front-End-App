@@ -20,6 +20,8 @@ export default function middleware(req) {
 export const config = {
   matcher: [            
     '/:list',        
+    '/list',        
+    '/[...list]',        
     '/pr/:detail',               
     '/',
     '/brand',
