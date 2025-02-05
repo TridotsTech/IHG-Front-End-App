@@ -216,12 +216,21 @@ export default function App({ Component, pageProps }) {
 
   const [masterValue, setMasterValues] = useState()
   const getValue = async () => {
-    const mastersRes = await get_all_masters();
+    try{
+      const mastersRes = await get_all_masters();
     if (mastersRes && mastersRes.message) {
       // console.log("master", mastersRes.message)
       // console.log(mastersRes.message, "mastersRes.message")
       setMasterValues(mastersRes.message)
       setCategoryData(mastersRes.message.item_group)
+    } 
+    // else{
+    //   console.log("error", mastersRes)
+    //   router.push("/login")
+    //   localStorage.clear();
+    // }
+    } catch(e){
+      console.error("err", e)
     }
   }
 
@@ -245,10 +254,10 @@ export default function App({ Component, pageProps }) {
             {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
             <Component  {...pageProps} />
             {/* </main> */}
-            {shown && <div className='lg:hidden'>
+            <div className='lg:hidden'>
               <BottomTabs tabs={tabs} getActiveTab={getActiveTab} activeTab={activeTab} />
             </div>
-            }
+            
 
 
             <div id='footer'>

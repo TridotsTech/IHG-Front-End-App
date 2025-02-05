@@ -36,8 +36,9 @@ const Detail = ({ productDetail,detail}) => {
     const router = useRouter();
     const address = useSelector((state) => state.webSettings.adddressInfo);
     const [details,setDetails] = useState({})
+    const [relatedProduct, setRelatedProduct] = useState([])
 
-    
+    console.log("produ", relatedProduct);
     useEffect(()=>{
        let breadcrumb = [{'name' :'Home' , route:'/'}]
 
@@ -62,11 +63,21 @@ const Detail = ({ productDetail,detail}) => {
             setDetails([])
         }
 
+        if(details. related_products){
+            setRelatedProduct(details.related_products)
+        }
+
         // const resp = await get_product_details(router.query.detail);
         // const details = await resp.message || []
     }
 
 
+
+    console.log("rela", relatedProduct)
+
+    const getRelatedproduct = async()=>{
+        
+    }
 
     
    return(
@@ -731,13 +742,13 @@ const DetailPage = ({productDetail,toast,details}) =>{
                 {/* <button onClick={()=>{router.push('/tabs/yourcart')}} className='primary_btn p-[8px_12px]'>View Cart</button> */}
             </div>
         
-     {pageLoading && 
+     {/* {pageLoading && 
         <div id="wave">
         <span className="dot"></span>
         <span className="dot"></span>
         <span className="dot"></span>
         </div>
-     }
+     } */}
 
     </>
  }</> 
@@ -1024,8 +1035,10 @@ export async function getServerSideProps({req,params}) {
             productDetail.meta_image = data.hits[0].document.website_image_url
         }
 
+        let relatedProduct = data.related_products || []
+
         return {
-          props: { productDetail,detail},   
+          props: { productDetail,detail, relatedProduct},   
         }
 }
 

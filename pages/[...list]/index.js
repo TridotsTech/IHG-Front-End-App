@@ -67,10 +67,10 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const [foundValue, setFoundValue] = useState(0);
 
 
-  useEffect(() => {
-    setResults(initialData)
-    setFoundValue(found)
-  }, [router])
+  // useEffect(() => {
+  //   setResults(initialData)
+  //   setFoundValue(found)
+  // }, [router])
 
   // console.log("foundValue", foundValue)
 
@@ -591,7 +591,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     if (rest.product_type) filterParams.push(`product_type:${rest.product_type}`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
     if (rest.hot_product) filterParams.push(`hot_product:=${rest.hot_product ? 1 : 0}`);
-    if (rest.show_promotion) filterParams.push(`show_promotion:=${rest.show_promotion ? 1 : 0}`);
+    if (rest.show_promotion) filterParams.push(`offer_rate:>0`);
     if (rest.in_stock) filterParams.push(`stock:>0`);
     if (rest.has_variants) filterParams.push(`has_variants:=${rest.has_variants ? 1 : 0}`);
     if (rest.custom_in_bundle_item) filterParams.push(`is_bundle_item:=${rest.custom_in_bundle_item ? 1 : 0}`);
@@ -622,7 +622,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   };
 
 
-
+  const [removeAllFilter, setRemoveAllFilter] = useState(false);
   const removeFilter = () => {
     // console.log('filter')
     setpageNo(1)
@@ -643,11 +643,12 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     //     stock_range: { min: 0, max: 100000 },
     //   }));
     // }
-      setFilters((prevFilters) => ({
-        ...initialValue,
-        price_range: { min: 0, max: 100000 },
-        stock_range: { min: 0, max: 100000 },
-      }));
+    setFilters((prevFilters) => ({
+      ...initialValue,
+      price_range: { min: 0, max: 100000 },
+      stock_range: { min: 0, max: 100000 },
+    }));
+    setRemoveAllFilter((prev) => !prev);
 
     // console.log("checkRange",filters)
     // router.replace(`/list?category=`)
@@ -657,13 +658,37 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     setError(null);
     // console.log("queryfilter", filters)
     // const perPage = window.innerWidth >= 1400 ? "15" : "12";
+    console.log("itemCheck", productFilter.item_group, group_change)
+    const addFilterQuery = () => {
+      const itemGroupFilter =
+        productFilter?.item_group?.length > 0
+          ? `item_group:=[${productFilter.item_group.map((item) => `"${item}"`).join(",")}]`
+          : "";
+
+      const brandFilter =
+        productFilter?.brand?.length > 0
+          ? `brand:=[${productFilter.brand.map((item) => `"${item}"`).join(",")}]`
+          : "";
+
+          if (itemGroupFilter && brandFilter) {
+            return `${itemGroupFilter} && ${brandFilter}`;
+          }
+        
+          if (itemGroupFilter) {
+            return itemGroupFilter;
+          }
+        
+          if (brandFilter) {
+            return brandFilter;
+          }
+    }
     const queryParams = new URLSearchParams({
       q: '*',
       query_by: "item_name,item_description,brand",
       page: initialPageNo ? 1 : pageNo,
       per_page: "15",
       // query_by_weights: "1,2,3",
-      filter_by: group_change ? `item_group:=[${productFilter.item_group[0]}]` : buildFilterQuery(),
+      filter_by: group_change ? addFilterQuery() : buildFilterQuery(),
       // ...buildFilterQuery() && { filter_by: buildFilterQuery() },
       sort_by: filters.sort_by
     });
@@ -702,19 +727,51 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }
   };
 
+  const [filterUpdated, setFilterUpdated] = useState(false);
 
-  useMemo(() => {
-    if (productFilter && productFilter.item_group && productFilter.item_group.length > 0) {
-      console.log(productFilter, "productFilter")
+  useEffect(() => {
+    if ((productFilter?.item_group?.length > 0)) {
+      console.log(productFilter, "productFilter");
+
       setFilters((prevFilters) => ({
         ...prevFilters,
         item_group: productFilter.item_group,
       }));
 
-      fetchResults(false, true, true)
-    }
+      setFilterUpdated(true);
+      console.log("productUpdate")
 
-  }, [productFilter])
+    } if ((productFilter?.brand?.length > 0)) {
+      setFilters((prevFilter) => ({
+        ...prevFilter,
+        brand: productFilter.brand
+      }))
+      setFilterUpdated(true);
+    }
+    else {
+      fetchResults(false, true)
+    }
+  }, [productFilter]);
+
+  useEffect(() => {
+    if (filterUpdated) {
+      fetchResults(true, true, true);
+      setFilterUpdated(false);
+    }
+  }, [filterUpdated])
+
+
+  // useMemo(() => {
+  //   if (productFilter && productFilter.item_group && productFilter.item_group.length > 0) {
+  //     console.log(productFilter, "productFilter")
+  //     setFilters((prevFilters) => ({
+  //       ...prevFilters,
+  //       item_group: productFilter.item_group,
+  //     }));
+  //     fetchResults(false, true, true)
+  //   }
+
+  // }, [productFilter])
 
 
   // useEffect(()=>{
@@ -890,7 +947,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       });
       fetchResults(false, true)
     }
-  }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item])
+  }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item, removeAllFilter])
 
   console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
   return (
@@ -969,7 +1026,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
           {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
         </div>
 
-        <div className='md:hidden tab:block lg:hidden sticky top-[120px] bg-[#f1f5f9] z-[1000] w-full'>
+        <div className='md:hidden tab:block lg:hidden sticky top-[120px] bg-[#f1f5f9] z-[10] w-full'>
           {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} />}
         </div>
 
@@ -1020,7 +1077,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
 
         {/* lg:flex-[0_0_calc(80%_-_7px)] */}
-        <div className={`${(tabView && openFilter) ? 'tab:ml-[36%] tab:w-[65%] flex-[0_0_auto]' : 'tab:w-full tab:ml-0'} lg:w-[80%] lg:ml-[20%]  md:w-full main-width transition-all duration-300 ease-in`}>
+        <div className={`${(tabView && openFilter) ? 'tab:ml-[35%] tab:w-[65%] flex-[0_0_auto]' : 'tab:w-full tab:ml-0'} lg:w-[80%] lg:ml-[20%]  md:w-full main-width transition-all duration-300 ease-in`}>
           <>
             {loader ?
               <Skeleton />
@@ -1271,72 +1328,72 @@ const Backdrop = () => {
   )
 }
 
-export async function getServerSideProps(req) {
+// export async function getServerSideProps(req) {
 
-  const { category, brand } = req.query;
+//   const { category, brand } = req.query;
 
-  // let productRoute = ''
-  // let value = params.list
+//   // let productRoute = ''
+//   // let value = params.list
 
-  // value.map((r, i) => {
-  //   productRoute = productRoute + r + ((value.length != (i + 1)) ? '/' : '')
-  // })
+//   // value.map((r, i) => {
+//   //   productRoute = productRoute + r + ((value.length != (i + 1)) ? '/' : '')
+//   // })
 
-  // let filterInfo = ''
-  // let currentId = ''
+//   // let filterInfo = ''
+//   // let currentId = ''
 
-  // let data = { "route": productRoute }
-  // let res = await get_category_filters(data);
-  // if (res && res.message) {
-  //   filterInfo = res.message
-  //   if (res.message.category_list && res.message.category_list.current_category && res.message.category_list.current_category.category_name) {
-  //     currentId = res.message.category_list.current_category
-  //   }
-  // }
+//   // let data = { "route": productRoute }
+//   // let res = await get_category_filters(data);
+//   // if (res && res.message) {
+//   //   filterInfo = res.message
+//   //   if (res.message.category_list && res.message.category_list.current_category && res.message.category_list.current_category.category_name) {
+//   //     currentId = res.message.category_list.current_category
+//   //   }
+//   // }
 
-  // Fetch data from API
+//   // Fetch data from API
 
-  const filters = {
-    item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
-    brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
-  };
+//   // const filters = {
+//   //   item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
+//   //   brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
+//   // };
 
-  const buildFilterQuery = () => {
-    const filterParams = [];
+//   // const buildFilterQuery = () => {
+//   //   const filterParams = [];
 
-    if (filters.item_group.length) {
-      const values = filters.item_group.map(v => `"${v}"`).join(",");
-      filterParams.push(`item_group:=[${values}]`);
-    }
+//   //   if (filters.item_group.length) {
+//   //     const values = filters.item_group.map(v => `"${v}"`).join(",");
+//   //     filterParams.push(`item_group:=[${values}]`);
+//   //   }
 
-    if (filters.brand.length) {
-      const values = filters.brand.map(v => `"${v}"`).join(",");
-      filterParams.push(`brand:=[${values}]`);
-    }
+//   //   if (filters.brand.length) {
+//   //     const values = filters.brand.map(v => `"${v}"`).join(",");
+//   //     filterParams.push(`brand:=[${values}]`);
+//   //   }
 
-    return filterParams.length > 0 ? filterParams.join(" && ") : "";
-  };
+//   //   return filterParams.length > 0 ? filterParams.join(" && ") : "";
+//   // };
 
-  const queryParams = new URLSearchParams({
-    q: '*',
-    query_by: "item_name,item_description,brand",
-    page: "1",
-    per_page: "15",
-    query_by_weights: "1,2,3",
-    filter_by: buildFilterQuery(),
-  });
+//   // const queryParams = new URLSearchParams({
+//   //   q: '*',
+//   //   query_by: "item_name,item_description,brand",
+//   //   page: "1",
+//   //   per_page: "15",
+//   //   query_by_weights: "1,2,3",
+//   //   filter_by: buildFilterQuery(),
+//   // });
 
-  const data = await typesense_search_items(queryParams);
-  const initialData = data.hits || [];
-  const found = data.found || 0
+//   // const data = await typesense_search_items(queryParams);
+//   // const initialData = data.hits || [];
+//   // const found = data.found || 0
 
 
-  return {
-    // props: { productRoute, filterInfo, currentId, params, mastersData }
-    props: { initialData, found }
-  }
+//   return {
+//     // props: { productRoute, filterInfo, currentId, params, mastersData }
+//     // props: { initialData, found }
+//   }
 
-}
+// }
 
 // export async function getServerSideProps({ params }) {
 //   let productRoute = ''

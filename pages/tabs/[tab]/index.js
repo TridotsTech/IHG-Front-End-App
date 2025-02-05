@@ -53,7 +53,7 @@ console.log("categ", categoryData);
   }, [webSettings])
 
   return (
-    <div class={`main-width lg:py-[25px] mb-[65px]`}>
+    <div class={`main-width lg:py-[25px] mb-[20px]`}>
        {(theme_settings && routeName) && <MobileHeader back_btn={true} title={title} search={true} theme_settings={theme_settings}/>}
        {routeName == 'category' && <MobileCategoryFilter data={categoryData} />}
     </div>

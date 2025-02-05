@@ -1,5 +1,5 @@
 
-import { setFilter } from "@/redux/slice/filtersList"
+import { setBrand, setFilter } from "@/redux/slice/filtersList"
 import Link from "next/link"
 import { Fragment } from "react"
 import { useDispatch } from "react-redux"
@@ -12,6 +12,7 @@ const BrandCategory = ({ masterValue, title, keys, sliceKey }) => {
     const val = item
     // console.log(val, "val")
     dispatch(setFilter([val]))
+    dispatch(setBrand([]))
   }
   return (
     <>

@@ -425,7 +425,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
                   {/* <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-1 pt-[5px] text-[14px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`} /> */}
 
                   <div className='flex items-center gap-5 justify-between mt-2'>
-                    {(webSettings && webSettings.currency) && <h3 className={`text-[14px] primary_color float-left font-semibold openSens `}>{currencyFormatter1(item.document.rate, webSettings.currency)}</h3>}
+                    {(webSettings && webSettings.currency) && <h3 className={`text-[14px] primary_color inline-flex gap-[6px] float-left font-semibold openSens `}>AED {item.document.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{item.document.offer_rate} <span className=' line-through font-semibold ml-[2px]'>{parseFloat(item.document.rate)}</span></p>) : (<p className='font-semibold'>{item.document.rate}</p>) }</h3>}
 
                     {(item.discount_percentage && item.discount_percentage != '' && item.discount_percentage != 0) ? <h6 className='additional_bg text-[#fff] p-[3px_13px] rounded-[5px] text-[12px]'>Save {item.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% </span> </h6> : <></>}
                   </div>

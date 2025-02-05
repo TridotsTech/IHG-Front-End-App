@@ -8,6 +8,7 @@ import dynamic from "next/dynamic";
 import Image from "next/image";
 import { check_Image } from "@/libs/api";
 const ImageLoader = dynamic(() => import('../ImageLoader'))
+import Slider from "react-slick";
 // import ImageLoader from '../ImageLoader';
 export default function Sliders({ data, perView, imgClass, event, isMobile }) {
 
@@ -68,7 +69,8 @@ export default function Sliders({ data, perView, imgClass, event, isMobile }) {
                   )
                 })}
               </Carousel>
-              : <Skeleton />
+              
+              : <SliderCom data={data} isMobile={isMobile} perView={perView} imgClass={imgClass} event={event} />
             }
           </>
         )
@@ -158,3 +160,66 @@ const Skeleton = () => {
     </>
   )
 }
+
+
+// import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
+
+const CustomPrevArrow = ({ onClick }) => (
+  <button
+    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white text-white p-4 rounded-full shadow-lg z-10 opacity-75 hover:opacity-100"
+    onClick={onClick}
+  >
+    <Image src={'/rightArrow.svg'} width={15} height={15} />
+  </button>
+);
+
+const CustomNextArrow = ({ onClick }) => (
+  <button
+    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white text-white p-4 rounded-full shadow-lg z-10 opacity-75 hover:opacity-100"
+    onClick={onClick}
+  >
+    <Image src={'/leftArrow.svg'} width={15} height={15} />
+  </button>
+);
+
+const SliderCom = ({data, isMobile, perView, imgClass, event,}) => {
+  const settings = {
+    dots: false,
+    infinite: true,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: true,
+    autoplaySpeed: 7000,
+    prevArrow: <CustomPrevArrow />,
+    nextArrow: <CustomNextArrow />,
+  };
+
+  const images = [
+    "https://via.placeholder.com/800x400?text=Slide+1",
+    "https://via.placeholder.com/800x400?text=Slide+2",
+    "https://via.placeholder.com/800x400?text=Slide+3",
+  ];
+
+  return (
+    <div className="min-w-full h-full mx-auto p-4">
+      <Slider {...settings}>
+      {data.map((res, index) => {
+                  return (
+                    <div onClick={() => res.route ? router.push(`/${router.asPath.split('/')[1]}/category/${res.route}`) : null} key={index}>
+                      <div className={`lg:flex-[0_0_calc(30%_-_10px)] home md:min-h-[170px] your-element md:w-full`}>
+                        {/* {isMobile ? */}
+                        {/* <ImageLoader slide={true} isMobile={isMobile} style={`${imgClass ? imgClass : 'h-[300px]'} w-full your-element`} height={570} width={1500} src={(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} title={res.item ? res.item : ''} /> */}
+                        {/* // : */}
+
+                        <Image alt={''}  loading='lazy' src={check_Image(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} height={isMobile ? 250 : 500} width={isMobile ? 500 : 1500} className={`${imgClass ? imgClass : 'h-[300px]'} your-element w-full `} />
+                        {/* } */}
+                      </div>
+                    </div>
+                  )
+                })}
+      </Slider>
+    </div>
+  );
+};
+

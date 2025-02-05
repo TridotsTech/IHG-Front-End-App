@@ -35,7 +35,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
             <span className="lg:text-[15px] md:text-[14px] font-normal"> Barcode :</span>
-            <span className="font-bold lg:text-[15px] md:text-[14px]">{' - '}</span>
+            <span className="lg:text-[36px] md:text-[36px] barcode-font font-normal">{productDetails.barcode}</span>
           </div>
 
           <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >

@@ -134,12 +134,12 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
               </div>
             }
 
-            {title &&
+            {/* {title &&
               <div onClick={() => { titleClick && titleClick() }} className={`flex items-center justify-center gap-[3px] ${clear_cart ? 'w-[50%]' : 'w-[70%]'}`}>
                 <h6 className={`text-[15px] text-center font-semibold line-clamp-1`}>{title} </h6>
                 {titleDropDown && <Image style={{ objectFit: 'contain' }} className='h-[10px] object-contain' height={20} width={20} alt='vantage' src={'/Arrow/downArrowBlack.svg'}></Image>}
               </div>
-            }
+            } */}
 
             {(search && !router.asPath.includes('search')) &&
               <div className={`flex items-center gap-[8px] transition-all ease-in duration-500 delay-100 ${showSearch ? 'w-[180px]' : ''}`}>

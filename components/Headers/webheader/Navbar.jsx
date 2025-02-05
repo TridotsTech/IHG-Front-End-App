@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import useTabView from '@/libs/hooks/useTabView';
 import { useDispatch } from 'react-redux';
-import { setFilter } from '@/redux/slice/filtersList';
+import { setBrand, setFilter } from '@/redux/slice/filtersList';
 // import { check_Image } from '@/libs/api';
 
 export default function Navbar({ all_categories, categoryData }) {
@@ -133,6 +133,7 @@ export default function Navbar({ all_categories, categoryData }) {
   const changeCategory = (item) => {
     !router.asPath.includes('list') ? router.push('/list') : null
     dispatch(setFilter([item]))
+    dispatch(setBrand([]))
   }
 
   return (
@@ -244,7 +245,7 @@ export default function Navbar({ all_categories, categoryData }) {
                   <a className={`text-left font-medium navigation_c lg:text-[15px] tracking-wide uppercase`}>More</a>
                 </span>
                 {moreMenu == 1 && (categoryData && categoryData.length != 0) &&
-                  <div className="w-[241px] dropdown top-[32px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-99">
+                  <div className="w-[241px] dropdown top-[32px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-[2000]">
                     {categoryData.slice(tabView ? 6 : 10, categoryData.length).map((submenu, sub1) => (
                       <>
                         <div onClick={() => changeCategory(submenu)} className={`hoverMore cursor-pointer transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>

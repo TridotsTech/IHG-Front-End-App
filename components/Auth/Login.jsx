@@ -227,8 +227,9 @@ export default function LogIn({ hide, checkModal }) {
             {showAlert && <AlertUi button_2={'Ok'} closeModal={closeModal} isOpen={showAlert} headerMsg={headerMsg} alertMsg={msg} />}
             {/* <div className='container h-full md:h-[calc(100vh_-_50px)] overflow-auto md:p-[0_15px] lg:justify-center gap-[20px] '> */}
 
-            <div className='w-full text-center'>
-                <h2 className='text-[20px] font-semibold'>Welcome</h2>
+            <div className='w-full text-center flex items-center justify-center'>
+                {/* <h2 className='text-[20px] font-semibold'>Welcome</h2> */}
+                <Image className="" height={200} width={200} src="/login-logo.svg" />
                 {/* <p className='text-[14px]'>Don't have an account? <span className='primary_color text-[15px] cursor-pointer' onClick={() => checkModal('signup')}>Sign Up</span></p> */}
             </div>
             <form onSubmit={handleSubmit((data) => log_in(data))} autoComplete='off'>

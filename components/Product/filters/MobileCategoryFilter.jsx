@@ -4,7 +4,7 @@ import { check_Image } from '@/libs/api';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router'
 import { useDispatch } from "react-redux";
-import { setFilter } from "@/redux/slice/filtersList";
+import { setBrand, setFilter } from "@/redux/slice/filtersList";
 
 export default function MobileCategoryFilter({ category_list, closeModal, data }) {
 
@@ -36,6 +36,7 @@ export default function MobileCategoryFilter({ category_list, closeModal, data }
       // const val = item.redirect_url.split("=")[1]
       // console.log(val, "val")
       dispatch(setFilter([item]))
+      dispatch(setBrand([]))
     }
 
 
@@ -49,7 +50,7 @@ export default function MobileCategoryFilter({ category_list, closeModal, data }
                 <div className='border-[1px] border-slate-100 rounded-[5px] p-[10px] m-[10px]'>
 
                   <div className='flex items-center'>
-                    <h6 key={index1} className="flex items-center w-full gap-[5px] min-h-[65px]">
+                    <h6 key={index1} className="flex items-center w-full gap-[5px] min-h-[40px]">
                       {/* <Image className='cursor-pointer h-[50px] w-[50px] pr-[7px] object-contain rounded-[7px]' height={80} width={80} alt='logo' src={check_Image(child1.mobile_image)}></Image> */}
                       <span onClick={() => { changeCategory(child1) }} className={`${(router.asPath == ('/' + child1)) ? 'primary_color' : ''} w-full cursor-pointer text-[13px] font-medium line-clamp-1`}>{child1}</span>
                     </h6>

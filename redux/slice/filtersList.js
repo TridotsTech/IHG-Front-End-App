@@ -93,6 +93,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     filtersValue: {
         item_group: [],
+        brand : []
     }
 };
 
@@ -105,11 +106,15 @@ const FiltersList = createSlice({
             state.filtersValue.item_group = payload
         },
 
+        setBrand(state, action) {
+           const payload = action.payload;
+           state.filtersValue.brand = payload
+        },
         resetFilters(state) {
             state.filtersValue.item_group = [];
         },
     },
 });
 
-export const { setFilter, resetFilters } = FiltersList.actions;
+export const { setFilter, resetFilters, setBrand } = FiltersList.actions;
 export default FiltersList.reducer;
