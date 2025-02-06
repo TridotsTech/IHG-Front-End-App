@@ -587,7 +587,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     const { price_range, stock_range, ...rest } = filters;
 
     // if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
-    if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
+    // if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
     if (rest.product_type) filterParams.push(`product_type:${rest.product_type}`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
     if (rest.hot_product) filterParams.push(`hot_product:=${rest.hot_product ? 1 : 0}`);
@@ -657,7 +657,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const fetchResults = async (reset = false, initialPageNo, group_change = false) => {
     setError(null);
     // console.log("queryfilter", filters)
-    // const perPage = window.innerWidth >= 1400 ? "15" : "12";
+    const perPage = window.innerWidth >= 1400 ? "15" : "12";
     console.log("itemCheck", productFilter.item_group, group_change)
     const addFilterQuery = () => {
       const itemGroupFilter =
@@ -683,10 +683,10 @@ export default function List({ productRoute, filterInfo, currentId, params, init
           }
     }
     const queryParams = new URLSearchParams({
-      q: '*',
-      query_by: "item_name,item_description,brand",
+      q: filters.item_description ? `${filters.item_description}*` : '*',
+      query_by: filters.item_description ? 'item_description,item_code' : '',
       page: initialPageNo ? 1 : pageNo,
-      per_page: "15",
+      per_page: perPage,
       // query_by_weights: "1,2,3",
       filter_by: group_change ? addFilterQuery() : buildFilterQuery(),
       // ...buildFilterQuery() && { filter_by: buildFilterQuery() },

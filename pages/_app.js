@@ -88,10 +88,13 @@ export default function App({ Component, pageProps }) {
   useEffect(() => {
     // NProgress.configure({ showSpinner: false });
     nProgress.configure({ showSpinner: false })
-    const handleStart = () => {
+    const handleStart = (e) => {
+      if(e == '/' && localStorage['api_key']){
+        getValue()
+      }
       nProgress.start()
     };
-    const handleComplete = () => {
+    const handleComplete = (e) => {
       nProgress.done()
     };
 
@@ -132,7 +135,10 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     // getCategoryList()
-    getValue()
+    if(typeof window !== "undefined" && localStorage['api_key']){
+      getValue()
+    }
+
   }, [])
 
   // const loadScripts = () => {
@@ -217,7 +223,7 @@ export default function App({ Component, pageProps }) {
   const [masterValue, setMasterValues] = useState()
   const getValue = async () => {
     try{
-      const mastersRes = await get_all_masters();
+      const mastersRes = await get_all_masters(router);
     if (mastersRes && mastersRes.message) {
       // console.log("master", mastersRes.message)
       // console.log(mastersRes.message, "mastersRes.message")

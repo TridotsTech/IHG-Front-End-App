@@ -30,7 +30,7 @@ export default function index() {
   
   useEffect(()=>{
      const getValue = async () => {
-        const mastersRes = await get_all_masters();
+        const mastersRes = await get_all_masters(router);
         if (mastersRes && mastersRes.message) {
           setCategoryData(mastersRes.message.item_group)
         }

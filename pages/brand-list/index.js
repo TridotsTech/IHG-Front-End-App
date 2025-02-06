@@ -24,7 +24,9 @@ export default function index({ details }) {
             details.map((item, i) => (
               <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer' onClick={() => router.push(`/list?brand=${item.name}`)}>
                 <div className='py-4 px-5'>
-                  <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' />
+                  {item.image && <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' />}
+                  {!item.image && <h1 className='text-center min-h-[50px] flex justify-center items-center text-[20px] font-medium'>{item.name}</h1>}
+                  {/* <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' /> */}
                 </div>
 
                 <div className='bg-[#F0F0F0] py-1 px-3'>
@@ -45,7 +47,7 @@ export default function index({ details }) {
 export async function getServerSideProps({ req }) {
   const apikey = req.cookies.api_key;
   const apisecret = req.cookies.api_secret;
-  const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"
+  const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : null
 
   const data = await get_brands_list(token);
   const details = await data.message || []

@@ -1,6 +1,7 @@
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { domain, website } from "./config/siteConfig"
+import Cookies from "js-cookie";
 
 // const methodUrl = `http://${domain}/api/method/`;
 const methodUrl = `https://${domain}/api/method/`;
@@ -561,13 +562,13 @@ export async function typesense_search_items(queryParams) {
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     // https://search-ihg.tridotstech.com
-    let api = `https://search-ihg.tridotstech.com/collections/product/documents/search?${queryParams.toString()}`
+    let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
     const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
 
-export async function get_all_masters() {
+export async function get_all_masters(router) {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
@@ -577,6 +578,13 @@ export async function get_all_masters() {
     let api = `https://${domain}/api/method/igh_search.igh_search.api.get_all_masters`
     const myHead = new Headers((apikey && secret) ? { "Authorization": 'token ' + apikey + ':' + secret, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
+    if(response && response.status === 401 && response.statusText === "UNAUTHORIZED"){
+        // console.log(response,"response")
+        localStorage.clear();
+        Cookies.remove('api_key')
+        Cookies.remove('api_secret')
+        router?.push('/login')
+    }
     return await response.json()
 }
 
@@ -608,7 +616,7 @@ export async function get_product_details(code) {
     return await response.json()
 }
 
-export async function get_brands_list(keys="token 1a9d8fa500753d9:2bc735eab415a99") {
+export async function get_brands_list(keys) {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
@@ -616,7 +624,9 @@ export async function get_brands_list(keys="token 1a9d8fa500753d9:2bc735eab415a9
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     let api = `https://${domain}/api/method/get_brands`
-    const myHead = new Headers((apikey && secret) ? { "Authorization": 'token ' + apikey + ':' + secret, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
+
+    const token = keys ? keys : (apikey && secret) ? `token ${apikey}:${secret}` : null
+    const myHead = new Headers(token ? { "Authorization": token, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }

@@ -108,7 +108,7 @@ const Brands = ({ customCss = "", data }) => {
 
     const changeBrand = (item) => {
         !router.asPath.includes('list') ? router.push('/list') : null
-        console.log("log", item)
+        // console.log("log", item)
         dispatch(setBrand([item]))
         dispatch(setFilter([]))
     }
@@ -116,7 +116,7 @@ const Brands = ({ customCss = "", data }) => {
     return (
         <div className={`main-width lg:max-w-[1350px] lg:py-10 md:p-[10px] ${customCss}`}>
             <div className=''>
-                <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} navigationLink={'/brand'} />
+                <ViewAll data={{ title: "Shop By Brands" }} viewAll={true} navigationLink={'/brand-list'} />
 
                 <div className='py-3 '>
                     <div className='grid grid-cols-3 tab:grid-cols-4 lg:grid-cols-6 gap-3'>
@@ -124,7 +124,8 @@ const Brands = ({ customCss = "", data }) => {
                             data.map((item, i) => (
                                 <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer' onClick={() => changeBrand(item.name)}>
                                     <div className='py-4 px-5'>
-                                        <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' />
+                                       {item.image && <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' /> }
+                                       {!item.image && <h1 className='text-center min-h-[50px] flex justify-center items-center text-[20px] font-medium'>{item.name}</h1>}
                                     </div>
 
                                     <div className='bg-[#F0F0F0] py-1 px-3'>

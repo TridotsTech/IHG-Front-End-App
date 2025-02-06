@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Quagga from 'quagga';
+import { typesense_search_items } from '@/libs/api';
+import { useRouter } from 'next/router';
 
 function Scanner() {
   const [scannedBarcode, setScannedBarcode] = useState('');
   const videoRef = useRef(null);
   const [scanning, setScanning] = useState(true);
   const streamRef = useRef(null);
-
+  const router = useRouter()
   // Start the scanner automatically when the component mounts
   useEffect(() => {
     if (!scanning) return;
@@ -44,6 +46,7 @@ function Scanner() {
     Quagga.onDetected((result) => {
       setScanning(false); // Stop scanning
       setScannedBarcode(result.codeResult.code); // Set the scanned barcode
+      getScannedProducts(result.codeResult.code)
       stopCamera(); // Stop the camera stream
     });
 
@@ -62,21 +65,40 @@ function Scanner() {
     }
   };
 
+  const getScannedProducts = async (barcode) => {
+    console.log(barcode,"barcode")
+
+    const queryParams = new URLSearchParams({
+      q: "*",
+      // query_by: "item_name,item_description,brand",
+      // page: "1",
+      // per_page: "1",
+      // query_by_weights: "1,2,3",
+      filter_by: `barcode:=${barcode}`,
+    });
+
+    const data = await typesense_search_items(queryParams);
+    console.log(data,"data")
+    if(data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document){
+      router.push(`/pr/${data.hits[0].document.item_code}`)
+    }
+  }
+
   return (
-    <div>
+    <div className='bg-gray-200'>
       <div className="w-full h-full">
         {/* Video Feed */}
         <div ref={videoRef} className="w-full h-full bg-white relative">
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-36 rounded-lg">
-          {/* Scanning Line */}
-          {scanning && (
-            <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-scan" />
-          )}
-        </div>
+          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-36 rounded-lg">
+            {/* Scanning Line */}
+            {scanning && (
+              <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-scan" />
+            )}
+          </div>
         </div>
 
         {/* Centered Scanning Area */}
-        
+
       </div>
 
       {/* Close Button */}

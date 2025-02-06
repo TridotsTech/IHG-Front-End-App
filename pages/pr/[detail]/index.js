@@ -75,7 +75,7 @@ const Detail = ({ productDetail, detail }) => {
         productDetail["breadcrumb"] = breadcrumb;
         getDetail();
 
-    }, [address]);
+    }, [address,router]);
 
     const [relatedProductData, setRelatedData] = useState([])
 
@@ -90,7 +90,7 @@ const Detail = ({ productDetail, detail }) => {
         }
 
         if (details.related_products && details.related_products.length > 0) {
-            console.log("che", details.related_products)
+            // console.log("che", details.related_products)
             const filterQuery = details.related_products
                 .map((code) => `item_code:="${code}"`)
                 .join(" || ");
@@ -102,16 +102,35 @@ const Detail = ({ productDetail, detail }) => {
             });
 
             const data = await typesense_search_items(queryParams);
-            if(data.hits && data.hits.length > 0){
+            if (data.hits && data.hits.length > 0) {
                 setRelatedData(data.hits);
+                // setRelatedData(filterData(details.related_products, data.hits));
+                // console.log('filData', filterData(details.related_products, data.hits))
+                // console.log(data.hits, "data.hits")
             }
-        } else{
+        } else {
             setRelatedData([]);
         }
 
         // const resp = await get_product_details(router.query.detail);
         // const details = await resp.message || []
     };
+
+
+    const filterData = (arr1, arr2) => {
+        const arr = []
+
+        for (let i = 0; i < arr1.length; i++) {
+            for (let j = 0; j < arr2.length; j++) {
+                if (arr1[i] == arr2[j]['document']['item_code']) {
+                    arr.push(arr2[j])
+                }
+            }
+        }
+
+        console.log('arr', arr1, arr2, arr)
+        return arr
+    }
 
 
 
