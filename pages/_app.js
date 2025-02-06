@@ -205,7 +205,7 @@ export default function App({ Component, pageProps }) {
       menu_label: 'Account',
       alt_menu_label: 'User Profile',
       redirect_url: '/profile',
-      icon: '/Tabs/Account.svg',
+      icon: '/Tabs/account.svg',
       active_icon: '/Tabs/account-filled.svg',
       tab: 'my-profile',
       enable: 1
