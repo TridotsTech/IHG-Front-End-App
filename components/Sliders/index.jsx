@@ -58,12 +58,10 @@ export default function Sliders({ data, perView, imgClass, event, isMobile }) {
                   return (
                     <div onClick={() => res.route ? router.push(`/${router.asPath.split('/')[1]}/category/${res.route}`) : null} className={`${event ? '' : 'flex items-center justify-center gap-[15px] h-full'}`} key={index}>
                       <div className={`lg:flex-[0_0_calc(30%_-_10px)] home md:min-h-[170px] your-element md:w-full`}>
-                        {/* {isMobile ? */}
                         {/* <ImageLoader slide={true} isMobile={isMobile} style={`${imgClass ? imgClass : 'h-[300px]'} w-full your-element`} height={570} width={1500} src={(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} title={res.item ? res.item : ''} /> */}
                         {/* // : */}
 
                         <Image alt={''}  loading='lazy' src={check_Image(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} height={isMobile ? 250 : 500} width={isMobile ? 500 : 1500} className={`${imgClass ? imgClass : 'h-[300px]'} your-element w-full `} />
-                        {/* } */}
                       </div>
                     </div>
                   )

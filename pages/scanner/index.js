@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Quagga from 'quagga';
 import { typesense_search_items } from '@/libs/api';
 import { useRouter } from 'next/router';
+import { toast } from 'react-toastify';
 
 function Scanner() {
   const [scannedBarcode, setScannedBarcode] = useState('');
@@ -81,6 +82,8 @@ function Scanner() {
     console.log(data,"data")
     if(data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document){
       router.push(`/pr/${data.hits[0].document.item_code}`)
+    }else{
+      toast.error('Something went wrong!')
     }
   }
 
