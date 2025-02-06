@@ -736,6 +736,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       setFilters((prevFilters) => ({
         ...prevFilters,
         item_group: productFilter.item_group,
+        brand: []
       }));
 
       setFilterUpdated(true);
@@ -748,7 +749,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       }))
       setFilterUpdated(true);
     }
-    else {
+    if(!(productFilter?.brand?.length > 0) && !(productFilter?.item_group?.length > 0)) {
       fetchResults(false, true)
     }
   }, [productFilter]);
