@@ -178,7 +178,7 @@ export default function App({ Component, pageProps }) {
       menu_label: 'Category',
       alt_menu_label: 'Categories',
       redirect_url: '/tabs/category',
-      icon: '/Tabs/category.svg',
+      icon: '/Tabs/Category.svg',
       active_icon: '/Tabs/category-filled.svg',
       tab: 'category',
       enable: 1
@@ -205,7 +205,7 @@ export default function App({ Component, pageProps }) {
       menu_label: 'Account',
       alt_menu_label: 'User Profile',
       redirect_url: '/profile',
-      icon: '/Tabs/account.svg',
+      icon: '/Tabs/Account.svg',
       active_icon: '/Tabs/account-filled.svg',
       tab: 'my-profile',
       enable: 1
