@@ -178,8 +178,8 @@ export default function App({ Component, pageProps }) {
       menu_label: 'Category',
       alt_menu_label: 'Categories',
       redirect_url: '/tabs/category',
-      icon: '/Tabs/Category.svg',
-      active_icon: '/Tabs/Category-filled.svg',
+      icon: '/Tabs/category.svg',
+      active_icon: '/Tabs/category-filled.svg',
       tab: 'category',
       enable: 1
     },
