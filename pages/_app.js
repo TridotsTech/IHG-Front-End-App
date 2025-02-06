@@ -23,6 +23,7 @@ import 'tailwindcss/tailwind.css';
 const BrandCategory = dynamic(() => import('@/components/Common/BrandCategory'))
 import settig from '@/libs/websiteSettings'
 import ScrollToTopButton from '@/components/Common/ScrollToTop';
+import Image from 'next/image';
 // console.log('setting', settig.message)
 
 // import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -89,7 +90,7 @@ export default function App({ Component, pageProps }) {
     // NProgress.configure({ showSpinner: false });
     nProgress.configure({ showSpinner: false })
     const handleStart = (e) => {
-      if(e == '/' && localStorage['api_key']){
+      if (e == '/' && localStorage['api_key']) {
         getValue()
       }
       nProgress.start()
@@ -135,7 +136,7 @@ export default function App({ Component, pageProps }) {
 
   useEffect(() => {
     // getCategoryList()
-    if(typeof window !== "undefined" && localStorage['api_key']){
+    if (typeof window !== "undefined" && localStorage['api_key']) {
       getValue()
     }
 
@@ -168,8 +169,8 @@ export default function App({ Component, pageProps }) {
       menu_label: 'Home',
       alt_menu_label: 'Home Icon',
       redirect_url: '/',
-      icon: '/Tabs/Home-1.svg',
-      active_icon: '/Tabs/Home-fill.svg',
+      icon: '/Tabs/Home.svg',
+      active_icon: '/Tabs/Home-filled.svg',
       tab: 'home',
       enable: 1,
     },
@@ -177,26 +178,35 @@ export default function App({ Component, pageProps }) {
       menu_label: 'Category',
       alt_menu_label: 'Categories',
       redirect_url: '/tabs/category',
-      icon: '/Tabs/Category-1.svg',
-      active_icon: '/Tabs/Category-fill.svg',
+      icon: '/Tabs/Category.svg',
+      active_icon: '/Tabs/Category-filled.svg',
       tab: 'category',
       enable: 1
     },
     // {
-    //   menu_label: 'Cart',
-    //   alt_menu_label: 'Shopping Cart',
-    //   redirect_url: '/tabs/yourcart',
+    //   menu_label: 'Brands',
+    //   alt_menu_label: 'Brands',
+    //   redirect_url: '/tabs/brand-list',
     //   icon: '/Tabs/Cart-1.svg',
     //   active_icon: '/Tabs/Cart-fill.svg',
-    //   tab: 'yourcart',
+    //   tab: 'brands',
     //   enable: 1
     // },
     {
+      menu_label: 'List',
+      alt_menu_label: 'List',
+      redirect_url: '/list',
+      icon: '/Tabs/list.svg',
+      active_icon: '/Tabs/list-filled.svg',
+      tab: 'list',
+      enable: 1
+    },
+    {
       menu_label: 'Account',
       alt_menu_label: 'User Profile',
-      redirect_url: '/profile?my_account=',
-      icon: '/Tabs/profile-1.svg',
-      active_icon: '/Tabs/Account-filled.svg',
+      redirect_url: '/profile',
+      icon: '/Tabs/account.svg',
+      active_icon: '/Tabs/account-filled.svg',
       tab: 'my-profile',
       enable: 1
     },
@@ -222,20 +232,20 @@ export default function App({ Component, pageProps }) {
 
   const [masterValue, setMasterValues] = useState()
   const getValue = async () => {
-    try{
+    try {
       const mastersRes = await get_all_masters(router);
-    if (mastersRes && mastersRes.message) {
-      // console.log("master", mastersRes.message)
-      // console.log(mastersRes.message, "mastersRes.message")
-      setMasterValues(mastersRes.message)
-      setCategoryData(mastersRes.message.item_group)
-    } 
-    // else{
-    //   console.log("error", mastersRes)
-    //   router.push("/login")
-    //   localStorage.clear();
-    // }
-    } catch(e){
+      if (mastersRes && mastersRes.message) {
+        // console.log("master", mastersRes.message)
+        // console.log(mastersRes.message, "mastersRes.message")
+        setMasterValues(mastersRes.message)
+        setCategoryData(mastersRes.message.item_group)
+      }
+      // else{
+      //   console.log("error", mastersRes)
+      //   router.push("/login")
+      //   localStorage.clear();
+      // }
+    } catch (e) {
       console.error("err", e)
     }
   }
@@ -261,13 +271,18 @@ export default function App({ Component, pageProps }) {
             <Component  {...pageProps} />
             {/* </main> */}
             <div className='lg:hidden'>
-              <BottomTabs tabs={tabs} getActiveTab={getActiveTab} activeTab={activeTab} />
+              {router.pathname != "/login" && <BottomTabs tabs={tabs} getActiveTab={getActiveTab} activeTab={activeTab} />}
             </div>
-            
+
+            {router.pathname != "/login" && !router.asPath.includes('profile') && <div className="fixed lg:hidden bottom-[90px] right-[20px]">
+              <div onClick={()=> router.push('/scanner')} className={`size-[50px] bg-[#000] rounded-[50%] flex items-center justify-center`}>
+                <Image height={25} width={25} className='size-[25px]' src={'/scanner-fixed.svg'} alt="Scanner" ></Image>
+              </div>
+            </div>}
 
 
             <div id='footer'>
-              {(masterValue && masterValue['item_group']) && (router.pathname != "/login" && router.pathname != "/[...list]") && <>
+              {(masterValue && masterValue['item_group']) && (router.pathname != "/login" && !router.asPath.includes('profile') && router.pathname != "/[...list]") && <>
                 <div className="bg-[#F0F0F0] py-[30px]" >
 
                   <BrandCategory title={'Popular Categories'} keys={'item_group'} masterValue={masterValue} />
@@ -281,7 +296,9 @@ export default function App({ Component, pageProps }) {
               </>}
             </div>
 
-            <ScrollToTopButton />
+            <div className='md:hidden'>
+              <ScrollToTopButton />
+            </div>
           </RootLayout>
         </Provider>
       </ErrorBoundary>

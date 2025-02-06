@@ -13,7 +13,7 @@ export default function index({ details }) {
   const isMobile = IsMobile()
 
   useEffect(() => {
-    console.log(details, "details")
+    // console.log(details, "details")
   }, [details])
 
   const dispatch = useDispatch()
@@ -23,12 +23,16 @@ export default function index({ details }) {
     // console.log("log", item)
     dispatch(setBrand([item]))
     dispatch(setFilter([]))
-}
+  }
 
   return (
     <>
       {isMobile && <MobileHeader back_btn={true} title={'Brands'} empty_div={false} search={true} share={false} />}
-      <div className='py-10 md:py-3 main-width lg:max-w-[1350px]'>
+      <div className='py-10 md:py-3 md:px-[10px] main-width lg:max-w-[1350px]'>
+        <div className='py-[10px]'>
+          <h6 className={`text-[16px] lg:text-[24px] font-semibold line-clamp-1`}>Brands </h6>
+        </div>
+
         <div className='grid grid-cols-3 lg:grid-cols-6 gap-3'>
           {
             details.map((item, i) => (

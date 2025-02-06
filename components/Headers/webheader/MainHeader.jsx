@@ -13,6 +13,7 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 import SearchCom from '@/components/Search/SearchCom';
+import Cookies from 'js-cookie';
 
 export default function MainHeader({ header_template, theme_settings, website_settings, all_categories }) {
 
@@ -276,6 +277,8 @@ export default function MainHeader({ header_template, theme_settings, website_se
       localStorage.clear();
       dispatch(setCustomerInfo({ logout: true }));
       dispatch(resetCust({}));
+      Cookies.remove('api_key')
+      Cookies.remove('api_secret')
       toast.success("You have successfully logged out!")
       router.push('/login');
     } else {

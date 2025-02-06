@@ -450,10 +450,23 @@ input {
   }
 }
 
+@media (max-width: 768px) {
+  .home_slide{
+    .react-multi-carousel-item{
+      height: 120px;
+    }
+  }
+
+  .react-multi-carousel-track{
+    height: 120px !important;
+  }
+}
+
 @media (min-width: 768px) {
   .home_slide{
     .react-multi-carousel-item{
       // min-height: 450px !important;
+      // height: 100px;
     }
     // .react-multi-carousel-list{
     //   max-height: 440px;
@@ -942,6 +955,7 @@ input {
       height: 90% !important;
       width: 100% !important;
       margin: auto auto 0 auto !important;
+      padding-bottom: 65px !important;
     }
   }
 
@@ -1723,7 +1737,7 @@ input[type="range"] {
 
 video{
   width: 100% !important;
-  height: 60vh;
+  height: 500px;
 }
 
 canvas{

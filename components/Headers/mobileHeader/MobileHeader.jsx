@@ -12,6 +12,7 @@ const Modals = dynamic(() => import('@/components/Detail/Modals'), { ssr: false 
 import { toast } from 'react-toastify';
 import { setCustomerInfo } from '@/redux/slice/logInInfo';
 import { setCartItems } from '@/redux/slice/cartSettings'
+import Cookies from 'js-cookie';
 // import Modals from '@/components/Detail/Modals'
 
 export default function MobileHeader({ home, back_btn, share, search, cart, clear_cart, title, titleDropDown, titleClick, empty_div, navigateLink, theme_settings }) {
@@ -36,6 +37,8 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
       localStorage.clear();
       dispatch(setCustomerInfo({ logout: true }));
       toast.success("You have successfully logged out!")
+      Cookies.remove('api_key')
+      Cookies.remove('api_secret')
       router.push('/');
     } else {
       setAlertUi(false);
@@ -65,7 +68,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
     // }
   }
 
-  const [showSearch,setShowSearch] = useState(false)
+  const [showSearch, setShowSearch] = useState(false)
   let [searchValue, setSearchValue] = useState('')
   function getSearchTxt(eve) {
     searchValue = eve.target.value
@@ -102,9 +105,9 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
 
             <div className={`flex items-center gap-[10px]`}>
 
-              <div onClick={() => { setSideMenu(sideMenu = !sideMenu) }} className='flex items-center justify-end'>
+              {/* <div onClick={() => { setSideMenu(sideMenu = !sideMenu) }} className='flex items-center justify-end'>
                 <Image className='h-[25px] w-[25px] object-contain' height={40} width={40} alt='logo' src={'/menu.svg'}></Image>
-              </div>
+              </div> */}
               <div className='flex items-center justify-start'>
                 {theme_settings.website_logo && <Image className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>}
               </div>
@@ -130,7 +133,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
                 <div onClick={() => { navigateLink ? router.push(navigateLink) : router.back() }} className='flex items-center justify-center  h-[30px] w-[30px] cursor-pointer primary_bg rounded-[50%]'>
                   <Image style={{ objectFit: 'contain' }} className='h-[15px] object-contain' height={40} width={40} alt='vantage' src={'/Arrow/rightArrowWhite.svg'}></Image>
                 </div>
-                <Image onClick={()=> router.push('/')} className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>
+                <Image onClick={() => router.push('/')} className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>
               </div>
             }
 
@@ -145,13 +148,13 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
               <div className={`flex items-center gap-[8px] transition-all ease-in duration-500 delay-100 ${showSearch ? 'w-[180px]' : ''}`}>
                 {search &&
                   <>
-                  {/* router.push('/search') */}
+                    {/* router.push('/search') */}
                     {!showSearch && <div onClick={() => { setShowSearch(!showSearch) }} className='flex transition-all ease-in duration-500 delay-100 items-center justify-end'>
                       <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[20px] object-contain' height={40} width={40} alt='vantage' src={'/search.svg'}></Image>
                     </div>}
 
                     <div className={`transition-all ease-in duration-500 delay-100 ${!showSearch ? 'h-0 w-0 opacity-0' : 'opacity-100 p-[5px_10px] h-[30px] flex items-center w-full border_color rounded-[20px]'} `}>
-                      <input id='search' value={searchValue} spellcheck="false" onChange={(eve) => { getSearchTxt(eve) }}  className='w-[95%] text-[14px]' placeholder='Search Products' />
+                      <input id='search' value={searchValue} spellcheck="false" onChange={(eve) => { getSearchTxt(eve) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
                       <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
                     </div>
                   </>

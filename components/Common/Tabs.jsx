@@ -19,9 +19,9 @@ const Tabs = ({ stockDetails, productDetails }) => {
   //   "Stock Uom": "Nos",
   // };
 
-  useEffect(()=>{
+  useEffect(() => {
 
-  },[stockDetails])
+  }, [stockDetails])
 
   const tabs = [
     { id: 0, label: "Product Details" },
@@ -38,25 +38,26 @@ const Tabs = ({ stockDetails, productDetails }) => {
             <span className="lg:text-[36px] md:text-[36px] barcode-font font-normal">{productDetails.barcode}</span>
           </div>
 
-          <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[15px] md:text-[14px] font-normal"> Product Code :</span>
-            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.item_code}</span>
-          </div>
-
-          <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[15px] md:text-[14px] font-normal"> Brand :</span>
-            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.brand}</span>
-          </div>
-
-          <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[15px] md:text-[14px] font-normal"> Group :</span>
-            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.item_group}</span>
-          </div>
-
-          <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[15px] md:text-[14px] font-normal"> Stock Uom :</span>
-            <span className="font-bold lg:text-[15px] md:text-[14px]">{productDetails.stock_uom}</span>
-          </div>
+          <TableDatas label={"Product Code"} value={productDetails.item_code} />
+          <TableDatas label={"Brand"} value={productDetails.brand} />
+          <TableDatas label={"Group"} value={productDetails.item_group} />
+          <TableDatas label={"Stock Uom"} value={productDetails.stock_uom} />
+          <TableDatas label={"Beam Angle"} value={productDetails.beam_angle} />
+          <TableDatas label={"body finish"} value={productDetails.body_finish} />
+          <TableDatas label={"category list"} value={productDetails.category_list} />
+          <TableDatas label={"color temp"} value={productDetails.color_temp_} />
+          <TableDatas label={"dimension"} value={productDetails.dimension} />
+          <TableDatas label={"input"} value={productDetails.input} />
+          <TableDatas label={"ip rate"} value={productDetails.ip_rate} />
+          <TableDatas label={"lamp type"} value={productDetails.lamp_type} />
+          <TableDatas label={"lumen output"} value={productDetails.lumen_output} />
+          <TableDatas label={"material"} value={productDetails.material} />
+          <TableDatas label={"mounting"} value={productDetails.mounting} />
+          <TableDatas label={"output current"} value={productDetails.output_current} />
+          <TableDatas label={"output voltage"} value={productDetails.output_voltage} />
+          <TableDatas label={"power"} value={productDetails.power} />
+          <TableDatas label={"product type"} value={productDetails.product_type} />
+          <TableDatas label={"warranty"} value={productDetails.warranty_} />
 
         </div>
       );
@@ -82,7 +83,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
                 ))}
               </tbody>
             </table>
-            
+
 
           </>
             : <>
@@ -116,5 +117,16 @@ const Tabs = ({ stockDetails, productDetails }) => {
     </div>
   );
 };
+
+const TableDatas = ({ label, value }) => {
+  return (
+    <>
+      {value ? <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
+        <span className="lg:text-[15px] md:text-[14px] font-normal capitalize"> {label} :</span>
+        <span className="font-bold lg:text-[15px] md:text-[14px]">{value}</span>
+      </div> : <></>}
+    </>
+  )
+}
 
 export default Tabs;

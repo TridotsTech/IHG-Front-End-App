@@ -66,8 +66,10 @@ function Scanner() {
     }
   };
 
+  const [errorMsg, setErrorMsg] = useState('');
+
   const getScannedProducts = async (barcode) => {
-    console.log(barcode,"barcode")
+    console.log(barcode, "barcode")
 
     const queryParams = new URLSearchParams({
       q: "*",
@@ -79,33 +81,40 @@ function Scanner() {
     });
 
     const data = await typesense_search_items(queryParams);
-    console.log(data,"data")
-    if(data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document){
+    console.log(data, "data")
+    if (data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document) {
       router.push(`/pr/${data.hits[0].document.item_code}`)
-    }else{
+    } else {
       toast.error('Something went wrong!')
+      setErrorMsg("No product found!");
     }
   }
 
   return (
-    <div className='bg-gray-200'>
+    <div className='bg-gray-200 min-h-screen flex justify-center items-center'>
       <div className="w-full h-full">
         {/* Video Feed */}
-        <div ref={videoRef} className="w-full h-full bg-white relative">
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-36 rounded-lg">
-            {/* Scanning Line */}
-            {scanning && (
-              <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-scan" />
-            )}
-          </div>
-        </div>
+        {
+          errorMsg === '' ? (
+            <div ref={videoRef} className="w-full h-[500px] bg-white relative">
+              <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-36 rounded-lg">
+                {/* Scanning Line */}
+                {scanning && (
+                  <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-scan" />
+                )}
+              </div>
+            </div>
+          ) : (
+            <p className='text-lg font-semibold'>{errorMsg}</p>
+          )
+        }
 
         {/* Centered Scanning Area */}
 
       </div>
 
       {/* Close Button */}
-      <button
+      {/* <button
         onClick={() => {
           stopCamera(); // Stop the camera stream
           onClose(); // Close the scanner
@@ -113,7 +122,7 @@ function Scanner() {
         className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg"
       >
         Close Scanner
-      </button>
+      </button> */}
     </div>
   );
 }

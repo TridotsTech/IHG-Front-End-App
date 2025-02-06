@@ -43,7 +43,7 @@ export default function MobileCategoryFilter({ category_list, closeModal, data }
   return (
     <>
       {data &&
-        <div className='h-full overflow-auto scrollbarHide'>
+        <div className='h-full overflow-auto scrollbarHide min-h-screen'>
           {data.length != 0 &&
             data.map((child1, index1) => {
               return (

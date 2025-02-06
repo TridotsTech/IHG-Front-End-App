@@ -14,7 +14,7 @@ import Rodal from 'rodal';
 // import 'rodal/lib/rodal.css';
 import { setBoxView } from '@/redux/slice/websiteSettings'
 import { resetSetFilters, setLoad } from '@/redux/slice/ProductListFilters'
-import { resetFilters } from "@/redux/slice/filtersList";
+import { resetFilters, setBrand, setFilter } from "@/redux/slice/filtersList";
 import Head from 'next/head'
 import { Switch } from '@headlessui/react';
 import clsx from 'clsx'
@@ -650,6 +650,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }));
     setRemoveAllFilter((prev) => !prev);
 
+    dispatch(setBrand([]))
+    dispatch(setFilter([]))
     // console.log("checkRange",filters)
     // router.replace(`/list?category=`)
   }
@@ -658,7 +660,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     setError(null);
     // console.log("queryfilter", filters)
     const perPage = window.innerWidth >= 1400 ? "15" : "12";
-    console.log("itemCheck", productFilter.item_group, group_change)
+    // console.log("itemCheck", productFilter.item_group, group_change)
     const addFilterQuery = () => {
       const itemGroupFilter =
         productFilter?.item_group?.length > 0
@@ -670,17 +672,17 @@ export default function List({ productRoute, filterInfo, currentId, params, init
           ? `brand:=[${productFilter.brand.map((item) => `"${item}"`).join(",")}]`
           : "";
 
-          if (itemGroupFilter && brandFilter) {
-            return `${itemGroupFilter} && ${brandFilter}`;
-          }
-        
-          if (itemGroupFilter) {
-            return itemGroupFilter;
-          }
-        
-          if (brandFilter) {
-            return brandFilter;
-          }
+      if (itemGroupFilter && brandFilter) {
+        return `${itemGroupFilter} && ${brandFilter}`;
+      }
+
+      if (itemGroupFilter) {
+        return itemGroupFilter;
+      }
+
+      if (brandFilter) {
+        return brandFilter;
+      }
     }
     const queryParams = new URLSearchParams({
       q: filters.item_description ? `${filters.item_description}*` : '*',
@@ -700,6 +702,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       setLoading(true);
       // console.log('query', buildFilterQuery);
       // console.log('queParam', filters)
+      // console.log("prch", filters);
       const data = await typesense_search_items(queryParams);
       if (data.hits.length === 0) {
         if (pageNo > 1) {
@@ -731,7 +734,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
   useEffect(() => {
     if ((productFilter?.item_group?.length > 0)) {
-      console.log(productFilter, "productFilter");
+      // console.log(productFilter, "productFilter");
 
       setFilters((prevFilters) => ({
         ...prevFilters,
@@ -740,7 +743,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       }));
 
       setFilterUpdated(true);
-      console.log("productUpdate")
+      // console.log("productUpdate")
 
     } if ((productFilter?.brand?.length > 0)) {
       setFilters((prevFilter) => ({
@@ -749,14 +752,14 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       }))
       setFilterUpdated(true);
     }
-    if(!(productFilter?.brand?.length > 0) && !(productFilter?.item_group?.length > 0)) {
+    if (!(productFilter?.brand?.length > 0) && !(productFilter?.item_group?.length > 0)) {
       fetchResults(false, true)
     }
   }, [productFilter]);
 
   useEffect(() => {
     if (filterUpdated) {
-      fetchResults(true, true, true);
+      fetchResults(true, true);
       setFilterUpdated(false);
     }
   }, [filterUpdated])
@@ -950,7 +953,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }
   }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item, removeAllFilter])
 
-  console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
+  // console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
   return (
 
     <>

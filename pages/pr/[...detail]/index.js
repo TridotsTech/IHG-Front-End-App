@@ -75,7 +75,7 @@ const Detail = ({ productDetail, detail }) => {
         productDetail["breadcrumb"] = breadcrumb;
         getDetail();
 
-    }, [address,router]);
+    }, [address, router]);
 
     const [relatedProductData, setRelatedData] = useState([])
 
@@ -836,6 +836,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 </div>
                                             )}
                                         </div>
+                                        {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat((data.offer_rate / data.rate) * 100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
                                         {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
                                         {false && (
                                             <div className="md:hidden absolute top-4 right-[-3px] flex">
@@ -871,16 +872,18 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 )}
 
                                                 <div className="flex items-center gap-3">
+
                                                     <h3
                                                         className={`md:text-[13px] text-[18px]  font-semibold  openSens`}
                                                     >
-                                                        {currencyFormatter1(data.rate, "")}
+                                                        <h3 className={`text-[18px] primary_color inline-flex gap-[6px] items-center font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
+
                                                     </h3>
                                                 </div>
 
                                                 {data.stock && data.stock > 0 ? (
                                                     <p className="text-base text-[#1A9A62] lg:text-[16px] md:text-[13px] font-semibold mt-1">
-                                                        IN STOCK ({data.stock} PCS)
+                                                        IN STOCK ({data.stock} NOS)
                                                     </p>
                                                 ) : (
                                                     <p className="text-base lg:text-[16px] md:text-[13px] font-semibold mt-1 text-[#d11111]">
@@ -899,7 +902,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                         </h3>
                                                         {data.stock && data.stock > 0 ? (
                                                             <p className="text-base text-[#1A9A62] font-semibold mt-1">
-                                                                IN STOCK ({data.stock} PCS)
+                                                                IN STOCK ({data.stock} NOS)
                                                             </p>
                                                         ) : (
                                                             <p className="text-base font-semibold mt-1 text-[#d11111]">
@@ -917,11 +920,12 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                     }}
                                                 />
 
-                                                <div className="flex flex-row-reverse items-center gap-3">
+                                                <div className="flex flex-row mt-1 items-center gap-3">
+                                                    {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat((data.offer_rate / data.rate) * 100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
                                                     <h3
                                                         className={`md:text-[18px] text-lg  font-semibold  openSens`}
                                                     >
-                                                        {currencyFormatter1(data.rate, "")}
+                                                        <h3 className={`text-[18px] primary_color inline-flex items-center gap-[6px] float-left font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
                                                     </h3>
                                                 </div>
                                             </>
@@ -1410,7 +1414,10 @@ const Skeleton = () => {
 
 export async function getServerSideProps({ req, params }) {
     let { detail } = params;
-
+    let productRoute = ""
+    detail.map((r, i) => {
+        productRoute = productRoute + r + ((detail.length != (i + 1)) ? '/' : '')
+    })
     // const apikey = req.cookies.api_key;
     // const apisecret = req.cookies.api_secret;
     // const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"
@@ -1421,7 +1428,7 @@ export async function getServerSideProps({ req, params }) {
         // page: "1",
         // per_page: "1",
         // query_by_weights: "1,2,3",
-        filter_by: `item_code:${detail}`,
+        filter_by: `item_code:${productRoute}`,
     });
 
     const data = await typesense_search_items(queryParams);
@@ -1440,7 +1447,7 @@ export async function getServerSideProps({ req, params }) {
     let relatedProduct = data.related_products || [];
 
     return {
-        props: { productDetail, detail, relatedProduct },
+        props: { productDetail, detail, relatedProduct, productRoute },
     };
 }
 

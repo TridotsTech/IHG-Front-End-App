@@ -562,8 +562,8 @@ export async function typesense_search_items(queryParams) {
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
     // https://search-ihg.tridotstech.com
-    let api = `https://search-ihg.tridotstech.com/collections/product/documents/search?${queryParams.toString()}`
-    // let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
+    // let api = `https://search-ihg.tridotstech.com/collections/product/documents/search?${queryParams.toString()}`
+    let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
     const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz" })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
