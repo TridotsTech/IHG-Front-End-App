@@ -921,7 +921,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 />
 
                                                 <div className="flex flex-row mt-1 items-center gap-3">
-                                                    {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat((data.offer_rate / data.rate) * 100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                                                    {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat(data.offer_rate / data.rate * 100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
                                                     <h3
                                                         className={`md:text-[18px] text-lg  font-semibold  openSens`}
                                                     >
