@@ -9,7 +9,7 @@ const WebPageSection = dynamic(() => import("@/components/Builders/WebPageSectio
 
 import Head from 'next/head'
 
-export default function Home({ data }) {
+export default function Home() {
   let [isMobile, setIsMobile] = useState(false);
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const router = useRouter();
@@ -22,6 +22,23 @@ export default function Home({ data }) {
       setTheme_settings(settings);
     }
   }, [webSettings]);
+
+  const [data, setData] = useState([])
+
+  useEffect(()=>{
+    const getData = async()=>{
+      const param = {
+            application_type: "web",
+            route: "default-home-page",
+          };
+      const resp = await HomePage(param);
+      const data = resp.message ? resp.message : {}
+      setData(data)
+    }
+
+    getData();
+
+  }, [])
 
 
   useEffect(() => {
@@ -92,24 +109,24 @@ export default function Home({ data }) {
 }
 
 
-export async function getServerSideProps() {
-  const param = {
-    application_type: "web",
-    route: "default-home-page",
-  };
+// export async function getServerSideProps() {
+//   const param = {
+//     application_type: "web",
+//     route: "default-home-page",
+//   };
 
-  const resp = await HomePage(param);
-  const data = resp.message ? resp.message : {}
+//   const resp = await HomePage(param);
+//   const data = resp.message ? resp.message : {}
 
 
-  if (!data) {
-    return {
-      notFound: true,
-    }
-  }
+//   if (!data) {
+//     return {
+//       notFound: true,
+//     }
+//   }
 
-  return {
-    props: { data },
-    // revalidate: 120
-  }
-}
+//   return {
+//     props: { data },
+//     // revalidate: 120
+//   }
+// }

@@ -77,6 +77,8 @@ const Detail = ({ productDetail, detail }) => {
 
     }, [address]);
 
+    const [relatedProductData, setRelatedData] = useState([])
+
     const getDetail = async () => {
         const resp = await get_product_details(detail);
         const details = (await resp.message) || {};
@@ -87,7 +89,7 @@ const Detail = ({ productDetail, detail }) => {
             setDetails([]);
         }
 
-        if (details.related_products) {
+        if (details.related_products && details.related_products.length > 0) {
             console.log("che", details.related_products)
             const filterQuery = details.related_products
                 .map((code) => `item_code:="${code}"`)
@@ -111,7 +113,6 @@ const Detail = ({ productDetail, detail }) => {
         // const details = await resp.message || []
     };
 
-    const [relatedProductData, setRelatedData] = useState([])
 
 
 
@@ -212,7 +213,6 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
         };
 
         window.addEventListener("scroll", handleScroll);
-        console.log("rel", relatedProductData)
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
@@ -223,6 +223,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
     const [relatedData, setRelatedData] = useState([])
     useEffect(() => {
+        console.log("rel", relatedProductData)
         setRelatedData(relatedProductData)
     }, [relatedProductData])
 
