@@ -625,6 +625,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const [removeAllFilter, setRemoveAllFilter] = useState(false);
   const removeFilter = () => {
     // console.log('filter')
+    setClearAllFilters(true);
     setpageNo(1)
     // dispatch(resetFilters())
     // if (category) {
@@ -731,8 +732,14 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   };
 
   const [filterUpdated, setFilterUpdated] = useState(false);
+  const [clearAllFilters, setClearAllFilters] = useState(false);
 
   useEffect(() => {
+    if (clearAllFilters) {
+      setClearAllFilters(false);
+      return;
+    }
+
     if ((productFilter?.item_group?.length > 0)) {
       // console.log(productFilter, "productFilter");
 
@@ -761,6 +768,11 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     if (filterUpdated) {
       fetchResults(true, true);
       setFilterUpdated(false);
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
     }
   }, [filterUpdated])
 
@@ -849,6 +861,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   // },[category, brand])
 
   const handleFilterClick = () => {
+    
     setResults([]);
 
     // setpageNo(1)
@@ -1216,7 +1229,10 @@ const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, s
 
         <div className=''>
           <div className='flex items-center gap-5 justify-between'>
-            <h5 className={`${label_classname}`}>Filter</h5>
+            <div className='flex items-center gap-1'>
+              <Image src={'/filters/tabFilter.svg'} width={20} height={20} />
+            <h5 className={`${label_classname}`}>Filters</h5>
+            </div>
             <Switch checked={openFilter} onChange={(e) => setOpenFilter(e)} as={Fragment}>
               {({ checked, disabled }) => (
                 <button

@@ -212,7 +212,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
     } else {
       setSearchProducts([]);
     }
-    console.log(initialData, "initialData")
+    // console.log(initialData, "initialData")
 
   }
 

@@ -160,7 +160,7 @@ import Select from 'react-select';
 const MultiSelectBox = ({ options, filters, type, onSelectionChange, label, label_classname }) => {
   return (
     <div className='my-3'>
-      <label htmlFor="" className={`${label_classname}`}>{label}</label>
+      <label className={`${label_classname}`}>{label} ({options && options.length})</label>
       <Select
         isMulti
         placeholder="Select the value"
@@ -174,14 +174,3 @@ const MultiSelectBox = ({ options, filters, type, onSelectionChange, label, labe
 }
 
 export default MultiSelectBox;
-
-// export default () => (
-//   <Select
-//     defaultValue={[colourOptions[2], colourOptions[3]]}
-//     isMulti
-//     name="colors"
-//     options={colourOptions}
-//     className="basic-multi-select"
-//     classNamePrefix="select"
-//   />
-// );

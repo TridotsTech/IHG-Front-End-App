@@ -617,7 +617,7 @@ export async function get_product_details(code) {
     return await response.json()
 }
 
-export async function get_brands_list(keys) {
+export async function get_brands_list(keys,data) {
     let apikey;
     let secret;
     if (typeof window !== 'undefined') {
@@ -628,6 +628,6 @@ export async function get_brands_list(keys) {
 
     const token = keys ? keys : (apikey && secret) ? `token ${apikey}:${secret}` : null
     const myHead = new Headers(token ? { "Authorization": token, "Content-Type": "application/json" } : { "Content-Type": "application/json" })
-    const response = await fetch(api, { method: 'GET', headers: myHead, })
+    const response = await fetch(api, { method: 'POST', headers: myHead,body:JSON.stringify(data) })
     return await response.json()
 }

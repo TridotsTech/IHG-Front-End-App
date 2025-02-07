@@ -450,7 +450,7 @@ input {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 767px) {
   .home_slide{
     .react-multi-carousel-item{
       height: 120px;
@@ -959,6 +959,8 @@ input {
     }
   }
 
+
+
   // .sortByPopup {
   //   .rodal-dialog {
   //     padding: 0 !important;
@@ -1132,13 +1134,28 @@ input {
 }
 
 
-.sortByPopup {
-  .rodal-dialog {
-    padding: 0 !important;
-    height: fit-content !important;
-    width: 100% !important;
-    margin: auto auto 0 auto !important;
-    padding-bottom: 65px !important;
+@media screen and (max-width: 768px) {
+  .sortByPopup {
+    .rodal-dialog {
+      padding: 0 !important;
+      height: fit-content !important;
+      width: 100% !important;
+      margin: auto auto 0 auto !important;
+      padding-bottom: 65px !important;
+    }
+  }
+}
+
+@media screen and (min-width:769px) {
+
+  .sortByPopup {
+    .rodal-dialog {
+      padding: 0 !important;
+      height: fit-content !important;
+      width: 100% !important;
+      margin: auto auto 0 auto !important;
+      padding-bottom: 5px !important;
+    }
   }
 }
 // .custom-checkbox input[type="checkbox"]:checked {
@@ -1736,9 +1753,11 @@ input[type="range"] {
   animation: scan 2s linear infinite;
 }
 
-video{
+.video_scanner{
+  video{
   width: 100% !important;
-  height: 500px;
+  height: 400px !important;
+}
 }
 
 canvas{

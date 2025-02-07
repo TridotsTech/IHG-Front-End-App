@@ -259,7 +259,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
     const [relatedData, setRelatedData] = useState([])
     useEffect(() => {
-        console.log("rel", relatedProductData)
+        // console.log("rel", relatedProductData)
         setRelatedData(relatedProductData)
     }, [relatedProductData])
 
@@ -890,12 +890,12 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
                                                 <div className="flex items-center gap-3">
 
-                                                    <h3
-                                                        className={`md:text-[13px] text-[18px]  font-semibold  openSens`}
+                                                    <div
+                                                        className={``}
                                                     >
-                                                        <h3 className={`text-[18px] primary_color inline-flex gap-[6px] items-center font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
+                                                        <h3 className={`text-[16px] primary_color inline-flex gap-[6px] items-center font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
 
-                                                    </h3>
+                                                    </div>
                                                 </div>
 
                                                 {data.stock && data.stock > 0 ? (

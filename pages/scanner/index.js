@@ -3,6 +3,8 @@ import Quagga from 'quagga';
 import { typesense_search_items } from '@/libs/api';
 import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
+import NoProductFound from '@/components/Common/NoProductFound';
+import MobileHeader from '@/components/Headers/mobileHeader/MobileHeader';
 
 function Scanner() {
   const [scannedBarcode, setScannedBarcode] = useState('');
@@ -91,12 +93,14 @@ function Scanner() {
   }
 
   return (
+    <>
+      {<MobileHeader  titleDropDown={true} back_btn={true} search={true} />}
     <div className='bg-gray-200 min-h-screen flex justify-center items-center'>
       <div className="w-full h-full">
         {/* Video Feed */}
         {
           errorMsg === '' ? (
-            <div ref={videoRef} className="w-full h-[500px] bg-white relative">
+            <div ref={videoRef} className="w-full h-[400px] bg-white relative video_scanner">
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-36 rounded-lg">
                 {/* Scanning Line */}
                 {scanning && (
@@ -105,7 +109,7 @@ function Scanner() {
               </div>
             </div>
           ) : (
-            <p className='text-lg font-semibold'>{errorMsg}</p>
+            <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} heading={'No Products Found!'} />
           )
         }
 
@@ -124,6 +128,7 @@ function Scanner() {
         Close Scanner
       </button> */}
     </div>
+    </>
   );
 }
 
