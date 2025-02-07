@@ -240,7 +240,7 @@ export default function Navbar({ all_categories, categoryData }) {
 
 
             {categoryData.length > 10 &&
-              <div className={`relative pb-[2px] cursor-pointer hoverMenuSec ${moreMenu == 1 ? 'active_parent' : ''}`} onMouseEnter={() => { enbleDropdownMore('enter'), setDropdown(-1) }} onMouseLeave={() => enbleDropdownMore('leave')}>
+              <div className={`relative pb-[2px] cursor-pointer hoverMenuSec ${moreMenu == 1 ? 'active_parent' : ''}`} onClick={()=> { enbleDropdownMore('enter'), setDropdown(-1) }} onMouseEnter={() => { enbleDropdownMore('enter'), setDropdown(-1) }} onMouseLeave={() => enbleDropdownMore('leave')}>
                 <span className='flex item-center mb-[0] gap-[5px] pb-[4px]'>
                   <a className={`text-left font-medium navigation_c lg:text-[15px] tracking-wide uppercase`}>More</a>
                 </span>

@@ -328,36 +328,36 @@ export default function MainHeader({ header_template, theme_settings, website_se
   const dropdownRef = useRef(null);
   const [isLogout, setIsLogout] = useState(false);
 
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsLogout(false);
-      }
-    }
-
-    document.addEventListener("click", handleClickOutside);
-    return () => {
-      document.removeEventListener("click", handleClickOutside);
-    };
-  }, [isLogout]);
-
   // useEffect(() => {
-  //       const handleClickOutside = (event) => {
-  //         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-  //           setIsOpen(false);
-  //         }
-  //       };
+  //   function handleClickOutside(event) {
+  //     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //       setIsLogout(false);
+  //     }
+  //   }
+
+  //   document.addEventListener("click", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("click", handleClickOutside);
+  //   };
+  // }, []);
+
+  useEffect(() => {
+        const handleClickOutside = (event) => {
+          if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+            setIsLogout(false);
+          }
+        };
     
-  //       if (isOpen) {
-  //         document.addEventListener("mousedown", handleClickOutside);
-  //       } else {
-  //         document.removeEventListener("mousedown", handleClickOutside);
-  //       }
+        if (isLogout) {
+          document.addEventListener("mousedown", handleClickOutside);
+        } else {
+          document.removeEventListener("mousedown", handleClickOutside);
+        }
     
-  //       return () => {
-  //         document.removeEventListener("mousedown", handleClickOutside);
-  //       };
-  //     }, [isLogout]);
+        return () => {
+          document.removeEventListener("mousedown", handleClickOutside);
+        };
+      }, [isLogout]);
 
 
   return (
@@ -422,7 +422,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
                     <div className="relative">
                     <button
-                      onClick={() => setIsLogout(!isLogout)}
+                      onClick={() => setIsLogout(true)}
                       className="flex items-center justify-center"
                     >
                       <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? (customerName) : 'Login'}</p>
@@ -432,13 +432,14 @@ export default function MainHeader({ header_template, theme_settings, website_se
                       </div>
                     </button>
 
-                    {isLogout && (
-                      <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 z-50">
+                    {isLogout && customerName && (
+                      <div ref={dropdownRef} className="absolute right-0 mt-1 w-48 bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 z-50">
                         <div className="text-gray-700">
                           <div
                             className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => alert("Logging out...")}
+                            onClick={() => { checkUser() }} onMouseEnter={() => customerName ? setCustomerMenu(true) : null}
                           >
+                        <Image height={20} width={20} className='size-[15px]' alt='forward' src={'/Navbar/Logout.svg'}></Image>
                             Logout
                           </div>
                         </div>

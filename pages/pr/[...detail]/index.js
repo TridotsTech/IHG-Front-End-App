@@ -77,7 +77,7 @@ const Detail = ({ productRoute }) => {
         getProductDetail()
         getDetail();
 
-    }, [address, router]);
+    }, [router,productRoute]);
 
     const getProductDetail = async () => {
         const queryParams = new URLSearchParams({
@@ -233,7 +233,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
             setLoader(false);
             get_product_details();
         }
-    }, [router.query]);
+    }, [router.query,productDetail]);
 
     useEffect(() => {
         const handleScroll = () => {
