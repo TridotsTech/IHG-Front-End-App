@@ -415,15 +415,15 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[230px]  relative ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:!h-[120px]' : 'md:h-[170px] md:w-[100%] pb-[10px] '} your-element `}>
                   <Link onClick={()=> navigateDetail(item)} href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[220px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : 220} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[220px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
-                  {(item.document.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat((item.document.offer_rate/item.document.rate)*100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                  {(item.document.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat(((item.document.rate-item.document.offer_rate)/item.document.rate)*100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
                 </div>
 
                 <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%]' : ''} p-[10px]`}>
                   {/* <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link> */}
 
-                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer pt-[5px] h-[60px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer h-[55px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
 
-                  <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-2 pt-[5px] text-[13px] md:text-[12px] h-[50px] md:leading-[2.1] lg:leading-[25px] openSens innerHtml_desc`} />
+                  <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-2 text-[13px] md:text-[12px] md:h-[45px] h-[50px] md:leading-[2.1] lg:leading-[25px] openSens innerHtml_desc`} />
 
                   <div className='flex items-center gap-5 justify-between mt-2'>
                     {(webSettings && webSettings.currency) && <h3 className={`text-[14px] primary_color inline-flex gap-[6px] float-left font-semibold openSens `}>AED {item.document.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(item.document.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(item.document.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(item.document.rate).toFixed(2)}</p>) }</h3>}

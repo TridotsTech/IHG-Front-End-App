@@ -325,6 +325,40 @@ export default function MainHeader({ header_template, theme_settings, website_se
     setEnableLocation(enableLocation = !enableLocation)
   }
 
+  const dropdownRef = useRef(null);
+  const [isLogout, setIsLogout] = useState(false);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsLogout(false);
+      }
+    }
+
+    document.addEventListener("click", handleClickOutside);
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, [isLogout]);
+
+  // useEffect(() => {
+  //       const handleClickOutside = (event) => {
+  //         if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+  //           setIsOpen(false);
+  //         }
+  //       };
+    
+  //       if (isOpen) {
+  //         document.addEventListener("mousedown", handleClickOutside);
+  //       } else {
+  //         document.removeEventListener("mousedown", handleClickOutside);
+  //       }
+    
+  //       return () => {
+  //         document.removeEventListener("mousedown", handleClickOutside);
+  //       };
+  //     }, [isLogout]);
+
 
   return (
     <>
@@ -377,13 +411,39 @@ export default function MainHeader({ header_template, theme_settings, website_se
                     </div>
 
 
-                    <div onClick={() => { checkUser() }} onMouseEnter={() => customerName ? setCustomerMenu(true) : null} onMouseLeave={() => customerName ? setCustomerMenu(false) : null} class="relative  cursor-pointer flex flex-row-reverse items-center">
+                    {/* <div onClick={() => { checkUser() }} onMouseEnter={() => customerName ? setCustomerMenu(true) : null} onMouseLeave={() => customerName ? setCustomerMenu(false) : null} class="relative  cursor-pointer flex flex-row-reverse items-center">
                       <div className='headerBtbs'>
                         <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={'/profile.svg'}></Image>
                       </div>
-                      <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? customerName : 'Login'}</p>
+                      <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? (customerName) : 'Login'}</p>
 
 
+                    </div> */}
+
+                    <div className="relative">
+                    <button
+                      onClick={() => setIsLogout(!isLogout)}
+                      className="flex items-center justify-center"
+                    >
+                      <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? (customerName) : 'Login'}</p>
+
+                      <div className='headerBtbs'>
+                        <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={'/profile.svg'}></Image>
+                      </div>
+                    </button>
+
+                    {isLogout && (
+                      <div ref={dropdownRef} className="absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 z-50">
+                        <div className="text-gray-700">
+                          <div
+                            className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => alert("Logging out...")}
+                          >
+                            Logout
+                          </div>
+                        </div>
+                      </div>
+                    )}
                     </div>
                   </div>
                 }

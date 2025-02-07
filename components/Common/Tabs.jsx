@@ -28,15 +28,24 @@ const Tabs = ({ stockDetails, productDetails }) => {
     { id: 1, label: "Stock Details" },
   ];
 
+  const removeBarcode = (data) => {
+    if (data && data.split(",") && data.split(",").length > 1) {
+      return data.split(",")[0]
+    }
+
+    return data
+  }
+
+
   const renderContent = () => {
     if (activeTab === 0) {
       return (
         <div className="space-y-2">
 
-          <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
+          {productDetails.barcode && <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
             <span className="lg:text-[15px] md:text-[14px] font-normal"> Barcode :</span>
-            <span className="lg:text-[36px] md:text-[36px] barcode-font font-normal">{productDetails.barcode}</span>
-          </div>
+            <span className="lg:text-[36px] md:text-[36px] barcode-font font-normal">{removeBarcode(productDetails.barcode)}</span>
+          </div>}
 
           <TableDatas label={"Product Code"} value={productDetails.item_code} />
           <TableDatas label={"Brand"} value={productDetails.brand} />

@@ -1,8 +1,10 @@
+import { setBrand, setFilter } from "@/redux/slice/filtersList";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useDispatch } from "react-redux";
 export default function BottomTabs({ activeTab, getActiveTab, tabs }) {
     const router = useRouter()
-
+    const dispatch = useDispatch()
     // useEffect(() => {
     //     if (!activeTab) {
     //         let route = router.asPath.split('/')
@@ -20,6 +22,11 @@ export default function BottomTabs({ activeTab, getActiveTab, tabs }) {
     const changeNav = (nav) => {
         router.push(nav.redirect_url)
         getActiveTab(nav)
+
+        if (nav.redirect_url === "/list") {
+            dispatch(setBrand([]))
+            dispatch(setFilter([]))
+        }
     }
 
 
@@ -37,7 +44,7 @@ export default function BottomTabs({ activeTab, getActiveTab, tabs }) {
                     )
                 })}
 
-                
+
             </ul>
         </div>
     </>);

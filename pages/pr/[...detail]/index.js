@@ -50,37 +50,57 @@ import Tabs from "@/components/Common/Tabs";
 import ChooseCategory from "@/components/Common/ChooseCategory";
 import Brands from "@/components/Common/Brands";
 
-const Detail = ({ productDetail, detail }) => {
+const Detail = ({ productRoute }) => {
+    // const Detail = ({ productDetail, detail }) => {
     const router = useRouter();
     const address = useSelector((state) => state.webSettings.adddressInfo);
     const [details, setDetails] = useState({});
     const [relatedProduct, setRelatedProduct] = useState([]);
+    const [productDetail,setProductDetail] = useState()
 
-    console.log("produ", relatedProduct);
     useEffect(() => {
-        let breadcrumb = [{ name: "Home", route: "/" }];
+        // let breadcrumb = [{ name: "Home", route: "/" }];
 
-        if (
-            productDetail &&
-            productDetail.item_categories &&
-            productDetail.item_categories.category_name
-        ) {
-            breadcrumb.push({
-                name: productDetail.item_categories.category_name,
-                route: productDetail.item_categories.route,
-            });
-        }
+        // if (
+        //     productDetail &&
+        //     productDetail.item_categories &&
+        //     productDetail.item_categories.category_name
+        // ) {
+        //     breadcrumb.push({
+        //         name: productDetail.item_categories.category_name,
+        //         route: productDetail.item_categories.route,
+        //     });
+        // }
 
-        breadcrumb.push({ name: productDetail.item });
-        productDetail["breadcrumb"] = breadcrumb;
+        // breadcrumb.push({ name: productDetail.item });
+        // productDetail["breadcrumb"] = breadcrumb;
+        getProductDetail()
         getDetail();
 
     }, [address, router]);
 
+    const getProductDetail = async () => {
+        const queryParams = new URLSearchParams({
+            q: "*",
+            // query_by: "item_name,item_description,brand",
+            // page: "1",
+            // per_page: "1",
+            // query_by_weights: "1,2,3",
+            filter_by: `item_code:${productRoute}`,
+        });
+
+        const data = await typesense_search_items(queryParams);
+
+        let productDetail = data.hits && data.hits.length > 0 ? data.hits[0].document : {};
+        if(productDetail){
+            setProductDetail(productDetail)
+        }
+    }
+
     const [relatedProductData, setRelatedData] = useState([])
 
     const getDetail = async () => {
-        const resp = await get_product_details(detail);
+        const resp = await get_product_details(productRoute);
         const details = (await resp.message) || {};
 
         if (details && details.stock && details.stock.length > 0) {
@@ -103,8 +123,8 @@ const Detail = ({ productDetail, detail }) => {
 
             const data = await typesense_search_items(queryParams);
             if (data.hits && data.hits.length > 0) {
-                setRelatedData(data.hits);
-                // setRelatedData(filterData(details.related_products, data.hits));
+                // setRelatedData(data.hits);
+                setRelatedData(filterData(details.related_products, data.hits));
                 // console.log('filData', filterData(details.related_products, data.hits))
                 // console.log(data.hits, "data.hits")
             }
@@ -128,14 +148,11 @@ const Detail = ({ productDetail, detail }) => {
             }
         }
 
-        console.log('arr', arr1, arr2, arr)
+        // console.log('arr', arr1, arr2, arr)
         return arr
     }
 
 
-
-
-    console.log("rela", relatedProductData);
 
     return (
         <RootLayout>
@@ -836,7 +853,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat((data.offer_rate / data.rate) * 100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                                        {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat(((data.rate - data.offer_rate) / data.rate) * 100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
                                         {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
                                         {false && (
                                             <div className="md:hidden absolute top-4 right-[-3px] flex">
@@ -920,13 +937,13 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                     }}
                                                 />
 
-                                                <div className="flex flex-row mt-1 items-center gap-3">
-                                                    {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat(data.offer_rate / data.rate * 100).toFixed(1)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
-                                                    <h3
-                                                        className={`md:text-[18px] text-lg  font-semibold  openSens`}
+                                                <div className="flex flex-row mt-1 items-center justify-between gap-3">
+                                                    {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_10px] rounded-[5px] text-[10px]'>{parseFloat((data.rate - data.offer_rate) / data.rate * 100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                                                    <div
+                                                        className={` font-semibold  openSens`}
                                                     >
-                                                        <h3 className={`text-[18px] primary_color inline-flex items-center gap-[6px] float-left font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
-                                                    </h3>
+                                                        <h3 className={` primary_color inline-flex items-center gap-[6px] float-left font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
+                                                    </div>
                                                 </div>
                                             </>
                                         )}
@@ -1422,32 +1439,33 @@ export async function getServerSideProps({ req, params }) {
     // const apisecret = req.cookies.api_secret;
     // const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"
 
-    const queryParams = new URLSearchParams({
-        q: "*",
-        // query_by: "item_name,item_description,brand",
-        // page: "1",
-        // per_page: "1",
-        // query_by_weights: "1,2,3",
-        filter_by: `item_code:${productRoute}`,
-    });
+    // const queryParams = new URLSearchParams({
+    //     q: "*",
+    //     // query_by: "item_name,item_description,brand",
+    //     // page: "1",
+    //     // per_page: "1",
+    //     // query_by_weights: "1,2,3",
+    //     filter_by: `item_code:${productRoute}`,
+    // });
 
-    const data = await typesense_search_items(queryParams);
+    // const data = await typesense_search_items(queryParams);
 
-    let productDetail =
-        data.hits && data.hits.length > 0 ? data.hits[0].document : {};
-    if (
-        data.hits &&
-        data.hits.length > 0 &&
-        data.hits[0].document &&
-        data.hits[0].document.website_image_url
-    ) {
-        productDetail.meta_image = data.hits[0].document.website_image_url;
-    }
+    // let productDetail =
+    //     data.hits && data.hits.length > 0 ? data.hits[0].document : {};
+    // if (
+    //     data.hits &&
+    //     data.hits.length > 0 &&
+    //     data.hits[0].document &&
+    //     data.hits[0].document.website_image_url
+    // ) {
+    //     productDetail.meta_image = data.hits[0].document.website_image_url;
+    // }
 
-    let relatedProduct = data.related_products || [];
+    // let relatedProduct = data.related_products || [];
 
     return {
-        props: { productDetail, detail, relatedProduct, productRoute },
+        props: { productRoute },
+        // props: { productDetail, detail, relatedProduct, productRoute },
     };
 }
 

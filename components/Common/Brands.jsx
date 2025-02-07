@@ -122,13 +122,13 @@ const Brands = ({ customCss = "", data }) => {
                     <div className='grid grid-cols-3 tab:grid-cols-4 lg:grid-cols-6 gap-3'>
                         {
                             data.map((item, i) => (
-                                <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer' onClick={() => changeBrand(item.name)}>
+                                <div key={i} className='border border-[#E9E9E9] rounded-xl cursor-pointer relative min-h-[100px]' onClick={() => changeBrand(item.name)}>
                                     <div className='py-4 px-5'>
                                        {item.image && <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' /> }
-                                       {!item.image && <h1 className='text-center min-h-[50px] flex justify-center items-center text-[20px] font-medium'>{item.name}</h1>}
+                                       {!item.image && <h1 className='text-center min-h-[50px] flex justify-center items-center text-[20px] md:text-[15px] font-medium'>{item.name}</h1>}
                                     </div>
 
-                                    <div className='bg-[#F0F0F0] py-1 px-3'>
+                                    <div className='bg-[#F0F0F0] py-1 px-3 absolute bottom-0 w-full rounded-[0_0_10px_10px]'>
                                         <p className='text-[#565656] text-xs lg:text-sm'>{item.item_count} + {"Products"}</p>
                                     </div>
                                 </div>
