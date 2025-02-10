@@ -77,7 +77,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   const options = ["LTECH", "Option 2", "Option 3", "Option 4"];
   let sortByOptions = [
     { text: 'Relevance', value: '' },
-    { text: 'Created Date', value: 'created_date' },
+    { text: 'Created Date', value: 'creation:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
     { text: 'Stock low to high', value: 'stock:asc' },

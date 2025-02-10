@@ -893,7 +893,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                     <div
                                                         className={``}
                                                     >
-                                                        <h3 className={`text-[16px] primary_color inline-flex gap-[6px] items-center font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
+                                                        <h3 className={`text-[16px] primary_color inline-flex gap-[6px] items-center font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold text-[16px]'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px] text-[16px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold text-[16px]'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
 
                                                     </div>
                                                 </div>
@@ -938,11 +938,11 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 />
 
                                                 <div className="flex flex-row mt-1 items-center justify-between gap-3">
-                                                    {(data.offer_rate) ? <h6 className='bg-green-500 text-[#fff] p-[3px_10px] rounded-[5px] text-[10px]'>{parseFloat((data.rate - data.offer_rate) / data.rate * 100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                                                    {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_10px] rounded-[5px] text-[10px]'>{parseFloat((data.rate - data.offer_rate) / data.rate * 100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
                                                     <div
                                                         className={` font-semibold  openSens`}
                                                     >
-                                                        <h3 className={` primary_color inline-flex items-center gap-[6px] float-left font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
+                                                        <h3 className={` primary_color inline-flex items-center gap-[6px] float-left font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold text-[14px]'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
                                                     </div>
                                                 </div>
                                             </>

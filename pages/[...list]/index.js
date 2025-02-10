@@ -685,6 +685,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
         return brandFilter;
       }
     }
+
     const queryParams = new URLSearchParams({
       q: filters.item_description ? `${filters.item_description}*` : '*',
       query_by: filters.item_description ? 'item_description,item_code' : '',
@@ -695,6 +696,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       // ...buildFilterQuery() && { filter_by: buildFilterQuery() },
       sort_by: filters.sort_by
     });
+    
     if (initialPageNo) {
       setpageNo(1)
       setResults([])
@@ -924,7 +926,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
   let sortByOptions = [
     { text: 'Select Sort By', value: '' },
-    { text: 'Created Date', value: 'created_date' },
+    { text: 'Created Date', value: 'creation:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
     { text: 'Stock low to high', value: 'stock:asc' },
@@ -1287,7 +1289,7 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) =
 
   let sorting = [
     { text: 'Select Sort By', value: '' },
-    { text: 'Created Date', value: 'created_date' },
+    { text: 'Created Date', value: 'creation:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
     { text: 'Stock low to high', value: 'stock:asc' },
