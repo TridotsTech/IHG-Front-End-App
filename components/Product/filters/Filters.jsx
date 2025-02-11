@@ -127,7 +127,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   return (
     <>
       <div className='bg-[#F0F0F0] p-[7px_14px] md:my-[5px] md:hidden'>
-        <h4 className='text-[16px] font-semibold md:text-[14px] text-center'>Total  {foundValue}  Products</h4>
+        <h4 className={`text-[16px] font-semibold md:text-[14px] text-center transition-opacity duration-[0.5s] ease-in-out `}>Total  {foundValue}  Products</h4>
       </div>
       <div className='md:hidden  px-[20px] tab:pb-[40px]'>
 

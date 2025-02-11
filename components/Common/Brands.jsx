@@ -4,7 +4,8 @@ import Image from 'next/image'
 import { check_Image } from '@/libs/api'
 import { useRouter } from 'next/router'
 import { useDispatch } from 'react-redux'
-import { setBrand, setFilter } from '@/redux/slice/filtersList';
+import { setFilter } from '@/redux/slice/homeFilter'
+
 
 const Brands = ({ customCss = "", data }) => {
     const router = useRouter()
@@ -108,9 +109,8 @@ const Brands = ({ customCss = "", data }) => {
 
     const changeBrand = (item) => {
         !router.asPath.includes('list') ? router.push('/list') : null
-        // console.log("log", item)
-        dispatch(setBrand([item]))
-        dispatch(setFilter([]))
+        console.log("log", item)
+        dispatch(setFilter({ brand: [item] }));
     }
 
     return (

@@ -46,7 +46,7 @@ export default function App({ Component, pageProps }) {
   const router = useRouter();
   let [website_settings, setWebsite_settings] = useState()
   const [activeTab, setActiveTab] = useState(0)
-
+  const [pageKey, setPageKey] = useState(Date.now()); // A unique key for each page
   useEffect(() => {
 
     // if (navigator && typeof window != 'undefined') {
@@ -96,6 +96,7 @@ export default function App({ Component, pageProps }) {
       nProgress.start()
     };
     const handleComplete = (e) => {
+      setPageKey(Date.now());
       nProgress.done()
     };
 
@@ -256,52 +257,56 @@ export default function App({ Component, pageProps }) {
       <script src="https://cdn.jsdelivr.net/npm/typesense-instantsearch-adapter@2/dist/typesense-instantsearch-adapter.min.js"></script>
 
       {/* <!-- You might want to pin the version of the adapter used if you don't want to always receive the latest minor version --> */}
-      <ErrorBoundary >
-        <Provider store={store}>
-          <ToastContainer position={'bottom-right'} autoClose={2000} />
-          <RootLayout >
-            {website_settings && website_settings.app_settings.favicon &&
-              <Head>
-                {/* <link rel="shortcut icon" href={check_Image(website_settings.app_settings.favicon)} /> */}
-                <link rel="shortcut icon" href={'/logo.png'} />
-              </Head>}
+      <div className="page-container">
+        <ErrorBoundary >
+          <Provider store={store}>
+            <ToastContainer position={'bottom-right'} autoClose={2000} />
+            <RootLayout >
+              {website_settings && website_settings.app_settings.favicon &&
+                <Head>
+                  {/* <link rel="shortcut icon" href={check_Image(website_settings.app_settings.favicon)} /> */}
+                  <link rel="shortcut icon" href={'/logo.png'} />
+                </Head>}
 
-            {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
-            {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
-            <Component  {...pageProps} />
-            {/* </main> */}
-            <div className='lg:hidden'>
-              {router.pathname != "/login" && <BottomTabs tabs={tabs} getActiveTab={getActiveTab} activeTab={activeTab} />}
-            </div>
-
-            {router.pathname != "/login" && !router.asPath.includes('profile') && <div className="fixed lg:hidden bottom-[90px] right-[20px]">
-              <div onClick={()=> router.push('/scanner')} className={`size-[50px] bg-[#000] rounded-[50%] flex items-center justify-center`}>
-                <Image height={25} width={25} className='size-[25px]' src={'/scanner-fixed.svg'} alt="Scanner" ></Image>
+              {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
+              {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
+              <div key={pageKey} className="page fade-enter fade-enter-active">
+                <Component  {...pageProps} />
               </div>
-            </div>}
+              {/* </main> */}
+              <div className='lg:hidden'>
+                {router.pathname != "/login" && <BottomTabs tabs={tabs} getActiveTab={getActiveTab} activeTab={activeTab} />}
+              </div>
 
-
-            <div id='footer'>
-              {(masterValue && masterValue['item_group']) && (router.pathname != "/login" && !router.asPath.includes('profile') && router.pathname != "/[...list]") && <>
-                <div className="bg-[#F0F0F0] py-[30px]" >
-
-                  <BrandCategory title={'Popular Categories'} keys={'item_group'} masterValue={masterValue} />
-                  <BrandCategory title={'Popular Brands'} keys={'brand'} masterValue={masterValue} sliceKey={30} />
-
+              {router.pathname != "/login" && !router.asPath.includes('profile') && <div className="fixed lg:hidden bottom-[90px] right-[20px]">
+                <div onClick={() => router.push('/scanner')} className={`size-[50px] bg-[#000] rounded-[50%] flex items-center justify-center`}>
+                  <Image height={25} width={25} className='size-[25px]' src={'/scanner-fixed.svg'} alt="Scanner" ></Image>
                 </div>
-                <div className='border-t border-t-[#ddd] w-full text-center bg-[#F0F0F0] py-2'>
-                  © 2025 ihg-sigma.vercel.app. All Rights Reserved.
-                </div>
+              </div>}
 
-              </>}
-            </div>
 
-            <div className='md:hidden'>
-              <ScrollToTopButton />
-            </div>
-          </RootLayout>
-        </Provider>
-      </ErrorBoundary>
+              <div id='footer'>
+                {(masterValue && masterValue['item_group']) && (router.pathname != "/login" && !router.asPath.includes('profile') && router.pathname != "/[...list]") && <>
+                  <div className="bg-[#F0F0F0] py-[30px]" >
+
+                    <BrandCategory title={'Popular Categories'} keys={'item_group'} masterValue={masterValue} />
+                    <BrandCategory title={'Popular Brands'} keys={'brand'} masterValue={masterValue} sliceKey={30} />
+
+                  </div>
+                  <div className='border-t border-t-[#ddd] w-full text-center bg-[#F0F0F0] py-2'>
+                    © 2025 ihg-sigma.vercel.app. All Rights Reserved.
+                  </div>
+
+                </>}
+              </div>
+
+              <div className='md:hidden'>
+                <ScrollToTopButton />
+              </div>
+            </RootLayout>
+          </Provider>
+        </ErrorBoundary>
+      </div>
 
     </>
   )

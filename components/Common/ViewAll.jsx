@@ -1,10 +1,29 @@
 import Image from 'next/image';
 // import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useDispatch } from 'react-redux'
+import { setFilter } from '@/redux/slice/homeFilter';
+import { useRouter } from "next/router";
 
 // const CategoryTabs = dynamic(() => import("@/components/Common/CategoryTabs"));
 
 export default function ViewAll({ data, viewAll, categoryTab, categories, filterData, navigationLink }) {
+
+    const dispatch = useDispatch();
+    const router = useRouter();
+    const navigatePage = (link, data)=>{
+        console.log("clickN")
+        if(data.title === "Top Selling Items"){
+           dispatch(setFilter({'sort_by': 'sold_last_30_days:desc'}))
+           router.push(link)
+        } 
+        else if(data.title === "Hot Deals"){
+            dispatch(setFilter({'hot_product': true}))
+            router.push(link)
+         } else{
+            router.push(link)
+         }
+    }
     {
         return (
             <>
@@ -14,10 +33,10 @@ export default function ViewAll({ data, viewAll, categoryTab, categories, filter
                     
                     {viewAll &&
 
-                    <Link href={navigationLink ? navigationLink : '#'} className='flex items-center gap-[8px] border rounded-full px-3 lg:px-[10px] py-1 lg:py-[5px] cursor-pointer'>
+                    <div onClick={() => {navigationLink ? navigatePage(navigationLink, data) : '#'}} className='flex items-center gap-[8px] border rounded-full px-3 lg:px-[10px] py-1 lg:py-[5px] cursor-pointer'>
                         <h6 className='text-[12px] lg:text-[15px] font-semibold lg:font-bold text-[#000]'>See More</h6>
                         <Image style={{ objectFit: 'contain' }} className='h-[16px] w-[16px]' height={15}  width={15} alt='vantage' src={'/Arrow/roundArrow.png'}></Image>
-                    </Link>
+                    </div>
                       
                     //   <button
                     //     className={`md:text-[14px] md:font-semibold md:px-[10px]

@@ -20,35 +20,35 @@
 //   reducers: {
 
 //     setFilters: (state, action) => {
-//       let value = action.payload
-//       if (value) {
-//         let key = Object.keys(value);
-//         state.filtersValue.loadData = state.filtersValue.loadData ? false : true
-//         if (key.length != 0) {
-//           state.filtersValue.scrollProduct = true,
-//             key.map(res => {
-//               if (res == 'page_no') {
-//                 state.filtersValue.page_no = value[res];
-//               } else if (res == 'item_code') {
-//                 state.filtersValue.item_code = value[res];
-//               } else if (res == 'item_description') {
-//                 state.filtersValue.item_description = value[res];
-//               } else if (res == 'item_group') {
-//                 state.filtersValue.item_group = value[res];
-//               } else if (res == 'upcoming_products') {
-//                 state.filtersValue.upcoming_products = value[res];
-//               } else if (res == 'show_promotion') {
-//                 state.filtersValue.show_promotion = value[res];
-//               } else if (res == 'in_stock') {
-//                 state.filtersValue.in_stock = value[res];
-//               } else if (res == 'brands') {
-//                 state.filtersValue.brands = value[res];
-//               } else if (res == 'price_range') {
-//                 state.filtersValue.price_range = value[res];
-//               }
-//             })
-//         }
-//       }
+//   let value = action.payload
+//   if (value) {
+//     let key = Object.keys(value);
+//     state.filtersValue.loadData = state.filtersValue.loadData ? false : true
+//     if (key.length != 0) {
+//       state.filtersValue.scrollProduct = true,
+//         key.map(res => {
+//           if (res == 'page_no') {
+//             state.filtersValue.page_no = value[res];
+//           } else if (res == 'item_code') {
+//             state.filtersValue.item_code = value[res];
+//           } else if (res == 'item_description') {
+//             state.filtersValue.item_description = value[res];
+//           } else if (res == 'item_group') {
+//             state.filtersValue.item_group = value[res];
+//           } else if (res == 'upcoming_products') {
+//             state.filtersValue.upcoming_products = value[res];
+//           } else if (res == 'show_promotion') {
+//             state.filtersValue.show_promotion = value[res];
+//           } else if (res == 'in_stock') {
+//             state.filtersValue.in_stock = value[res];
+//           } else if (res == 'brands') {
+//             state.filtersValue.brands = value[res];
+//           } else if (res == 'price_range') {
+//             state.filtersValue.price_range = value[res];
+//           }
+//         })
+//     }
+//   }
 //     },
 
 
@@ -92,8 +92,36 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
     filtersValue: {
+        q: "*",
+        page_no: 1,
+        item_code: "",
+        item_description: "",
+        sort_by: '',
+        hot_product: false,
+        show_promotion: false,
+        in_stock: false,
+        brand: [],
+        price_range: { min: 0, max: 1000 },
+        stock_range: { min: 0, max: 1000 },
+        product_type: "",
+        has_variants: false,
+        custom_in_bundle_item: false,
+        category_list: [],
         item_group: [],
-        brand : []
+        beam_angle: [],
+        lumen_output: [],
+        mounting: [],
+        ip_rate: [],
+        lamp_type: [],
+        power: [],
+        input: [],
+        dimension: '',
+        material: [],
+        body_finish: [],
+        warranty_: [],
+        output_voltage: [],
+        output_current: [],
+        color_temp_: []
     }
 };
 
@@ -106,15 +134,142 @@ const FiltersList = createSlice({
             state.filtersValue.item_group = payload
         },
 
+        setAllFilter(state, action) {
+            const payload = action.payload;
+            Object.keys(payload).forEach(key => {
+                if (state.filtersValue.hasOwnProperty(key)) {
+                    state.filtersValue[key] = payload[key];
+                }
+            });
+        },
+
         setBrand(state, action) {
-           const payload = action.payload;
-           state.filtersValue.brand = payload
+            const payload = action.payload;
+            state.filtersValue.brand = payload
+        },
+
+        setSwitchFields(state, action) {
+            let value = action.payload
+            if (value) {
+                let key = Object.keys(value);
+                if (key.length != 0) {
+                    key.map(res => {
+                        if (res == 'sort_by') {
+                            state.filtersValue.sort_by = value[res];
+                        } else if (res == 'show_promotion') {
+                            state.filtersValue.show_promotion = value[res];
+                        } else if (res == 'in_stock') {
+                            state.filtersValue.in_stock = value[res];
+                        } else if (res == 'has_variants') {
+                            state.filtersValue.has_variants = value[res];
+                        } else if (res == 'custom_in_bundle_item') {
+                            state.filtersValue.custom_in_bundle_item = value[res];
+                        }
+                    })
+                }
+            }
         },
         resetFilters(state) {
             state.filtersValue.item_group = [];
         },
+        resetSwitch(state) {
+            state.filtersValue = {
+                q: "*",
+                page_no: 1,
+                item_code: "",
+                item_description: "",
+                sort_by: '',
+                hot_product: false,
+                show_promotion: false,
+                in_stock: false,
+                brand: [],
+                price_range: { min: 0, max: 1000 },
+                stock_range: { min: 0, max: 1000 },
+                product_type: "",
+                has_variants: false,
+                custom_in_bundle_item: false,
+                category_list: [],
+                item_group: [],
+                beam_angle: [],
+                lumen_output: [],
+                mounting: [],
+                ip_rate: [],
+                lamp_type: [],
+                power: [],
+                input: [],
+                dimension: '',
+                material: [],
+                body_finish: [],
+                warranty_: [],
+                output_voltage: [],
+                output_current: [],
+                color_temp_: []
+            }
+        }
     },
 });
 
-export const { setFilter, resetFilters, setBrand } = FiltersList.actions;
+export const { setFilter, resetFilters, setBrand, setSwitchFields, resetSwitch, setAllFilter } = FiltersList.actions;
 export default FiltersList.reducer;
+
+
+
+
+// import { createSlice } from "@reduxjs/toolkit";
+
+// const initialState = {
+//     filtersValue: {
+//         q: "*",
+//         page_no: 1,
+//         item_code: "",
+//         item_description: "",
+//         sort_by: '',
+//         hot_product: false,
+//         show_promotion: false,
+//         in_stock: false,
+//         brand: [],
+//         price_range: { min: 0, max: 1000 },
+//         stock_range: { min: 0, max: 1000 },
+//         product_type: [],
+//         has_variants: false,
+//         custom_in_bundle_item: false,
+//         category_list: [],
+//         item_group: [],
+//         beam_angle: [],
+//         lumen_output: [],
+//         mounting: [],
+//         ip_rate: [],
+//         lamp_type: [],
+//         power: [],
+//         input: [],
+//         dimension: '',
+//         material: [],
+//         body_finish: [],
+//         warranty_: [],
+//         output_voltage: [],
+//         output_current: [],
+//         color_temp_: []
+//     }
+// };
+
+// const FiltersList = createSlice({
+//     name: "FiltersList",
+//     initialState,
+//     reducers: {
+//         setFilter(state, action) {
+//             const payload = action.payload;
+//             Object.keys(payload).forEach(key => {
+//                 if (state.filtersValue.hasOwnProperty(key)) {
+//                     state.filtersValue[key] = payload[key];
+//                 }
+//             });
+//         },
+
+//         resetFilters(state) {
+//             state.filtersValue = { ...initialState.filtersValue };
+//         },
+//     },
+// });
+
+// export const { setFilter, resetFilters } = FiltersList.actions;
+// export default FiltersList.reducer;

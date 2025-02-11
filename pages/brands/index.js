@@ -5,7 +5,7 @@ import Image from 'next/image';
 import MobileHeader from '@/components/Headers/mobileHeader/MobileHeader';
 import IsMobile from '@/libs/hooks/resize';
 import { useDispatch } from 'react-redux'
-import { setBrand, setFilter } from '@/redux/slice/filtersList';
+import { setFilter } from '@/redux/slice/homeFilter'
 
 export default function index() {
 
@@ -22,8 +22,7 @@ export default function index() {
   const changeBrand = (item) => {
     router.push('/list')
     // console.log("log", item)
-    dispatch(setBrand([item]))
-    dispatch(setFilter([]))
+    dispatch(setFilter({ brand: [item] }));
   }
 
   const getBrandList = async () => {

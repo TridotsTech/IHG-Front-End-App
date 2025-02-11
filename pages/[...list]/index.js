@@ -14,55 +14,56 @@ import Rodal from 'rodal';
 // import 'rodal/lib/rodal.css';
 import { setBoxView } from '@/redux/slice/websiteSettings'
 import { resetSetFilters, setLoad } from '@/redux/slice/ProductListFilters'
-import { resetFilters, setBrand, setFilter } from "@/redux/slice/filtersList";
+import { resetFilters, resetSwitch, setAllFilter, setBrand } from "@/redux/slice/filtersList";
+import { setFilter } from '@/redux/slice/homeFilter';
 import Head from 'next/head'
 import { Switch } from '@headlessui/react';
 import clsx from 'clsx'
 import SearchCom from '@/components/Search/SearchCom';
 import useTabView from '@/libs/hooks/useTabView';
 import SearchProduct from '@/components/Search/SearchProduct';
+import { resetFilter } from '@/redux/slice/homeFilter';
+
+const initialState = {
+  q: "*",
+  page_no: 1,
+  item_code: "",
+  item_description: "",
+  sort_by: '',
+  hot_product: false,
+  show_promotion: false,
+  in_stock: false,
+  brand: [],
+  price_range: { min: 0, max: 1000 },
+  stock_range: { min: 0, max: 1000 },
+  product_type: "",
+  has_variants: false,
+  custom_in_bundle_item: false,
+  category_list: [],
+  item_group: [],
+  beam_angle: [],
+  lumen_output: [],
+  mounting: [],
+  ip_rate: [],
+  lamp_type: [],
+  power: [],
+  input: [],
+  dimension: '',
+  material: [],
+  body_finish: [],
+  warranty_: [],
+  output_voltage: [],
+  output_current: [],
+  color_temp_: []
+}
 
 
 export default function List({ productRoute, filterInfo, currentId, params, initialData, found }) {
 
   // console.log('maste', mastersData)
   const router = useRouter();
-  const initialValue = {
-    q: "*",
-    page_no: 1,
-    item_description: "",
-    sort_by: '',
-    hot_product: false,
-    show_promotion: false,
-    in_stock: false,
-    brand: [],
-    price_range: { min: 0, max: 100000 },
-    stock_range: { min: 0, max: 100000 },
-    product_type: '',
-    has_variants: false,
-    custom_in_bundle_item: false,
-    category_list: [],
-    item_group: [],
-    beam_angle: [],
-    lumen_output: [],
-    mounting: [],
-    ip_rate: [],
-    lamp_type: [],
-    power: [],
-    input: [],
-    dimension: '',
-    material: [],
-    body_finish: [],
-    warranty_: [],
-    output_voltage: [],
-    output_current: [],
-    color_temp_: []
-  }
-  const [filters, setFilters] = useState({
-    ...initialValue,
-    price_range: { min: 0, max: 100000 },
-    stock_range: { min: 0, max: 100000 }
-  });
+
+
 
   const [foundValue, setFoundValue] = useState(0);
 
@@ -106,10 +107,21 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const productFilter = useSelector((state) => state.FiltersList.filtersValue)
   let loadData = useSelector((state) => state.ProductListFilters.filtersValue.loadData)
   const address = useSelector((state) => state.webSettings.adddressInfo);
+  const homeFilter = useSelector((state) => state.HomeFilter.filtersValue)
   const dispatch = useDispatch();
   let [top, setTop] = useState(true)
   let cardref = useRef();
 
+  console.log('homeFilter', homeFilter)
+
+  const initialValue = productFilter;
+
+
+  const [filters, setFilters] = useState({
+    ...initialValue,
+    price_range: { min: 0, max: 100000 },
+    stock_range: { min: 0, max: 100000 }
+  });
 
 
   const filtersData = useSelector((state) => state.FiltersList)
@@ -645,14 +657,14 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     //   }));
     // }
     setFilters((prevFilters) => ({
-      ...initialValue,
+      ...initialState,
       price_range: { min: 0, max: 100000 },
       stock_range: { min: 0, max: 100000 },
     }));
     setRemoveAllFilter((prev) => !prev);
 
-    dispatch(setBrand([]))
-    dispatch(setFilter([]))
+    dispatch(resetFilters())
+    dispatch(resetFilter())
     // console.log("checkRange",filters)
     // router.replace(`/list?category=`)
   }
@@ -692,11 +704,11 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       page: initialPageNo ? 1 : pageNo,
       per_page: perPage,
       // query_by_weights: "1,2,3",
-      filter_by: group_change ? addFilterQuery() : buildFilterQuery(),
+      filter_by: buildFilterQuery(),
       // ...buildFilterQuery() && { filter_by: buildFilterQuery() },
       sort_by: filters.sort_by
     });
-    
+
     if (initialPageNo) {
       setpageNo(1)
       setResults([])
@@ -742,32 +754,27 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       return;
     }
 
-    if ((productFilter?.item_group?.length > 0)) {
-      // console.log(productFilter, "productFilter");
-
+    if (homeFilter) {
+      console.log("hoooooo", homeFilter)
+      // dispatch(setFilter(homeFilter))
       setFilters((prevFilters) => ({
         ...prevFilters,
-        item_group: productFilter.item_group,
-        brand: []
+        ...homeFilter
       }));
 
       setFilterUpdated(true);
-      // console.log("productUpdate")
 
-    } if ((productFilter?.brand?.length > 0)) {
-      setFilters((prevFilter) => ({
-        ...prevFilter,
-        brand: productFilter.brand
-      }))
-      setFilterUpdated(true);
+      console.log("hoooo", homeFilter)
     }
-    if (!(productFilter?.brand?.length > 0) && !(productFilter?.item_group?.length > 0)) {
-      fetchResults(false, true)
-    }
-  }, [productFilter]);
+    console.log("proct", homeFilter)
+    // if (!(homeFilter?.brand?.length > 0) && !(homeFilter?.item_group?.length > 0)) {
+    //   fetchResults(false, true)
+    // }
+  }, [homeFilter]);
 
   useEffect(() => {
     if (filterUpdated) {
+
       fetchResults(true, true);
       setFilterUpdated(false);
 
@@ -777,6 +784,9 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       });
     }
   }, [filterUpdated])
+
+
+  console.log("filllll", filters)
 
 
   // useMemo(() => {
@@ -807,20 +817,20 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   // }, [filters]);
 
 
-  useEffect(() => {
-    if (category) {
-      setFilters((prevFilters) => ({
-        ...initialValue,
-        item_group: prevFilters.item_group,
-      }));
-    }
-    if (brand) {
-      setFilters((prevFilters) => ({
-        ...initialValue,
-        brand: prevFilters.brand,
-      }));
-    }
-  }, [router.query])
+  // useEffect(() => {
+  //   if (category) {
+  //     setFilters((prevFilters) => ({
+  //       ...initialValue,
+  //       item_group: prevFilters.item_group,
+  //     }));
+  //   }
+  //   if (brand) {
+  //     setFilters((prevFilters) => ({
+  //       ...initialValue,
+  //       brand: prevFilters.brand,
+  //     }));
+  //   }
+  // }, [router.query])
 
   const [pageLoad, setPageLoad] = useState(false)
 
@@ -863,7 +873,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   // },[category, brand])
 
   const handleFilterClick = () => {
-    
+
     setResults([]);
 
     // setpageNo(1)
@@ -876,57 +886,15 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     });
   };
 
-
-  // useEffect(()=>{
-  //   setTimeout(()=>{
-  //     applyFilter()
-  //   }, 500)
-  // }, [filters])
-
-
-  // useEffect(() => {
-  //     fetchResults();
-  //   }, [filters, priceBetween]);
-
-  // useEffect(() => {
-  //   // Create an IntersectionObserver instance
-  //   const observer = new IntersectionObserver((entries) => {
-  //     // Loop through each entry (in case multiple elements are being observed)
-  //     entries.forEach((entry) => {
-  //       if (entry.isIntersecting) {
-  //         // Trigger the event when the footer is visible
-  //         console.log('Footer is visible!');
-  //         const ele = document.getElementById('filter-sec')
-  //         ele.classList.add('!absolute')
-  //         // You can trigger any custom function here
-  //         // Example: call a function or update state
-  //       }else{
-  //         const ele = document.getElementById('filter-sec')
-  //         ele.classList.remove('!absolute')
-  //       }
-  //     });
-  //   }, {
-  //     threshold: 0.1, // This means 10% of the footer must be visible for the event to be triggered
-  //   });
-
-  //   // Target the element with id "footer"
-  //   const footerElement = document.getElementById('footer');
-  //   if (footerElement) {
-  //     observer.observe(footerElement); // Start observing the footer
-  //   }
-
-  //   // Cleanup observer when the component is unmounted
-  //   return () => {
-  //     if (footerElement) {
-  //       observer.unobserve(footerElement); // Stop observing on unmount
-  //     }
-  //   };
-  // }, []); // Empty dependency array to run this only once on mount
-
+  useEffect(() => {
+    dispatch(setAllFilter({ ...filters }))
+    console.log("checkFill", productFilter)
+    // dispatch(setFilter({...filters}))
+  }, [filters])
 
   let sortByOptions = [
     { text: 'Select Sort By', value: '' },
-    { text: 'Created Date', value: 'creation:desc' },
+    { text: 'Created Date', value: 'creation_on:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
     { text: 'Stock low to high', value: 'stock:asc' },
@@ -956,16 +924,18 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const [openFilter, setOpenFilter] = useState(false);
 
   useEffect(() => {
+
     if (initialLoad) {
       setInitialLoad(false);
       return;
-    } else {
+    } 
       window.scrollTo({
         top: 0,
         behavior: "smooth",
       });
+
       fetchResults(false, true)
-    }
+
   }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item, removeAllFilter])
 
   // console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
@@ -995,16 +965,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
       {<MobileHeader titleClick={titleClick} titleDropDown={true} back_btn={true} search={true} theme_settings={theme_settings} />}
 
-
-      {/* Baner Section */}
-      {/* <div className='primary_bg py-[40px] md:py-[15px]'>
-        <div className='grid justify-center text-center'>
-          <h1 className='text-white text-[30px] md:text-[18px]  font-semibold'>Discover a new device</h1>
-          <p className='text-white text-[16px] md:text-[14px]'>Explore a wide range of smartphones, from the iconic iPhones to the latest Android devices. </p>
-        </div>
-      </div> */}
-
-
       <div className='md:hidden tab:hidden main-width pt-3 flex justify-end gap-4'>
         <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-end gap-[7px] cursor-pointer border border-[1px] border-[#ddd] rounded-[5px] p-[5px_10px]'>
           <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
@@ -1012,7 +972,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
         </div>
 
         <div className=''>
-          {/* <label htmlFor="" className={`${label_classname}`}>Sort by</label> */}
           <select value={filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
             {
               sortByOptions.map((item, i) => (
@@ -1023,15 +982,49 @@ export default function List({ productRoute, filterInfo, currentId, params, init
         </div>
       </div>
 
+      <div className={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in `}>
+        {
+          ((tabView && openFilter) || !tabView) && (
+            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[124px] tab:top-[186px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
+              {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+            </div>
+          )
+        }
+
+        <div className="lg:hidden tab:hidden sticky top-[50px] bg-[#f1f5f9] z-[99] ">
+          {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+        </div>
+
+        <div className='md:hidden tab:block lg:hidden sticky top-[120px] bg-[#f1f5f9] z-[10] w-full '>
+          {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} />}
+        </div>
+
+        <div className={` ${(tabView && openFilter) ? 'tab:ml-[35%] tab:w-[65%] flex-[0_0_auto]' : 'tab:w-full tab:ml-0'} lg:w-[80%] lg:ml-[20%] md:w-full main-width transition-all duration-300 ease-in scale-in`}>
+          <>
+            {loader ?
+              <Skeleton />
+              :
+              <div className='min-h-screen '>
+                {((results.length != 0 && Array.isArray(results))) ? <ProductBox tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} /> :
+                  <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
+                }
+              </div>
+            }
+            <div className="" ref={lastResultRef}></div>
+
+            {loading &&
+              <div id="wave" className="loader">
+                <span className="dot"></span>
+                <span className="dot"></span>
+                <span className="dot"></span>
+              </div>
+            }
+          </>
+        </div>
+      </div>
 
 
-      <div class={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in`}>
-
-        {/* <div className="md:hidden flex-[0_0_calc(20%_-_7px)] mr-[10px] sticky top-[170px] overflow-auto scrollbarHide h-[calc(100vh_-_160px)] bg-[#fff] z-[98]">
-          {filtersList && <Filters filtersList={filtersList} ProductFilter={ProductFilter} />}
-        </div> */}
-
-        {/* flex-[0_0_calc(20%_-_7px)] */}
+      {/* <div class={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in`}>
         {
           ((tabView && openFilter) || !tabView) && (
             <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed  lg:w-[20%]  transition-all duration-300 ease-in  mr-[10px] lg:top-[124px] tab:top-[186px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]`}>
@@ -1041,7 +1034,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
         }
 
         <div className="lg:hidden tab:hidden sticky top-[50px] bg-[#f1f5f9] z-[99]">
-          {/* {filtersList && <CurrentProductFilter isMobile={true} category_list={filtersList.category_list} />} */}
           {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
         </div>
 
@@ -1049,53 +1041,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
           {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} />}
         </div>
 
-
-        {/* <div className="lg:flex-[0_0_calc(80%_-_7px)] md:w-full">
-          <>
-            {productFilters.selectedAttributes.length != 0 &&
-              <div className='md:hidden flex gap-[8px] items-center flex-wrap mb-[10px]'>
-
-                <div onClick={() => { clearFilter('', 'clearAll') }} className={`cursor-pointer flex items-center bg-[#f1f1f157] gap-[8px] border-[1px] border-slate-100 rounded-[20px] p-[5px_15px] w-max`}>
-                  <h5 className='text-[13px]'>Clear All</h5>
-                  <Image className='h-[12px] w-[12px] object-contain' src={'/cancel.svg'} alt='Close' height={20} width={20} />
-                </div>
-
-
-                {productFilters.selectedAttributes.map((res, i) => {
-                  return (
-                    <div onClick={() => { productFilters.selectedAttributes.length == 1 ? clearFilter('', 'clearAll') : clearFilter(res, '') }} key={i} className={`cursor-pointer flex items-center bg-[#f1f1f157] gap-[8px] border-[1px] border-slate-100 rounded-[20px] p-[5px_15px] w-max`}>
-                      <h5 className='text-[13px]'>{res.option_value}</h5>
-                      <Image className=' h-[12px] w-[12px] object-contain' src={'/cancel.svg'} alt='Close' height={20} width={20} />
-                    </div>
-                  )
-                })}
-
-              </div>
-            }
-            {loader ?
-              <Skeleton />
-              :
-              <>
-                {((productList.length != 0 && Array.isArray(productList)) && productBoxView) ? <ProductBox productList={productList} rowCount={'flex-[0_0_calc(33.333%_-_8px)]'} productBoxView={productBoxView} /> :
-                  <>{theme_settings && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
-                }
-              </>
-            }
-            <div className='more' ref={cardref}></div>
-
-            {pageLoading &&
-              <div id="wave">
-                <span className="dot"></span>
-                <span className="dot"></span>
-                <span className="dot"></span>
-              </div>
-            }
-
-          </>
-        </div> */}
-
-
-        {/* lg:flex-[0_0_calc(80%_-_7px)] */}
         <div className={`${(tabView && openFilter) ? 'tab:ml-[35%] tab:w-[65%] flex-[0_0_auto]' : 'tab:w-full tab:ml-0'} lg:w-[80%] lg:ml-[20%]  md:w-full main-width transition-all duration-300 ease-in`}>
           <>
             {loader ?
@@ -1107,7 +1052,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
                 }
               </div>
             }
-            {/* <div className='more' ref={cardref}></div> */}
+           
             <div className="" ref={lastResultRef}></div>
 
             {loading &&
@@ -1121,29 +1066,9 @@ export default function List({ productRoute, filterInfo, currentId, params, init
           </>
         </div>
 
-
-        {/* <div>
-          <Typesense />
-        </div> */}
-
-      </div>
-
-      {/* Shop By Brands */}
-
-
-
-      {(cartItems && cartItems.length > 0) &&
-        <div className='lg:hidden h-[60px] bg-[#fff] flex items-center justify-between fixed w-full bottom-0 z-[9] p-[10px] shadow-[0_0_5px_#ddd]'>
-          <div onClick={() => { router.push('/tabs/yourcart') }} className='flex items-center gap-[5px]'>
-            <Image className='h-[35px] w-[35px] object-contain' height={60} width={60} alt='logo' src={'/cart.svg'}></Image>
-            <h6 className='primary_color text-[14px] font-medium'>{cartItems.length} Items</h6>
-          </div>
-          <button onClick={() => { router.push('/tabs/yourcart') }} className='primary_btn p-[8px_12px]'>View Cart</button>
-        </div>
-      }
+      </div> */}
 
     </>
-    // </ProductList.Provider>
   )
 
 }
@@ -1233,7 +1158,7 @@ const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, s
           <div className='flex items-center gap-5 justify-between'>
             <div className='flex items-center gap-1'>
               <Image src={'/filters/tabFilter.svg'} width={20} height={20} />
-            <h5 className={`${label_classname}`}>Filters</h5>
+              <h5 className={`${label_classname}`}>Filters</h5>
             </div>
             <Switch checked={openFilter} onChange={(e) => setOpenFilter(e)} as={Fragment}>
               {({ checked, disabled }) => (
@@ -1289,7 +1214,7 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) =
 
   let sorting = [
     { text: 'Select Sort By', value: '' },
-    { text: 'Created Date', value: 'creation:desc' },
+    { text: 'Created Date', value: 'creation_on:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
     { text: 'Stock low to high', value: 'stock:asc' },

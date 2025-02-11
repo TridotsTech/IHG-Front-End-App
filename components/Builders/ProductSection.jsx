@@ -27,7 +27,7 @@ const ProductSection = ({ data,isMobile,i }) => {
     return (
         <>
             {products && products.length > 0 && <div className="main-width lg:max-w-[1350px] md:p-[10px]">
-                <ViewAll data={data} viewAll={false} />
+                <ViewAll data={data} viewAll={true} navigationLink={'/list'} />
                 <ProductBox
                     productList={products}
                     remove_bg={true}

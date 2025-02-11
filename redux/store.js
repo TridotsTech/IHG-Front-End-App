@@ -7,6 +7,7 @@ import customerInfo from './slice/customerInfo'
 import checkoutInfo from './slice/checkoutInfo'
 import ProductListFilters from './slice/ProductListFilters'
 import FiltersList from './slice/filtersList'
+import HomeFilter from './slice/homeFilter'
 
 export default configureStore({
   reducer: {
@@ -17,6 +18,7 @@ export default configureStore({
     customerInfo:customerInfo,
     checkoutInfo:checkoutInfo,
     ProductListFilters:ProductListFilters,
-    FiltersList: FiltersList
+    FiltersList: FiltersList,
+    HomeFilter: HomeFilter
   },
 })

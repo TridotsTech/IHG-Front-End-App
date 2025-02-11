@@ -402,7 +402,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
         <div className={`${!scroll_button && 'hidden'} absolute top-[40%] left-[-22px] h-[35px] w-[35px] z-10 bg-[#fff] text-black border-[1px]  border-slate-100 rounded-full flex items-center justify-center  cursor-pointer md:hidden`} onClick={() => sctollTo('prev')} id={'prev_' + (scroll_id ? scroll_id : '')}> <Image className='h-[12px] object-contain' alt="Prev" src={'/rightArrow.svg'} width={35} height={35} /></div>
 
-        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={` ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'flex-wrap'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] lg:grid lg:grid-cols-2 tab:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-4 tab:grid-cols-3 2xl:grid-cols-5 lg:gap-3'} ${openFilter && tabView ? (productBoxView && productBoxView == 'List View') ? 'tab:!grid-cols-1' : 'tab:!grid-cols-2' : ''} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
+        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={`fade-in ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'flex-wrap'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] lg:grid lg:grid-cols-2 tab:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-4 tab:grid-cols-3 2xl:grid-cols-5 lg:gap-3'} ${openFilter && tabView ? (productBoxView && productBoxView == 'List View') ? 'tab:!grid-cols-1' : 'tab:!grid-cols-2' : ''} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
 
           {leftHorizontalImage && <Image src={check_Image(leftHorizontalImage)} width={400} height={400} alt="icon1" className="lg:hidden h-[300px] w-[200px] object-cover" />}
 
@@ -410,7 +410,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
           {(productList && productList.length != 0 && Array.isArray(productList)) && productList.map((item, index) => {
             return (
               // onMouseEnter={() => { setQuick(index) }} onMouseLeave={() => { setQuick(-1) }}
-              <li key={index} className={`${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] ')} relative your-element border`} >
+              <li key={index} className={`fade-in ${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] ')} relative your-element border`} >
 
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[230px]  relative ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:!h-[120px]' : 'md:h-[170px] md:w-[100%] pb-[10px] '} your-element `}>
@@ -421,10 +421,12 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
                 <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%]' : ''} p-[10px]`}>
                   {/* <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link> */}
 
-                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer h-[55px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer h-[40px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_code}</p>
 
-                  <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-2 text-[13px] md:text-[12px] md:h-[45px] h-[50px] md:leading-[2.1] lg:leading-[25px] openSens innerHtml_desc`} />
-
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer h-[40px] text-[13px] md:text-[12px] md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_name}</p>
+                  {/* <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-2 text-[13px] md:text-[12px] md:h-[45px] h-[50px] md:leading-[2.1] lg:leading-[25px] openSens innerHtml_desc`} /> */}
+  
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer h-[40px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>Brand : <span className='text-[14px]'>{item.document.brand}</span></p>
                   <div className='flex items-center gap-5 justify-between mt-2'>
                     {(webSettings && webSettings.currency) && <h3 className={`text-[14px] primary_color inline-flex gap-[6px] float-left font-semibold openSens `}>AED {item.document.offer_rate > 0 ? (<p className='text-green-600 font-semibold'>{parseFloat(item.document.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px]'>{parseFloat(item.document.rate).toFixed(2)}</span></p>) : (<p className='font-semibold'>{parseFloat(item.document.rate).toFixed(2)}</p>) }</h3>}
 

@@ -6,8 +6,11 @@ import dynamic from "next/dynamic";
 // import IsMobile from "@/libs/hooks/resize";
 const MobileHeader = dynamic(() => import("@/components/Headers/mobileHeader/MobileHeader"))
 const WebPageSection = dynamic(() => import("@/components/Builders/WebPageSection"))
+import { resetFilter } from "@/redux/slice/homeFilter";
+import { resetFilters } from "@/redux/slice/filtersList";
 
 import Head from 'next/head'
+import { useDispatch } from "react-redux";
 
 export default function Home() {
   let [isMobile, setIsMobile] = useState(false);
@@ -15,6 +18,8 @@ export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false)
   const [theme_settings, setTheme_settings] = useState();
+
+  const dispatch = useDispatch();
 
   useMemo(() => {
     if (webSettings && webSettings.app_settings) {
@@ -39,6 +44,9 @@ export default function Home() {
     }
 
     getData();
+
+      dispatch(resetFilter())
+      dispatch(resetFilters())
 
   }, [])
 
@@ -103,36 +111,41 @@ export default function Home() {
         )}
       </div>
 
-      {loading ?
-        <div className="min-h-screen ">
-          <div className="animate-pulse">
-            <div className="flex items-center justify-center w-full gap-[15px] h-full">
-              <div className="w-full home md:min-h-[120px] your-element ">
-                {/* <!-- Skeleton for Image --> */}
-                <div className={`bg-gray-300 w-full ${isMobile ? 'h-[150px] ' : 'h-[500px] '} rounded-md`}></div>
+
+
+        <div className="fade-in">
+
+        {loading ?
+          <div className="min-h-screen ">
+            <div className="animate-pulse">
+              <div className="flex items-center justify-center w-full gap-[15px] h-full">
+                <div className="w-full home md:min-h-[120px] your-element ">
+                  {/* <!-- Skeleton for Image --> */}
+                  <div className={`bg-gray-300 w-full ${isMobile ? 'h-[150px] ' : 'h-[500px] '} rounded-md`}></div>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12 main-width lg:max-w-[1350px] lg:py-10 md:p-[10px] bg-white">
-            {
-              // Simulate multiple skeleton loaders for grid items
-              Array(8).fill(null).map((_, i) => (
-                <div className="flex-[0_0_auto] text-center lg:px-[14px] justify-center flex flex-col space-y-2 items-center cursor-pointer" key={i}>
-                  {/* Skeleton loader for Image */}
-                  <div className="bg-gray-300 size-[55px] lg:size-[70px] rounded-[50%]"></div>
-                  {/* Skeleton loader for Title */}
-                  <div className="bg-gray-300 h-[20px] lg:h-[25px] w-3/4 rounded-md"></div>
-                </div>
-              ))
-            }
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 space-y-2 lg:space-y-4 lg:gap-12 main-width lg:max-w-[1350px] lg:py-10 md:p-[10px] bg-white">
+              {
+                // Simulate multiple skeleton loaders for grid items
+                Array(8).fill(null).map((_, i) => (
+                  <div className="flex-[0_0_auto] text-center lg:px-[14px] justify-center flex flex-col space-y-2 items-center cursor-pointer" key={i}>
+                    {/* Skeleton loader for Image */}
+                    <div className="bg-gray-300 size-[55px] lg:size-[70px] rounded-[50%]"></div>
+                    {/* Skeleton loader for Title */}
+                    <div className="bg-gray-300 h-[20px] lg:h-[25px] w-3/4 rounded-md"></div>
+                  </div>
+                ))
+              }
+            </div>
           </div>
+          :
+          <>
+            {memoizedData}
+          </>
+        }
         </div>
-        :
-        <>
-          {memoizedData}
-        </>
-      }
 
 
 

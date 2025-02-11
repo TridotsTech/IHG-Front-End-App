@@ -26,7 +26,7 @@ export default function RootLayout({ children }) {
 
   return (
     <>
-      <main id='main' className='md:min-h-screen your-element md:w-full'>{children}</main>
+      <main id='main' className='md:min-h-screen your-element md:w-full fade-in'>{children}</main>
     </>
   )
 }

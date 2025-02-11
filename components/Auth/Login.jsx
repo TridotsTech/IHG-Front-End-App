@@ -253,14 +253,6 @@ export default function LogIn({ hide, checkModal }) {
                     {errors.password && <p className={`${styles.danger}`}>{errors.password.message}</p>}
                 </div>
 
-                <div className={`flex items-center justify-between gap-[50px] pb-5`}>
-                    <div onClick={() => { setRememberMe(remember_me_check = !remember_me_check) }} className='flex cursor-pointer items-center gap-[10px]'>
-                        <input checked={remember_me_check} type='checkbox' className={`${styles.checkBox} indeterminate:bg-gray-300 cursor-pointer`} {...register('remember')} />
-                        {/* <span className={`${styles.checkmark}`}></span> */}
-                        <span className='text-[13px]'>Remember Me</span>
-                    </div>
-                    {/* <p className='primary_color font-semibold text-[13px] cursor-pointer' onClick={() => checkModal('forget')}>Forgot Password</p> */}
-                </div>
                 <button type="submit" className={`${styles.loginBtn} `}>Log In</button>
                 {/* {wrong && <p className='text-center pt-[5px] text-[#ff1010] font-semibold'>Please check your email or password</p>} */}
             </form>

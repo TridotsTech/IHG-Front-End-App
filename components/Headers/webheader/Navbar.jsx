@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import Link from 'next/link'
 import useTabView from '@/libs/hooks/useTabView';
 import { useDispatch } from 'react-redux';
-import { setBrand, setFilter } from '@/redux/slice/filtersList';
+import { setFilter } from '@/redux/slice/homeFilter';
 // import { check_Image } from '@/libs/api';
 
 export default function Navbar({ all_categories, categoryData }) {
@@ -132,8 +132,9 @@ export default function Navbar({ all_categories, categoryData }) {
 
   const changeCategory = (item) => {
     !router.asPath.includes('list') ? router.push('/list') : null
-    dispatch(setFilter([item]))
-    dispatch(setBrand([]))
+    dispatch(setFilter({ item_group: [item] }));
+    // dispatch(setFilter([item]))
+    // dispatch(setBrand([]))
   }
 
   return (

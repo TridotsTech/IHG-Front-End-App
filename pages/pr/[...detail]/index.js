@@ -1,13 +1,9 @@
 import { useEffect, useMemo, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import {
-    get_product_detail,
-    get_product_other_info,
     check_Image,
     seo_Image,
     getCurrentUrl,
-    currencyFormatter1,
-    validate_attributes_stock,
     delete_cart_items,
     insert_cart_items,
     get_cart_items,
@@ -17,10 +13,7 @@ import {
 } from "@/libs/api";
 import Image from "next/image";
 import dynamic from "next/dynamic";
-const CardButton = dynamic(() => import("@/components/Product/CardButton"));
 const ProductBox = dynamic(() => import("@/components/Product/ProductBox"));
-const Accordions = dynamic(() => import("@/components/Common/Accordions"));
-const Modals = dynamic(() => import("@/components/Detail/Modals"));
 const ImageSlider = dynamic(() => import("@/components/Detail/ImageSlider"));
 const MobileHeader = dynamic(() =>
     import("@/components/Headers/mobileHeader/MobileHeader")
@@ -41,22 +34,16 @@ const RootLayout = dynamic(() => import("@/layouts/RootLayout"));
 // import RootLayout from '@/layouts/RootLayout'
 import { useSelector, useDispatch } from "react-redux";
 import { setCartItems } from "@/redux/slice/cartSettings";
-import styles from "@/styles/checkout.module.scss";
 import Head from "next/head";
-import Link from "next/link";
 import { toast } from "react-toastify";
 import ViewAll from "@/components/Common/ViewAll";
 import Tabs from "@/components/Common/Tabs";
-import ChooseCategory from "@/components/Common/ChooseCategory";
-import Brands from "@/components/Common/Brands";
 
-const Detail = ({ productRoute }) => {
+const Detail = () => {
     // const Detail = ({ productDetail, detail }) => {
     const router = useRouter();
-    const address = useSelector((state) => state.webSettings.adddressInfo);
     const [details, setDetails] = useState({});
-    const [relatedProduct, setRelatedProduct] = useState([]);
-    const [productDetail,setProductDetail] = useState()
+    const [productDetail, setProductDetail] = useState()
 
     useEffect(() => {
         // let breadcrumb = [{ name: "Home", route: "/" }];
@@ -74,10 +61,32 @@ const Detail = ({ productRoute }) => {
 
         // breadcrumb.push({ name: productDetail.item });
         // productDetail["breadcrumb"] = breadcrumb;
-        getProductDetail()
+        const detail = localStorage['product_detail']
+        if(detail && JSON.parse(detail)){
+            setProductDetail(JSON.parse(detail))
+        }else{
+            getProductDetail()
+        }
         getDetail();
 
-    }, [router,productRoute]);
+        return (()=> {
+            if(detail && JSON.parse(detail)){
+                localStorage.removeItem('product_detail')
+            }
+        })
+
+    }, [router.query]);
+
+    const getPrRoute = () => {
+        let productRoute = ""
+        if(router.query && router.query.detail){
+            let detail = router.query.detail
+            detail.map((r, i) => {
+                productRoute = productRoute + r + ((detail.length != (i + 1)) ? '/' : '')
+            })
+        }
+        return productRoute
+    }
 
     const getProductDetail = async () => {
         const queryParams = new URLSearchParams({
@@ -86,13 +95,13 @@ const Detail = ({ productRoute }) => {
             // page: "1",
             // per_page: "1",
             // query_by_weights: "1,2,3",
-            filter_by: `item_code:${productRoute}`,
+            filter_by: `item_code:${getPrRoute()}`,
         });
 
         const data = await typesense_search_items(queryParams);
 
         let productDetail = data.hits && data.hits.length > 0 ? data.hits[0].document : {};
-        if(productDetail){
+        if (productDetail) {
             setProductDetail(productDetail)
         }
     }
@@ -100,7 +109,7 @@ const Detail = ({ productRoute }) => {
     const [relatedProductData, setRelatedData] = useState([])
 
     const getDetail = async () => {
-        const resp = await get_product_details(productRoute);
+        const resp = await get_product_details(getPrRoute());
         const details = (await resp.message) || {};
 
         if (details && details.stock && details.stock.length > 0) {
@@ -189,14 +198,16 @@ const Detail = ({ productRoute }) => {
                 ></script>
             </Head>
 
-            {productDetail && (
-                <DetailPage
-                    productDetail={productDetail}
-                    toast={toast}
-                    details={details}
-                    relatedProductData={relatedProductData}
-                />
-            )}
+            <div className="fade-in min-h-screen">
+                {productDetail && (
+                    <DetailPage
+                        productDetail={productDetail}
+                        toast={toast}
+                        details={details}
+                        relatedProductData={relatedProductData}
+                    />
+                )}
+            </div>
         </RootLayout>
     );
 };
@@ -233,7 +244,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
             setLoader(false);
             get_product_details();
         }
-    }, [router.query,productDetail]);
+    }, [router.query, productDetail]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -719,7 +730,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
     return (
         <>
-            <div ref={cardref} className="main-width lg:w-[90%] max-w-[1300px]">
+            <div ref={cardref} className="main-width fade-in lg:w-[90%] max-w-[1300px]">
                 {loader ? (
                     <Skeleton />
                 ) : (
@@ -764,7 +775,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                 <div
                                     className={`lg:flex lg:m-[15px_0] gap-[10px] justify-between `}
                                 >
-                                    <div className="flex lg:flex-[0_0_calc(50%_-_10px)] lg:sticky lg:top-[150px] lg:h-[450px] border p-3">
+                                    <div className="flex lg:flex-[0_0_calc(50%_-_10px)] fade-in lg:sticky lg:top-[150px] lg:h-[450px] border p-3">
                                         <div className="w-full">
                                             {isMobile ? (
                                                 <>
@@ -777,7 +788,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                         />
                                                     ) : (
                                                         <Image
-                                                            className={"w-full h-[170px] object-contain"}
+                                                            className={"w-full fade-in h-[170px] object-contain"}
                                                             height={200}
                                                             width={300}
                                                             alt={data.item}
@@ -1429,45 +1440,45 @@ const Skeleton = () => {
 //   };
 // }
 
-export async function getServerSideProps({ req, params }) {
-    let { detail } = params;
-    let productRoute = ""
-    detail.map((r, i) => {
-        productRoute = productRoute + r + ((detail.length != (i + 1)) ? '/' : '')
-    })
-    // const apikey = req.cookies.api_key;
-    // const apisecret = req.cookies.api_secret;
-    // const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"
+// export async function getServerSideProps({ req, params }) {
+//     let { detail } = params;
+//     let productRoute = ""
+//     detail.map((r, i) => {
+//         productRoute = productRoute + r + ((detail.length != (i + 1)) ? '/' : '')
+//     })
+//     // const apikey = req.cookies.api_key;
+//     // const apisecret = req.cookies.api_secret;
+//     // const token = (apikey && apisecret) ? `token ${apikey}:${apisecret}` : "token 0c7f0496a397762:199919c53cd169d"
 
-    // const queryParams = new URLSearchParams({
-    //     q: "*",
-    //     // query_by: "item_name,item_description,brand",
-    //     // page: "1",
-    //     // per_page: "1",
-    //     // query_by_weights: "1,2,3",
-    //     filter_by: `item_code:${productRoute}`,
-    // });
+//     // const queryParams = new URLSearchParams({
+//     //     q: "*",
+//     //     // query_by: "item_name,item_description,brand",
+//     //     // page: "1",
+//     //     // per_page: "1",
+//     //     // query_by_weights: "1,2,3",
+//     //     filter_by: `item_code:${productRoute}`,
+//     // });
 
-    // const data = await typesense_search_items(queryParams);
+//     // const data = await typesense_search_items(queryParams);
 
-    // let productDetail =
-    //     data.hits && data.hits.length > 0 ? data.hits[0].document : {};
-    // if (
-    //     data.hits &&
-    //     data.hits.length > 0 &&
-    //     data.hits[0].document &&
-    //     data.hits[0].document.website_image_url
-    // ) {
-    //     productDetail.meta_image = data.hits[0].document.website_image_url;
-    // }
+//     // let productDetail =
+//     //     data.hits && data.hits.length > 0 ? data.hits[0].document : {};
+//     // if (
+//     //     data.hits &&
+//     //     data.hits.length > 0 &&
+//     //     data.hits[0].document &&
+//     //     data.hits[0].document.website_image_url
+//     // ) {
+//     //     productDetail.meta_image = data.hits[0].document.website_image_url;
+//     // }
 
-    // let relatedProduct = data.related_products || [];
+//     // let relatedProduct = data.related_products || [];
 
-    return {
-        props: { productRoute },
-        // props: { productDetail, detail, relatedProduct, productRoute },
-    };
-}
+//     return {
+//         props: { productRoute },
+//         // props: { productDetail, detail, relatedProduct, productRoute },
+//     };
+// }
 
 export default Detail;
 

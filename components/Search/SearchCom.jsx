@@ -61,12 +61,14 @@ export default function SearchCom({ searchRoute = '', title, type }) {
 
   async function getSearchProducts(inputText) {
     const queryParams = new URLSearchParams({
-      q: `*`,
-      query_by: "item_name,item_description,brand",
+      q: `${inputText}`,
+      query_by: "item_name,item_code",
       page: page_no,
       per_page: "15",
-      query_by_weights: "1,2,3",
-      filter_by: `item_code:${inputText}* || item_description:${inputText}*`
+      exhaustive_search: "true",
+      query_by_weights: "4,2"
+      // query_by_weights: "1,2,3",
+      // filter_by: `item_code:${inputText} || item_description:${inputText}`
     });
 
     const data = await typesense_search_items(queryParams);
