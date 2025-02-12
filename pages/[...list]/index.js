@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo, useRef, useCallback, Fragment } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback, Fragment, memo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { seo_Image, getCurrentUrl, typesense_search_items, get_all_masters } from '@/libs/api';
 import dynamic from 'next/dynamic';
 const ProductBox = dynamic(() => import('@/components/Product/ProductBox'))
 const Filters = dynamic(() => import('@/components/Product/filters/Filters'))
-const CurrentProductFilter = dynamic(() => import('@/components/Product/filters/CurrentProductFilter'))
 const NoProductFound = dynamic(() => import('@/components/Common/NoProductFound'))
 const MobileHeader = dynamic(() => import('@/components/Headers/mobileHeader/MobileHeader'))
 const MobileCategoryFilter = dynamic(() => import('@/components/Product/filters/MobileCategoryFilter'))
@@ -19,9 +18,7 @@ import { setFilter } from '@/redux/slice/homeFilter';
 import Head from 'next/head'
 import { Switch } from '@headlessui/react';
 import clsx from 'clsx'
-import SearchCom from '@/components/Search/SearchCom';
 import useTabView from '@/libs/hooks/useTabView';
-import SearchProduct from '@/components/Search/SearchProduct';
 import { resetFilter } from '@/redux/slice/homeFilter';
 
 const initialState = {
@@ -34,9 +31,9 @@ const initialState = {
   show_promotion: false,
   in_stock: false,
   brand: [],
-  price_range: { min: 0, max: 1000 },
-  stock_range: { min: 0, max: 1000 },
-  product_type: "",
+  price_range: { min: 0, max: 100000 },
+  stock_range: { min: 0, max: 100000 },
+  product_type: [],
   has_variants: false,
   custom_in_bundle_item: false,
   category_list: [],
@@ -58,15 +55,10 @@ const initialState = {
 }
 
 
-export default function List({ productRoute, filterInfo, currentId, params, initialData, found }) {
-
-  // console.log('maste', mastersData)
+function List({ category, brand, search }) {
   const router = useRouter();
 
-
-
   const [foundValue, setFoundValue] = useState(0);
-
 
   // useEffect(() => {
   //   setResults(initialData)
@@ -88,6 +80,18 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }
 
     getMasterData()
+
+    return (() => {
+      if (localStorage['sort_by']) {
+        filters = {...filters,sort_by:localStorage['sort_by']}
+        setFilters({...filters});
+        const obj = {sort_by:localStorage['sort_by']}
+        dispatch(setAllFilter({ ...obj }))
+        setTimeout(() => {
+          localStorage.removeItem('sort_by')
+        }, 400);
+      }
+    })
   }, [])
 
   // console.log('maste', mastersData)
@@ -99,25 +103,22 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   let [loader, setLoader] = useState(true);
   let [pageLoading, setPageLoading] = useState(true);
 
-  const [filtersList, setFiltersList] = useState();
-  const cartItems = useSelector((state) => state.cartSettings.cartItems)
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
   const productBoxView = useSelector((state) => state.webSettings.productBoxView)
   let productFilters = useSelector((state) => state.ProductListFilters.filtersValue)
   const productFilter = useSelector((state) => state.FiltersList.filtersValue)
   let loadData = useSelector((state) => state.ProductListFilters.filtersValue.loadData)
-  const address = useSelector((state) => state.webSettings.adddressInfo);
   const homeFilter = useSelector((state) => state.HomeFilter.filtersValue)
   const dispatch = useDispatch();
   let [top, setTop] = useState(true)
-  let cardref = useRef();
+  let cardref = useRef(null);
 
-  console.log('homeFilter', homeFilter)
+  // console.log('homeFilter', homeFilter)
 
   const initialValue = productFilter;
 
 
-  const [filters, setFilters] = useState({
+  let [filters, setFilters] = useState({
     ...initialValue,
     price_range: { min: 0, max: 100000 },
     stock_range: { min: 0, max: 100000 }
@@ -129,12 +130,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
   let [loadSpinner, setLoadSpinner] = useState(false);
   let [no_product, setNoProduct] = useState(true);
-  const [currentRoute, setCurrentRoute] = useState()
-  // let min_price = 0
-  // let max_price = 0
+
   let rating = 0
-  // let productRoute = ''
-  // let page_no = 1;
 
 
   useEffect(() => {
@@ -143,15 +140,12 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       // dispatch(resetSetFilters());
       setLoader(true);
       setPageLoading(false);
-      setFiltersList(filterInfo)
-      setCurrentRoute(currentId)
       no_product = false
       setNoProduct(no_product)
-      getProductList();
-      getCategoryFilters();
+      // getProductList();
     }
 
-  }, [router, address])
+  }, [router])
 
   useEffect(() => {
     router.events.on("routeChangeStart", exitingFunction);
@@ -163,55 +157,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const exitingFunction = () => {
     dispatch(resetSetFilters());
   };
-
-  // useEffect(() => {
-
-  //     const intersectionObserver = new IntersectionObserver(entries => {
-  //       if (entries[0].intersectionRatio <= 0) return;
-
-  //       if (!no_product) {
-  //          no_product = true
-  //          setNoProduct(no_product)
-  //          setTimeout(()=>{
-  //           let updatedPageNo = productFilters.page_no + 1;
-  //           let obj = { ...productFilters, page_no: updatedPageNo };
-  //           setPageLoading(true);
-  //           dispatch(setFilters(obj));
-  //          },800)
-  //       }
-  //     },{
-  //       root: null,
-  //       rootMargin: "500px",
-  //       threshold: 0.5,
-  //     }
-  //     );
-
-  //     intersectionObserver.observe(cardref?.current);
-
-  //     return () => {
-  //       cardref?.current && intersectionObserver.unobserve(cardref?.current)
-  //     }
-
-
-
-  // }, [productFilters,no_product])
-
-  // const handleScroll = () => {
-  //   const cardElement = cardref.current;
-  //   const windowHeight = window.innerHeight;
-  //   const scrollY = window.scrollY;
-  //   const cardPosition = cardElement.getBoundingClientRect().top;
-
-  //   if (cardPosition - windowHeight < 2000) {
-  //     if (!no_product) {
-  //       no_product = true
-  //       let obj = { page_no :productFilters.page_no + 1  } 
-  //       dispatch(setFilters(obj));
-  //     }
-  //   }
-  // };
-
-
 
 
   useEffect(() => {
@@ -283,40 +228,18 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     };
   }, []);
 
-  async function getCategoryFilters() {
-    // productRoute = router.asPath.substring(1);
-    let data = { "route": productRoute }
-    // let res = await get_category_filters(data);
-    let res = [];
-    if (res && res.message) {
-      setFiltersList(res.message)
-      if (res.message.category_list && res.message.category_list.current_category && res.message.category_list.current_category.category_name) {
-        // setCurrentRoute(res.message.category_list.current_category)
-        // setMeta({meta_title:res.message.category_list.current_category.category_name,meta_description:res.message.category_list.current_category.category_name})
-      }
-    }
-  }
 
   useMemo(() => {
     if (typeof window !== 'undefined') {
       if (loadData) {
         // console.log("loaddata")
-        getProductList()
+        // getProductList()
         dispatch(setLoad(false))
       }
 
     }
   }, [loadData])
 
-  // const memoizedCallback = useCallback(() => {
-  //   getProductList();
-  // }, [productFilters]);
-
-  // useMemo(() => {
-  //   if (typeof window !== 'undefined') {
-  //     getProductList()
-  //   }
-  // }, [productFilters])
 
   function ProductFilter(value) {
     no_product = false
@@ -369,69 +292,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   }
 
 
-
-
-  async function getProductList() {
-
-    // let data = await val
-    // console.log('data')
-    // setProductList(d => d = )
-    // productRoute = router.asPath.substring(1);
-
-
-
-    let datas = {
-      "route": productRoute,
-      "sort_by": productFilters.sort,//sort,
-      "min_price": productFilters.min_price > 0 ? productFilters.min_price : undefined,// min,
-      "max_price": productFilters.max_price > 0 ? productFilters.max_price : undefined,//max,
-      "page_no": productFilters.page_no,//page,
-      "page_size": 16,
-      "brands": productFilters.brands, //brands,   this.db.choosed_attributes.toString()
-      "attributes": productFilters.attributes, //attributes,
-      "rating": productFilters.rating > 0 ? productFilters.rating : undefined,
-      "code": productFilters.code,
-      "description": productFilters.description,
-    }
-
-
-    try {
-      // let res = await get_category_products(datas);
-      let res = [];
-
-      setLoader(false);
-      setPageLoading(false);
-      setLoadSpinner(false);
-      // console.log(res,'res')
-      if (res && res.message && res.message.status != "Failed") {
-
-        if (res.message.length != 0) {
-          productFilters.page_no == 1 ? setProductList(res.message) : setProductList(d => d = [...d, ...res.message])
-          no_product = false;
-          setNoProduct(no_product)
-          dispatch(setLoad(false))
-        } else {
-          productFilters.page_no == 1 ? setProductList([]) : setProductList([...productList])
-          no_product = true;
-          setNoProduct(no_product)
-          dispatch(setLoad(false))
-        }
-
-
-      } else {
-        productFilters.page_no == 1 ? setProductList([]) : null;
-        no_product = true;
-        setNoProduct(no_product)
-        dispatch(setLoad(false))
-      }
-    } catch (error) {
-      router.push('/404')
-    }
-
-  }
-
-
-
   const [theme_settings, setTheme_settings] = useState()
 
 
@@ -461,103 +321,6 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     setIsOpenCat(true)
   }
 
-  const clearFilter = (filters, type) => {
-    // dispatch(clearFilters(filters));
-    let obj = filters;
-    productFilters = JSON.stringify(productFilters)
-    productFilters = JSON.parse(productFilters)
-
-    if (type == 'clearAll') {
-      ProductFilter({ 'attribute': [], 'brands': '', selectedAttributes: [], minPrice: 0, maxPrice: 0, rating: 0 })
-      removeAttributeFilter(productFilters, type, obj)
-      removeBrandsFilter(productFilters, type, obj)
-    } else {
-      checkFilter(productFilters, type, obj)
-    }
-  }
-
-  function checkFilter(productFilters, type, obj) {
-    if (obj.filterType == 'Attribute') {
-      removeAttributeFilter(productFilters, type, obj)
-    } else if (obj.filterType == 'Brand') {
-      removeBrandsFilter(productFilters, type, obj)
-    } else if (obj.filterType == 'Min_price') {
-      removeMinPrice(productFilters, type)
-    } else if (obj.filterType == 'Max_price') {
-      removeMaxPrice(productFilters, type)
-    } else if (obj.filterType == 'Rating') {
-      let selectedAttributes = productFilters.selectedAttributes.filter(res => { return res.filterType != 'Rating' })
-      ProductFilter({ 'rating': rating, value: rating, 'selectedAttributes': selectedAttributes })
-    }
-  }
-
-  function removeMinPrice(productFilters, type) {
-    let selectedAttributes = productFilters.selectedAttributes
-    let checkValue = selectedAttributes.findIndex(res => { return (res.filterType && res.filterType == 'Min_price') })
-    selectedAttributes.splice(checkValue, 1)
-    type == 'clearAll' ? '' : ProductFilter({ 'minPrice': 0, 'selectedAttributes': selectedAttributes })
-  }
-
-  function removeMaxPrice(productFilters, type) {
-    let selectedAttributes = productFilters.selectedAttributes
-    let checkValue = selectedAttributes.findIndex(res => { return (res.filterType && res.filterType == 'Max_price') })
-    selectedAttributes.splice(checkValue, 1)
-    type == 'clearAll' ? '' : ProductFilter({ 'maxPrice': 0, 'selectedAttributes': selectedAttributes })
-  }
-
-  function removeBrandsFilter(productFilters, type, obj) {
-    if (filtersList.brand_list && filtersList.brand_list.length != 0) {
-      filtersList.brand_list.map(res => {
-        if ((res.unique_name == (obj && obj.unique_name)) || type == 'clearAll') {
-          res.isActive = false
-          type == 'clearAll' ? '' : brandFilters(productFilters, obj)
-        }
-      })
-    }
-  }
-
-  function brandFilters(productFilters, obj) {
-    productFilters.selectedAttributes = productFilters.selectedAttributes.filter(j => { return j.unique_name != obj.unique_name })
-    productFilters.brands = productFilters.brands.replace((obj.unique_name + ','), '')
-    ProductFilter({ 'brands': productFilters.brands, 'selectedAttributes': productFilters.selectedAttributes })
-  }
-
-
-  function removeAttributeFilter(productFilters, type, obj) {
-    if (filtersList.attribute_list && filtersList.attribute_list.length != 0) {
-
-      filtersList.attribute_list.map(attr => {
-
-        if ((attr.attribute_unique_name == (obj && obj.attr)) || type == 'clearAll') {
-
-          attr.options.map((option, index) => {
-
-            if ((option.unique_name == (obj && obj.unique_name)) || type == 'clearAll') {
-              option.isActive = false
-              type == 'clearAll' ? '' : attributeFilters(productFilters, attr, option, obj)
-            }
-
-          })
-
-        }
-
-      })
-
-    }
-  }
-
-  function attributeFilters(productFilters, attr, option, obj) {
-
-    productFilters.attributes.map(r => {
-      if (r.attribute == attr.attribute_unique_name) {
-        r.value = r.value.replace((obj.unique_name + ','), '')
-      }
-      productFilters.selectedAttributes = productFilters.selectedAttributes.filter(j => { return j.unique_name != option.unique_name })
-    })
-
-    ProductFilter({ 'attribute': productFilters.attributes, 'selectedAttributes': productFilters.selectedAttributes })
-  }
-
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -566,33 +329,11 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   const [hasMore, setHasMore] = useState(true);
   const observer = useRef();
 
-  const { category, brand } = router.query;
+  // const { category, brand } = router.query;
   // console.log(category, brand)
 
 
-
-  // console.log("fiterValue", filters)
-
-  useEffect(() => {
-    if (!router.isReady) return;
-
-    // console.log('Query Params:', router.query);
-
-    setFilters((prevFilters) => ({
-      ...prevFilters,
-      item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
-      brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
-    }));
-  }, [router.isReady, category, brand, router]);
-
-  // console.log('querFilter', filters)
-
-  // useEffect(()=>{
-  //   if(filters.item_group.length === 0){
-  //     router.replace('/list?category=')
-  //   }
-  // },[filters.item_group])
-
+  const label_classname = "text-[14px] md:text-[13px] font-semibold"
 
   const buildFilterQuery = () => {
     const filterParams = [];
@@ -600,7 +341,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
     // if (rest.item_code) filterParams.push(`item_code:${rest.item_code}*`);
     // if (rest.item_description) filterParams.push(`item_description:${rest.item_description}*`);
-    if (rest.product_type) filterParams.push(`product_type:${rest.product_type}`);
+    // if (rest.product_type) filterParams.push(`product_type:${rest.product_type}`);
     if (rest.dimension) filterParams.push(`dimension:${rest.dimension}`);
     if (rest.hot_product) filterParams.push(`hot_product:=${rest.hot_product ? 1 : 0}`);
     if (rest.show_promotion) filterParams.push(`offer_rate:>0`);
@@ -612,7 +353,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     [
       "brand", "color_temp_", "item_group", "beam_angle", "lumen_output", "mounting", "ip_rate", "lamp_type",
       "power", "input", "material", "body_finish", "warranty_",
-      "output_voltage", "output_current", "category_list"
+      "output_voltage", "output_current", "category_list", "product_type"
     ].forEach(key => {
       if (rest[key]?.length) {
         const values = rest[key].map(v => `"${v}"`).join(",")
@@ -620,24 +361,42 @@ export default function List({ productRoute, filterInfo, currentId, params, init
       }
     });
 
+    // console.log(checkInitialValue(price_range?.min,initialState.price_range.min),"price - min")
+    // console.log(checkInitialValue(price_range?.max,initialState.price_range.max),"price - max")
 
-
-    if (price_range?.min > 0 && price_range?.max) {
+    if (checkInitialValue(price_range?.min,initialState.price_range.min) || checkInitialValue(price_range?.max,initialState.price_range.max)) {
       filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
     }
-    if (stock_range?.min > 0 && stock_range?.max) {
+
+    // console.log(checkInitialValue(stock_range?.min,initialState.stock_range.min),"stock - min")
+    // console.log(checkInitialValue(stock_range?.max,initialState.stock_range.max),"stock - max")
+
+    if (checkInitialValue(stock_range?.min,initialState.stock_range.min)  ||  checkInitialValue(stock_range?.max,initialState.stock_range.max)) {
       filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
     }
+
+    // if (price_range?.min > 0 && price_range?.max) {
+    //   filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
+    // }
+
+    // if (stock_range?.min > 0 && stock_range?.max) {
+    //   filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
+    // }
 
     // console.log("params", filterParams);
     return filterParams.length > 0 ? filterParams.join(" && ") : "";
   };
 
+  const checkInitialValue = (present,past) => {
+    return present != past
+  }
+
 
   const [removeAllFilter, setRemoveAllFilter] = useState(false);
   const removeFilter = () => {
     // console.log('filter')
-    setClearAllFilters(true);
+    // setClearAllFilters(true);
+   
     setpageNo(1)
     // dispatch(resetFilters())
     // if (category) {
@@ -667,57 +426,37 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     dispatch(resetFilter())
     // console.log("checkRange",filters)
     // router.replace(`/list?category=`)
+    // setTimeout(() => {
+    //   router.replace("/list", undefined,  { shallow: true })
+    // }, 400);
   }
 
-  const fetchResults = async (reset = false, initialPageNo, group_change = false) => {
+  const fetchResults = async (reset = false, initialPageNo) => {
     setError(null);
     // console.log("queryfilter", filters)
     const perPage = window.innerWidth >= 1400 ? "15" : "12";
-    // console.log("itemCheck", productFilter.item_group, group_change)
-    const addFilterQuery = () => {
-      const itemGroupFilter =
-        productFilter?.item_group?.length > 0
-          ? `item_group:=[${productFilter.item_group.map((item) => `"${item}"`).join(",")}]`
-          : "";
-
-      const brandFilter =
-        productFilter?.brand?.length > 0
-          ? `brand:=[${productFilter.brand.map((item) => `"${item}"`).join(",")}]`
-          : "";
-
-      if (itemGroupFilter && brandFilter) {
-        return `${itemGroupFilter} && ${brandFilter}`;
-      }
-
-      if (itemGroupFilter) {
-        return itemGroupFilter;
-      }
-
-      if (brandFilter) {
-        return brandFilter;
-      }
-    }
 
     const queryParams = new URLSearchParams({
-      q: filters.item_description ? `${filters.item_description}*` : '*',
-      query_by: filters.item_description ? 'item_description,item_code' : '',
+      q: filters.q ? filters.q : filters.item_description ? `${filters.item_description}*` : '*',
+      query_by: filters.q ? 'item_name,item_code' :filters.item_description ? 'item_description,item_code' : '',
       page: initialPageNo ? 1 : pageNo,
-      per_page: perPage,
+      per_page: 15,
+      exhaustive_search: "true",
+      query_by_weights: "4,2",
       // query_by_weights: "1,2,3",
       filter_by: buildFilterQuery(),
       // ...buildFilterQuery() && { filter_by: buildFilterQuery() },
-      sort_by: filters.sort_by
+      sort_by: localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by
     });
 
     if (initialPageNo) {
       setpageNo(1)
       setResults([])
     }
+
+    setLoader(false)
     try {
       setLoading(true);
-      // console.log('query', buildFilterQuery);
-      // console.log('queParam', filters)
-      // console.log("prch", filters);
       const data = await typesense_search_items(queryParams);
       if (data.hits.length === 0) {
         if (pageNo > 1) {
@@ -745,92 +484,61 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     }
   };
 
-  const [filterUpdated, setFilterUpdated] = useState(false);
-  const [clearAllFilters, setClearAllFilters] = useState(false);
+  // const [filterUpdated, setFilterUpdated] = useState(false);
+  // const [clearAllFilters, setClearAllFilters] = useState(false);
 
-  useEffect(() => {
-    if (clearAllFilters) {
-      setClearAllFilters(false);
-      return;
-    }
-
-    if (homeFilter) {
-      console.log("hoooooo", homeFilter)
-      // dispatch(setFilter(homeFilter))
-      setFilters((prevFilters) => ({
-        ...prevFilters,
-        ...homeFilter
-      }));
-
-      setFilterUpdated(true);
-
-      console.log("hoooo", homeFilter)
-    }
-    console.log("proct", homeFilter)
-    // if (!(homeFilter?.brand?.length > 0) && !(homeFilter?.item_group?.length > 0)) {
-    //   fetchResults(false, true)
-    // }
-  }, [homeFilter]);
-
-  useEffect(() => {
-    if (filterUpdated) {
-
-      fetchResults(true, true);
-      setFilterUpdated(false);
-
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-    }
-  }, [filterUpdated])
-
-
-  console.log("filllll", filters)
-
-
-  // useMemo(() => {
-  //   if (productFilter && productFilter.item_group && productFilter.item_group.length > 0) {
-  //     console.log(productFilter, "productFilter")
-  //     setFilters((prevFilters) => ({
-  //       ...prevFilters,
-  //       item_group: productFilter.item_group,
-  //     }));
-  //     fetchResults(false, true, true)
+  // useEffect(() => {
+  //   if (clearAllFilters) {
+  //     setClearAllFilters(false);
+  //     return;
   //   }
 
-  // }, [productFilter])
+  //   if (homeFilter) {
+  //     console.log("hoooooo", homeFilter);
+
+  //     const validFilters = Object.keys(homeFilter).reduce((acc, key) => {
+  //       if ((homeFilter[key] !== undefined && homeFilter[key] !== null && homeFilter[key] !== '')) {
+  //         acc[key] = homeFilter[key];
+  //       }
+  //       return acc;
+  //     }, {});
+
+  //     if (Object.keys(validFilters).length > 0) {
+  //       setFilters((prevFilters) => ({
+  //         ...prevFilters,
+  //         ...validFilters
+  //       }));
+  //       setFilterUpdated(true);
+
+  //     }
+
+  //     console.log("hoooo", validFilters);
+  //   }
+  //   console.log("proct", homeFilter)
+  //   // if (!(homeFilter?.brand?.length > 0) && !(homeFilter?.item_group?.length > 0)) {
+  //   //   fetchResults(false, true)
+  //   // }
+  // }, [homeFilter]);
+
+  // useEffect(() => {
+  //   if (filterUpdated) {
+  //     console.log("filterUpdated", filterUpdated)
+  //     fetchResults(false, true);
+  //     setFilterUpdated(false);
+
+  //     window.scrollTo({
+  //       top: 0,
+  //       behavior: "smooth",
+  //     });
+  //   }
+  // }, [filterUpdated])
 
 
-  // useEffect(()=>{
-  //   fetchResults()
-  // }, [filters])
-
-  // console.log('result', filters)
+  // console.log("filllll", filters)
 
   useEffect(() => {
     return () => observer.current?.disconnect();
   }, []);
-
-  // useEffect(() => {
-  //   resetFilters
-  // }, [filters]);
-
-
-  // useEffect(() => {
-  //   if (category) {
-  //     setFilters((prevFilters) => ({
-  //       ...initialValue,
-  //       item_group: prevFilters.item_group,
-  //     }));
-  //   }
-  //   if (brand) {
-  //     setFilters((prevFilters) => ({
-  //       ...initialValue,
-  //       brand: prevFilters.brand,
-  //     }));
-  //   }
-  // }, [router.query])
 
   const [pageLoad, setPageLoad] = useState(false)
 
@@ -854,30 +562,22 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
   const [initialLoad, setInitialLoad] = useState(true);
 
+  // Pagination
   useEffect(() => {
     if (initialLoad) {
       setInitialLoad(false);
       return;
     }
 
-
     fetchResults();
 
   }, [pageLoad]);
 
-
-  // useEffect(()=>{
-  //   if(filters.item_group.length === 0){
-  //     router.push('/')
-  //   }
-  // },[category, brand])
-
+  // Btn Filter
   const handleFilterClick = () => {
-
     setResults([]);
 
     // setpageNo(1)
-
     fetchResults(true, true);
 
     window.scrollTo({
@@ -886,21 +586,103 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     });
   };
 
+  // onChnage filters
+  useEffect(() => {
+    if (initialLoad) {
+      setInitialLoad(false);
+      return;
+    }
+
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+
+    dispatch(setFilter({ ...filters }));
+    fetchResults(false, true);
+
+  }, [filters.hot_product, filters.sort_by, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item, removeAllFilter]);
+
+  // Initial
+  useEffect(() => {
+
+    // console.log('Query Params:', category);
+
+    if (router.query) {
+      if (router.query['category']) {
+        category = router.query['category']
+        search = ""
+      } else if (router.query['brand']) {
+        brand = router.query['brand']
+        search = ""
+      } else if(router.query['search']){
+        search = router.query['search'] ? router.query['search'] : ""
+      }
+    }
+
+    filters = {
+      ...filters,
+      item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
+      brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
+      q: search ? search : "*" 
+    }
+
+    setFilters({ ...filters })
+
+    // setFilters((prevFilters) => ({
+    //   ...prevFilters,
+    //   item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
+    //   brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
+    // }));
+    // if(){
+
+    // }
+    // console.log(homeFilter, "homeFilter")
+    // console.log(filters,"filters")
+    fetchResults(true, true)
+
+
+  }, [router.query]);
+
+  // useMemo(() => {
+  //   if (homeFilter && homeFilter.sort_by) {
+  //     filters = {...filters, sort_by: homeFilter.sort_by}
+  //     setFilters({ ...filters })
+
+  //     fetchResults(true, true)
+  //   }
+  // }, [homeFilter])
+
+
+
+  // useEffect(()=>{
+  //   if(filters.item_group.length === 0){
+  //     router.push('/')
+  //   }
+  // },[category, brand])
+
+
+
   useEffect(() => {
     dispatch(setAllFilter({ ...filters }))
-    console.log("checkFill", productFilter)
-    // dispatch(setFilter({...filters}))
+    // console.log("checkFill", productFilter)
+
   }, [filters])
 
+  // useEffect(()=>{
+  //   dispatch(setFilter({ ...filters }));
+  // },[filters.sort_by, filters.hot_product, filters.brand, filters.item_group])
+
   let sortByOptions = [
-    { text: 'Select Sort By', value: '' },
+    { text: 'Stock high to low', value: 'stock:desc' },
+    { text: 'Stock low to high', value: 'stock:asc' },
     { text: 'Created Date', value: 'creation_on:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
-    { text: 'Stock low to high', value: 'stock:asc' },
-    { text: 'Stock high to low', value: 'stock:desc' },
     { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
+    { text: 'Discount high to low', value: 'discount_percentage:desc' },
+    { text: 'Discount low to high', value: 'discount_percentage:asc' },
   ]
 
   const handleSortBy = (e, type = "") => {
@@ -911,6 +693,11 @@ export default function List({ productRoute, filterInfo, currentId, params, init
     } else {
       sortByValue = e
     }
+
+    if(localStorage['sort_by']){
+      localStorage.removeItem('sort_by')
+    }
+
     setFilters((prevFilters) => ({
       ...prevFilters,
       sort_by: sortByValue
@@ -923,27 +710,20 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
   const [openFilter, setOpenFilter] = useState(false);
 
-  useEffect(() => {
-
-    if (initialLoad) {
-      setInitialLoad(false);
-      return;
-    } 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth",
-      });
-
-      fetchResults(false, true)
-
-  }, [filters.sort_by, filters.hot_product, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item, removeAllFilter])
+  const changeValue = (type, value) => {
+    setFilters(prev => {
+      const obj = {}
+      obj[type] = value
+      return { ...prev, ...obj }
+    })
+  }
 
   // console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
   return (
 
     <>
 
-      <Head>
+      {/* <Head>
         <title>{filterInfo?.meta_info?.meta_title}</title>
         <meta name="description" content={filterInfo?.meta_info?.meta_description} />
         <meta property="og:type" content={'List'} />
@@ -952,7 +732,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
         <meta property="og:image" content={seo_Image(filterInfo?.meta_info?.meta_image)}></meta>
         <meta property="og:url" content={getCurrentUrl(router.asPath)}></meta>
         <meta name="twitter:image" content={seo_Image(filterInfo?.meta_info?.meta_image)}></meta>
-      </Head>
+      </Head> */}
 
 
       {loadSpinner && <Backdrop />}
@@ -965,20 +745,29 @@ export default function List({ productRoute, filterInfo, currentId, params, init
 
       {<MobileHeader titleClick={titleClick} titleDropDown={true} back_btn={true} search={true} theme_settings={theme_settings} />}
 
-      <div className='md:hidden tab:hidden main-width pt-3 flex justify-end gap-4'>
-        <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-end gap-[7px] cursor-pointer border border-[1px] border-[#ddd] rounded-[5px] p-[5px_10px]'>
-          <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
+      <div className='md:hidden tab:hidden main-width pt-3 flex items-center justify-end gap-4'>
+
+        <div className='flex items-center gap-3'>
+          <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
+          <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
+
+        </div>
+        <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className=' flex items-center gap-[7px] cursor-pointer border border-[1px] border-[#ddd] rounded-[5px] p-[5px_10px] min-w-[72px] h-[32px]'>
+          <Image className='size-[18px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
           <span className={`text-[14px] font-normal line-clamp-1`}>{productBoxView == 'Grid View' ? 'List' : 'Grid'}</span>
         </div>
 
         <div className=''>
-          <select value={filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
+          {typeof window !== "undefined" && <select value={localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
             {
               sortByOptions.map((item, i) => (
                 <option value={item.value}>{item.text}</option>
               ))
             }
-          </select>
+          </select>}
         </div>
       </div>
 
@@ -986,7 +775,7 @@ export default function List({ productRoute, filterInfo, currentId, params, init
         {
           ((tabView && openFilter) || !tabView) && (
             <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[124px] tab:top-[186px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
-              {<Filters mastersData={mastersData || []} filtersList={filtersList} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+              {<Filters mastersData={mastersData || []} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
             </div>
           )
         }
@@ -1005,9 +794,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
               <Skeleton />
               :
               <div className='min-h-screen '>
-                {((results.length != 0 && Array.isArray(results))) ? <ProductBox tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} /> :
-                  <>{theme_settings && !loading && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}</>
-                }
+                {((results.length != 0 && Array.isArray(results))) && <ProductBox tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} />}
+                {!loader && theme_settings && !loading && results.length === 0 && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}
               </div>
             }
             <div className="" ref={lastResultRef}></div>
@@ -1072,6 +860,8 @@ export default function List({ productRoute, filterInfo, currentId, params, init
   )
 
 }
+
+export default memo(List)
 
 const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, setFilters, handleSortBy, mastersData, filters, fetchResults, foundValue }) => {
 
@@ -1213,14 +1003,15 @@ const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, s
 const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) => {
 
   let sorting = [
-    { text: 'Select Sort By', value: '' },
+    { text: 'Stock high to low', value: 'stock:desc' },
+    { text: 'Stock low to high', value: 'stock:asc' },
     { text: 'Created Date', value: 'creation_on:desc' },
     { text: 'Price low to high', value: 'rate:asc' },
     { text: 'Price high to low', value: 'rate:desc' },
-    { text: 'Stock low to high', value: 'stock:asc' },
-    { text: 'Stock high to low', value: 'stock:desc' },
     { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
+    { text: 'Discount high to low', value: 'discount_percentage:desc' },
+    { text: 'Discount low to high', value: 'discount_percentage:asc' },
   ]
 
 
@@ -1273,6 +1064,47 @@ const Backdrop = () => {
       </div>
     </div>
   )
+}
+
+
+
+const SwitchComponent = ({ label1, label2, label_classname, checked, changeValue, type, filters }) => {
+  const label2_class = 'text-[#7C7C7C] text-[12px]'
+  return (
+    <div className=''>
+      <div className='flex items-center gap-5 justify-between'>
+        <h5 className={`${label_classname}`}>{label1}</h5>
+        <Switch checked={checked} onChange={(e) => changeValue(type, e)} as={Fragment}>
+          {({ checked, disabled }) => (
+            <button
+              className={clsx(
+                'group inline-flex h-6 w-11 items-center rounded-full',
+                checked ? 'bg-[#000]' : 'bg-gray-200',
+                disabled && 'cursor-not-allowed opacity-50'
+              )}
+            >
+              <span className="sr-only"></span>
+              <span
+                className={clsx('size-4 rounded-full bg-white transition', checked ? 'translate-x-6' : 'translate-x-1')}
+              />
+            </button>
+          )}
+        </Switch>
+      </div>
+
+      {/* <p className={`${label2_class}`}>{label2}</p> */}
+    </div>
+  )
+}
+
+
+export async function getServerSideProps(req) {
+
+  const { category = "", brand = "", search="" } = await req.query;
+
+  return {
+    props: { category, brand, search }
+  }
 }
 
 // export async function getServerSideProps(req) {

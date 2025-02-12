@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 
 const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges, ranges, filters }) => {
-    console.log('priceRange', filters);
+    // console.log('priceRange', filters);
     const COLOR_TRACK = "#CBD5E1";
     const COLOR_RANGE = "#000";
 
-    
+
 
     // Create references for sliders and tooltips
     const fromSliderRef = useRef(null);
@@ -21,11 +21,11 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
     const [showFromTooltip, setShowFromTooltip] = useState(false);
     const [showToTooltip, setShowToTooltip] = useState(false);
 
-    useEffect(()=>{
+    useEffect(() => {
         setFromValue(ranges.min)
         setToValue(ranges.max)
-        console.log("range", fromValue, toValue)
-      },[ranges])
+        // console.log("range", fromValue, toValue)
+    }, [ranges])
 
     // Update the slider background to represent the range
     const fillSlider = (from, to) => {
@@ -85,14 +85,31 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
         setTooltip(toSliderRef.current, toTooltipRef.current);
     }, [fromValue, toValue]);
 
+    const handleFromInputChange = (e) => {
+        let value = Number(e.target.value);
+        if (value < MIN) value = MIN;
+        if (value > toValue) value = toValue;
+        setFromValue(value);
+        setRanges({ min: value, max: toValue });
+    };
+
+    const handleToInputChange = (e) => {
+        let value = Number(e.target.value);
+        if (value > MAX) value = MAX;
+        if (value < fromValue) value = fromValue;
+        setToValue(value);
+        setRanges({ min: fromValue, max: value });
+    };
+
     return (
         <>
             <label htmlFor="range" className={`${label_classname}`}>{label}</label>
 
             <div className='flex items-center gap-[10px] justify-between pb-[15px]'>
                 <input
-                    min={MIN}
-                    readOnly
+                    // min={MIN}
+                    // readOnly
+                    onChange={handleFromInputChange}
                     max={MAX}
                     type="number"
                     className='border text-[#9a9a9a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
@@ -100,7 +117,8 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
                 />
                 <input
                     min={MIN}
-                    readOnly
+                    // readOnly
+                    onChange={handleToInputChange}
                     max={MAX}
                     type="number"
                     className='border text-[#9a9a9a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
@@ -196,8 +214,8 @@ export default RangeSlider;
 //             ${COLOR_TRACK} 0%,
 //             ${COLOR_TRACK} ${fromPosition}%,
 //             ${COLOR_RANGE} ${fromPosition}%,
-//             ${COLOR_RANGE} ${toPosition}%, 
-//             ${COLOR_TRACK} ${toPosition}%, 
+//             ${COLOR_RANGE} ${toPosition}%,
+//             ${COLOR_TRACK} ${toPosition}%,
 //             ${COLOR_TRACK} 100%)`;
 //     };
 

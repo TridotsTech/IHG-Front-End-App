@@ -131,8 +131,12 @@ export default function Navbar({ all_categories, categoryData }) {
   const tabView = useTabView(); // Use the custom hook
 
   const changeCategory = (item) => {
-    !router.asPath.includes('list') ? router.push('/list') : null
+    // !router.asPath.includes('list') ? router.replace(`/list?category=${item}`) : null
+    router.replace(`/list?category=${item}`, undefined,  { shallow: true });
     dispatch(setFilter({ item_group: [item] }));
+    enbleDropdownMore('leave')
+    setDropdown(1)
+    leaveFormnav()
     // dispatch(setFilter([item]))
     // dispatch(setBrand([]))
   }

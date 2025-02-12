@@ -20,7 +20,7 @@ export default function index() {
   const dispatch = useDispatch()
 
   const changeBrand = (item) => {
-    router.push('/list')
+    router.push('/list?brand='+item)
     // console.log("log", item)
     dispatch(setFilter({ brand: [item] }));
   }

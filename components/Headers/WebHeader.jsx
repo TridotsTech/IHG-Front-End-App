@@ -58,7 +58,7 @@ export default function WebHeader({ website_settings,categoryData }) {
                 </div>
               </div>
               {/* headerWidth_r */}
-              <div className=" p-[10px_0_5px_0] bg-[#00000008] ">
+              <div className=" p-[10px_0_5px_0] bg-[#00000008] lg:min-h-[46px]">
                 {/* {websiteSettings.all_categories && <Navbar all_categories={websiteSettings.all_categories} />} */}
                 {websiteSettings.default_header && <Navbar all_categories={websiteSettings.all_categories} categoryData={categoryData} />}
               </div>

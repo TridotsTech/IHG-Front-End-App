@@ -14,7 +14,7 @@ const HomeFilter = createSlice({
     initialState,
     reducers: {
         setFilter(state, action) {
-            console.log("setFilter action triggered");
+            // console.log("setFilter action triggered");
             const payload = action.payload;
 
             if (!state.filtersValue) {

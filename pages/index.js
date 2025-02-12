@@ -39,14 +39,14 @@ export default function Home() {
       };
       const resp = await HomePage(param);
       const data = resp.message ? resp.message : {}
-      setLoading(false)
       setData(data)
+      setLoading(false)
     }
 
     getData();
 
-      dispatch(resetFilter())
-      dispatch(resetFilters())
+    dispatch(resetFilter())
+    dispatch(resetFilters())
 
   }, [])
 
@@ -113,10 +113,10 @@ export default function Home() {
 
 
 
-        <div className="fade-in">
+      <div className="fade-in min-h-screen">
 
         {loading ?
-          <div className="min-h-screen ">
+          <>
             <div className="animate-pulse">
               <div className="flex items-center justify-center w-full gap-[15px] h-full">
                 <div className="w-full home md:min-h-[120px] your-element ">
@@ -139,13 +139,13 @@ export default function Home() {
                 ))
               }
             </div>
-          </div>
+          </>
           :
           <>
             {memoizedData}
           </>
         }
-        </div>
+      </div>
 
 
 

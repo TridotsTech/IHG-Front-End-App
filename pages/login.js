@@ -46,3 +46,21 @@ export default function login() {
   );
 }
 
+export async function getServerSideProps({ req }) {
+  const token = req.cookies.api_key || null;
+
+  // If the token exists and the user is on the login page, redirect to the home page or previous URL
+  if (token ) {
+    return {
+      redirect: {
+        destination: req.cookies.preurl ? req.cookies.preurl : '/',  // Redirect to previous URL or home
+        permanent: false, // Temporary redirect
+      },
+    };
+  }
+
+  // If no token, continue rendering the login page
+  return {
+    props: {}, // Return props for the login page
+  };
+}

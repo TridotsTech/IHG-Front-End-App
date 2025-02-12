@@ -69,6 +69,8 @@ const Detail = () => {
         }
         getDetail();
 
+        loadLightGallery();
+
         return (()=> {
             if(detail && JSON.parse(detail)){
                 localStorage.removeItem('product_detail')
@@ -76,6 +78,19 @@ const Detail = () => {
         })
 
     }, [router.query]);
+
+    const loadLightGallery = () => {
+        setTimeout(() => {
+            const $lightGallery = $("#lightgallery");
+            if ($lightGallery && $lightGallery.lightGallery()) {
+                $lightGallery.lightGallery();
+
+                return () => {
+                    $lightGallery.data("lightGallery").destroy(true);
+                };
+            }
+        }, 1000);
+    };
 
     const getPrRoute = () => {
         let productRoute = ""
@@ -321,19 +336,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
         }
     };
 
-    const loadLightGallery = () => {
-        setTimeout(() => {
-            const $lightGallery = $("#lightgallery");
-            if ($lightGallery && $lightGallery.lightGallery()) {
-                $lightGallery.lightGallery();
-
-                return () => {
-                    $lightGallery.data("lightGallery").destroy(true);
-                };
-            }
-        }, 1800);
-    };
-
+    
     useMemo(() => {
         if (webSettings) {
             let datas = [
@@ -473,7 +476,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
             }
 
             setLoader(false);
-            loadLightGallery();
+            // loadLightGallery();
         }
     };
 
@@ -760,7 +763,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
                                 <div
                                     className="md:hidden pt-3 flex items-center gap-[5px] w-fit cursor-pointer"
-                                    onClick={() => router.push("/list")}
+                                    onClick={() => router.back()}
                                 >
                                     <Image
                                         className="size-[14px]"
@@ -864,7 +867,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseFloat(((data.rate - data.offer_rate) / data.rate) * 100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                                        {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseInt(((data.rate - data.offer_rate) / data.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                         {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
                                         {false && (
                                             <div className="md:hidden absolute top-4 right-[-3px] flex">
@@ -949,7 +952,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 />
 
                                                 <div className="flex flex-row mt-1 items-center justify-between gap-3">
-                                                    {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_10px] rounded-[5px] text-[10px]'>{parseFloat((data.rate - data.offer_rate) / data.rate * 100).toFixed(2)}<span className='px-[0px] text-[#fff] text-[12px]'>% off</span> </h6> : <></>}
+                                                    {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_10px] rounded-[5px] text-[10px]'>{parseInt((data.rate - data.offer_rate) / data.rate * 100)}<span className='px-[0px] text-[#fff] text-[10px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                                     <div
                                                         className={` font-semibold  openSens`}
                                                     >

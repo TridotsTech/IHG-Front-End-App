@@ -1,7 +1,7 @@
 import '@/styles/globals.scss'
-import { Fragment, useEffect, useState } from 'react'
+import { memo, useEffect, useState } from 'react'
 import ErrorBoundary from '@/components/Exception/ErrorBoundary'
-import { websiteSettings, check_Image, get_all_category, get_all_masters } from '@/libs/api';
+import { get_all_masters } from '@/libs/api';
 import store from '@/redux/store'
 import dynamic from 'next/dynamic';
 const BottomTabs = dynamic(() => import('@/components/Common/BottomTabs'))
@@ -13,8 +13,8 @@ import { useRouter } from 'next/router'
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux'
-import nProgress from "nprogress";
-import "nprogress/nprogress.css"
+// import nProgress from "nprogress";
+// import "nprogress/nprogress.css"
 
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import 'rodal/lib/rodal.css'
@@ -41,7 +41,7 @@ import Image from 'next/image';
 // })
 
 
-export default function App({ Component, pageProps }) {
+function App({ Component, pageProps }) {
 
   const router = useRouter();
   let [website_settings, setWebsite_settings] = useState()
@@ -87,17 +87,16 @@ export default function App({ Component, pageProps }) {
   }, []);
 
   useEffect(() => {
-    // NProgress.configure({ showSpinner: false });
-    nProgress.configure({ showSpinner: false })
+    // nProgress.configure({ showSpinner: false })
     const handleStart = (e) => {
       if (e == '/' && localStorage['api_key']) {
         getValue()
       }
-      nProgress.start()
+      // nProgress.start()
     };
     const handleComplete = (e) => {
       setPageKey(Date.now());
-      nProgress.done()
+      // nProgress.done()
     };
 
 
@@ -270,7 +269,7 @@ export default function App({ Component, pageProps }) {
 
               {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
               {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
-              <div key={pageKey} className="page fade-enter fade-enter-active">
+              <div key={router.pathname == "/pr/[...detail]" ? pageKey : null} className="page fade-enter fade-enter-active">
                 <Component  {...pageProps} />
               </div>
               {/* </main> */}
@@ -312,4 +311,5 @@ export default function App({ Component, pageProps }) {
   )
 }
 
+export default memo(App)
 

@@ -31,7 +31,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   const router = useRouter()
 
   useEffect(() => {
-    console.log('fd', filters)
+    // console.log('fd', filters)
 
   }, [filters, router.query])
 
@@ -87,32 +87,32 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   ]
 
   const productTypeOptions = [
-    { label: "Select the value", value: "" },
-    { label: "Listed", value: "Listed" },
-    { label: "Unlisted", value: "Unlisted" },
-    { label: "Obsolete", value: "Obsolete" }
+    "Listed" ,
+    "Unlisted",
+    "Obsolete" 
   ]
 
   const multiSelectOptions = [
     { type: "brand", label: "Brands", options: mastersData.brand || [] },
+    { type: "category_list", label: "Category List", options: mastersData.category_list || [] },
+    { type: "product_type", label: "Product Type", options: productTypeOptions || [] },
     { type: "item_group", label: "Item Group", options: mastersData.item_group || [] },
+    { type: "ip_rate", label: "IP Rate", options: mastersData.ip_rate || [] },
+    { type: "power", label: "Power", options: mastersData.power || [] },
+    { type: "color_temp_", label: "Color Temp", options: mastersData.color_temp_ || [] },
+    { type: "body_finish", label: "Body Finish", options: mastersData.body_finish || [] },
+    { type: "input", label: "Input", options: mastersData.input || [] },
+    { type: "mounting", label: "Mounting", options: mastersData.mounting || [] },
+    { type: "output_current", label: "Output Current", options: mastersData.output_current || [] },
+    { type: "output_voltage", label: "Output Voltage", options: mastersData.output_voltage || [] },
+    { type: "lamp_type", label: "Lamp Type", options: mastersData.lamp_type || [] },
+    { type: "lumen_output", label: "Lumen Output", options: mastersData.lumen_output || [] },
+    { type: "beam_angle", label: "Beam Angle", options: mastersData.beam_angle },
+    { type: "material", label: "Material", options: mastersData.material || [] },
+    { type: "warranty_", label: "Warranty", options: mastersData.warranty_ || [] },
     // { type: "product_type", label: "Product Type", options: options },
     // { type: "has_variants", label: "Has Variants", options: mastersData.has_variants || [] },
     // { type: "custom_in_bundle_item", label: "Custom In Bundle Item", options: mastersData.custom_in_bundle_item || [] },
-    { type: "category_list", label: "Category List", options: mastersData.category_list || [] },
-    { type: "beam_angle", label: "Beam Angle", options: mastersData.beam_angle },
-    { type: "lumen_output", label: "Lumen Output", options: mastersData.lumen_output || [] },
-    { type: "mounting", label: "Mounting", options: mastersData.mounting || [] },
-    { type: "ip_rate", label: "IP Rate", options: mastersData.ip_rate || [] },
-    { type: "lamp_type", label: "Lamp Type", options: mastersData.lamp_type || [] },
-    { type: "power", label: "Power", options: mastersData.power || [] },
-    { type: "input", label: "Input", options: mastersData.input || [] },
-    { type: "material", label: "Material", options: mastersData.material || [] },
-    { type: "body_finish", label: "Body Finish", options: mastersData.body_finish || [] },
-    { type: "warranty_", label: "Warranty", options: mastersData.warranty_ || [] },
-    { type: "output_voltage", label: "Output Voltage", options: mastersData.output_voltage || [] },
-    { type: "output_current", label: "Output Current", options: mastersData.output_current || [] },
-    { type: "color_temp_", label: "Color Temp", options: mastersData.color_temp_ || [] },
   ];
   const handleSelectionChange = (type, selectedArray) => {
     console.log("Selected Options:", selectedArray);
@@ -126,7 +126,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
 
   return (
     <>
-      <div className='bg-[#F0F0F0] p-[7px_14px] md:my-[5px] md:hidden'>
+    {/* bg-[#F0F0F0] */}
+      <div className='border-b p-[7px_14px] md:my-[5px] md:hidden'>
         <h4 className={`text-[16px] font-semibold md:text-[14px] text-center transition-opacity duration-[0.5s] ease-in-out `}>Total  {foundValue}  Products</h4>
       </div>
       <div className='md:hidden  px-[20px] tab:pb-[40px]'>
@@ -138,7 +139,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
         {/* <input name='code' onChange={(e) => setFilters({ ...filters, item_code: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by code' /> */}
         {/* </div> */}
 
-        <div className='py-4 md:py-2'>
+        <div className='pt-4 md:py-2'>
           <label htmlFor="code" className={`${label_classname}`}>Search By Description</label>
           <input name='code' value={filters.item_description} onChange={(e) => setFilters({ ...filters, item_description: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by description' />
         </div>
@@ -150,13 +151,13 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           <SwitchCom label_classname={label_classname} label1={"InStock"} type={'stock'} checked={switchValues.stock} label2={"Show Instock products only"} changeValue={changeValue} />
         </div> */}
 
-        <div>
+        {/* <div>
           <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
-        </div>
+        </div> */}
 
         {/* <div className='py-4 flex flex-col gap-2'>
           <label htmlFor="" className={`${label_classname}`}>Sort by</label>
@@ -186,11 +187,6 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
             } label={'Stock'} label_classname={label_classname} />
         </div>
 
-        <div className='pt-4 md:py-2'>
-          <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
-          <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
-        </div>
-
         {/* <div className='py-4 md:py-2'>
           <RangeSlider MIN={0} MAX={350} ranges={stockRange} setRanges={setStockRange} label={'Stock'} label_classname={label_classname} />
         </div> */}
@@ -198,7 +194,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
         {/* <CurrentProductFilter category_list={filtersList.category_list} /> */}
         {/* {(filtersList.brand_list && filtersList.brand_list.length != 0) && <BrandsFilter brand_list={filtersList.brand_list} ProductFilter={ProductFilter} />} */}
 
-        <div className='my-3 flex flex-col'>
+        {/* <div className='my-3 flex flex-col'>
           <label htmlFor="" className={`${label_classname}`}>Product Type</label>
           <select value={filters.product_type} onChange={(e) => setFilters((prev) => ({ ...prev, product_type: e.target.value }))} className={` outline-none border-[1px] p-2 py-3 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
             {
@@ -207,8 +203,8 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
               ))
             }
           </select>
-        </div>
-        <div className='tab:mb-28 lg:mb-20'>
+        </div> */}
+        <div className='tab:mb-28'>
           {multiSelectOptions.map(({ type, label, options }) => (
             <MultiSelectBox
               key={type}
@@ -223,6 +219,11 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           ))}
         </div>
 
+        <div className='pt-1 md:py-2 lg:mb-20'>
+          <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
+          <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
+        </div>
+
         {/* {(filtersList.attribute_list && filtersList.attribute_list.length != 0) && <AttributeFilter attribute_list={filtersList.attribute_list} ProductFilter={ProductFilter} />} */}
         {/* <RatingFilter ProductFilter={ProductFilter} /> */}
         {/* <PriceFilter ProductFilter={ProductFilter} /> */}
@@ -235,9 +236,9 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
     width: 20%;
 } */}
       </div >
-      <div className={`fixed bottom-0 md:hidden tab:w-[35%] lg:w-[20%]  p-[12px_10px] bg-[#F0F0F0] z-[99]`} style={{ boxShadow: '-1px 0px 1px 2px #eeeeee' }}>
+      <div className={`fixed bottom-0 md:hidden tab:w-[35%] lg:w-[20%]  p-[12px_10px] bg-[#fff] z-[99]`} style={{ boxShadow: '-1px 0px 1px 2px #eeeeee' }}>
         <div className='w-full flex items-center gap-[10px] justify-between'>
-          <button className='w-[50%] text-[#fff] bg-[#f56c6c] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter()}>Clear All</button>
+          <button className='w-[50%] text-[#000] bg-[#ddd] rounded-[5px] h-[35px] px-[10px]' onClick={() => clearFilter()}>Clear All</button>
           <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => fetchResults()}>Filter</button>
         </div>
       </div>

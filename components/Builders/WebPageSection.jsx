@@ -155,17 +155,18 @@ export default function WebPageSection({ data, i, isLast }) {
   ]
 
   const changeCategory = (item) => {
-    router.push("/list")
-    // router.push("/" + item.redirect_url)
     const val = item.redirect_url.split("=")[1]
-    // console.log(val, "val")
-    console.log("Clickable", val)
-    dispatch(setFilter({ item_group: [val] }));
-    // dispatch(setFilter({'item_group': [val]}))
+    router.replace(`/list?category=${val}`,null,{locale: true,scroll:false,shallow:true})
+    // router.push("/" + item.redirect_url)
+    // dispatch(setFilter({ item_group: [val] }));
     // dispatch(setBrand([]))
   }
   
 
+  useEffect(()=>{
+    dispatch(resetFilter())
+    dispatch(resetFilters())
+  })
  
 
   // console.log("datett", data);
