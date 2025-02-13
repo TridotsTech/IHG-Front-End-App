@@ -57,8 +57,8 @@ export default function WebHeader({ website_settings,categoryData }) {
                   {websiteSettings.default_header && <MainHeader header_template={websiteSettings.default_header} theme_settings={websiteSettings.app_settings} all_categories={websiteSettings.all_categories} website_settings={website_settings} categoryData={categoryData} />}
                 </div>
               </div>
-              {/* headerWidth_r */}
-              <div className=" p-[10px_0_5px_0] bg-[#00000008] lg:min-h-[46px]">
+              {/* headerWidth_r p-[10px_0_5px_0] bg-[#00000008] lg:min-h-[46px] */}
+              <div className=" p-0 flex items-center bg-[#00000008] lg:min-h-[35px]">
                 {/* {websiteSettings.all_categories && <Navbar all_categories={websiteSettings.all_categories} />} */}
                 {websiteSettings.default_header && <Navbar all_categories={websiteSettings.all_categories} categoryData={categoryData} />}
               </div>

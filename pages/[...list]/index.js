@@ -438,8 +438,8 @@ function List({ category, brand, search }) {
     // console.log("queryfilter", filters)
     const perPage = window.innerWidth >= 1400 ? "15" : "12";
     const queryParams = new URLSearchParams({
-      q: filters.q ? filters.q : filters.item_description ? `${filters.item_description}*` : '*',
-      query_by: filters.q ? 'item_name,item_code,item_description' : filters.item_description ? 'item_description,item_code' : '',
+      q: filters.q !== '*' ? filters.q : filters.item_description ? `${filters.item_description}*` : '*',
+      query_by: filters.q ? 'item_name,item_code,item_description' : filters.item_description ? 'item_description,item_code,item_name' : '',
       page: initialPageNo ? 1 : pageNo,
       per_page: 15,
       exhaustive_search: "true",
@@ -473,7 +473,7 @@ function List({ category, brand, search }) {
         );
       }
 
-      setFoundValue(data.found || 0);
+      setFoundValue(data.found);
 
     } catch (err) {
       setError(err.message || "An error occurred while fetching data.");
@@ -627,6 +627,11 @@ function List({ category, brand, search }) {
         q: router.query['search'] ? router.query['search'] : "*"
       }
 
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+      });
+
       setFilters({ ...filters })
       fetchResults(true, true)
 
@@ -739,7 +744,7 @@ function List({ category, brand, search }) {
 
       <div className='md:hidden tab:hidden main-width pt-3 flex items-center justify-end gap-4'>
 
-        <div className='flex items-center gap-3'>
+        <div className='flex items-center gap-4'>
           <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
           <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
@@ -753,7 +758,7 @@ function List({ category, brand, search }) {
         </div>
 
         <div className=''>
-          {typeof window !== "undefined" && <select value={localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options">
+          {typeof window !== "undefined" && <select value={localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300 text-[13px] h-[32px]`} placeholder="Select options">
             {
               sortByOptions.map((item, i) => (
                 <option value={item.value}>{item.text}</option>
@@ -766,7 +771,7 @@ function List({ category, brand, search }) {
       <div className={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in `}>
         {
           ((tabView && openFilter) || !tabView) && (
-            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[124px] tab:top-[230px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
+            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[112px] tab:top-[220px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
               {<Filters mastersData={mastersData || []} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
             </div>
           )
@@ -776,7 +781,7 @@ function List({ category, brand, search }) {
           {<MobileFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} filters={filters} setFilters={setFilters} productBoxView={productBoxView} ProductFilter={ProductFilter} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
         </div>
 
-        <div className='md:hidden tab:block lg:hidden sticky top-[120px] bg-[#f1f5f9] z-[10] w-full '>
+        <div className='md:hidden tab:block lg:hidden sticky top-[110px] bg-[#f1f5f9] z-[10] w-full '>
           {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} changeValue={changeValue} />}
         </div>
 
@@ -877,7 +882,7 @@ const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter
 
       {isOpenSort && <div className='sortByPopup'>
         <Rodal visible={isOpenSort} enterAnimation='slideDown' animation='' onClose={closeModal}>
-          <SortByFilter setFilters={setFilters} handleSortBy={handleSortBy} closeModal={closeModal} />
+          <SortByFilter setFilters={setFilters} handleSortBy={handleSortBy} closeModal={closeModal} filters={filters} />
         </Rodal>
       </div>
       }
@@ -922,7 +927,7 @@ const TabFilters = ({ productBoxView, setFilters, handleSortBy, filters, setOpen
     <>
       {isOpenSort && <div className='sortByPopup'>
         <Rodal visible={isOpenSort} enterAnimation='slideDown' animation='' onClose={closeModal}>
-          <SortByFilter setFilters={setFilters} handleSortBy={handleSortBy} closeModal={closeModal} />
+          <SortByFilter setFilters={setFilters} handleSortBy={handleSortBy} closeModal={closeModal} filters={filters} />
         </Rodal>
       </div>
       }
@@ -1005,7 +1010,7 @@ const TabFilters = ({ productBoxView, setFilters, handleSortBy, filters, setOpen
   )
 }
 
-const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) => {
+const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy, filters }) => {
 
   let sorting = [
     { text: 'Stock high to low', value: 'stock:desc' },
@@ -1026,7 +1031,7 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy }) =
 
       {sorting.map((res, index) => {
         return (
-          <h6 onClick={() => { closeModal(), handleSortBy(res.value, "") }} className='text-[15px] font-medium p-[10px]'>{res.text}</h6>
+          <h6 onClick={() => { closeModal(), handleSortBy(res.value, "") }} className={`text-[15px] font-medium p-[10px] ${filters.sort_by === res.value && 'bg-gray-100'}`}>{res.text}</h6>
         )
       })}
     </>
@@ -1077,7 +1082,7 @@ const SwitchComponent = ({ label1, label2, label_classname, checked, changeValue
   const label2_class = 'text-[#7C7C7C] text-[12px]'
   return (
     <div className=''>
-      <div className='flex items-center gap-5 justify-between'>
+      <div className='flex items-center gap-3 justify-between'>
         <h5 className={`${label_classname}`}>{label1}</h5>
         <Switch checked={checked} onChange={(e) => changeValue(type, e)} as={Fragment}>
           {({ checked, disabled }) => (

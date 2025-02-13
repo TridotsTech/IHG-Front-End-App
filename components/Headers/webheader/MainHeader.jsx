@@ -196,12 +196,13 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
 
     const queryParams = new URLSearchParams({
-      q: `*`,
-      query_by: "item_name,item_description,brand",
+      q: `${inputText ? inputText : '*'}`,
+      query_by: "item_name,item_description,brand,item_code",
       // page: "1",
       // per_page: "15",
-      query_by_weights: "1,2,3",
-      filter_by: `item_code:${inputText}* || item_description:${inputText}*`
+      // query_by_weights: "1,2,3",
+      exhaustive_search: "true",
+      // filter_by: `item_code:${inputText}* || item_description:${inputText}*`
     });
 
     const data = await typesense_search_items(queryParams);
@@ -398,6 +399,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
                     <div key={index} className={`${website_settings.enable_multi_store == 1 ? 'w-full' : 'w-full'} relative flex justify-end`}>
                       <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
                         <input value={searchValue} autoComplete='off' id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
+                        {searchValue && <Image onClick={() => setSearchValue('')} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer mr-2' height={25} width={25} alt='vantage' src={'/Navbar/cancel.svg'}></Image>}
                         <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
                       </div>
                       {searchValue && (activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>

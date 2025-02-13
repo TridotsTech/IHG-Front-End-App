@@ -127,7 +127,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   return (
     <>
     {/* bg-[#F0F0F0] */}
-      <div className='border-b p-[7px_14px] md:my-[5px] md:hidden'>
+      <div className='border-b p-[7px_14px] md:my-[5px] md:hidden sticky top-0 bg-white z-[9]'>
         <h4 className={`text-[16px] font-semibold md:text-[14px] text-center transition-opacity duration-[0.5s] ease-in-out `}>Total  {foundValue}  Products</h4>
       </div>
       <div className='md:hidden  px-[20px] tab:pb-[40px]'>
@@ -221,7 +221,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
 
         <div className='pt-1 md:py-2 lg:mb-20 tab:mb-40'>
           <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
-          <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
+          <input name='dimension' value={filters.dimension} onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
         </div>
 
         {/* {(filtersList.attribute_list && filtersList.attribute_list.length != 0) && <AttributeFilter attribute_list={filtersList.attribute_list} ProductFilter={ProductFilter} />} */}
@@ -282,12 +282,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
               } label={'Stock'} label_classname={label_classname} />
           </div>
 
-          <div className='pt-4 md:py-2'>
-            <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
-            <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
-          </div>
-
-          <div className='my-3 flex flex-col'>
+          {/* <div className='my-3 flex flex-col'>
             <label htmlFor="" className={`${label_classname}`}>Product Type</label>
             <select value={filters.product_type} onChange={(e) => setFilters((prev) => ({ ...prev, product_type: e.target.value }))} className={` outline-none border-[1px] p-2 py-3 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
               {
@@ -296,7 +291,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
                 ))
               }
             </select>
-          </div>
+          </div> */}
           <div className=''>
             {multiSelectOptions.map(({ type, label, options }) => (
               <MultiSelectBox
@@ -310,6 +305,11 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
                 clearFilter={clearFilter}
               />
             ))}
+          </div>
+
+          <div className='md:py-2'>
+            <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
+            <input name='dimension' value={filters.dimension} onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
           </div>
 
 

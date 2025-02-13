@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 
 const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges, ranges, filters }) => {
     // console.log('priceRange', filters);
-    const COLOR_TRACK = "#CBD5E1";
-    const COLOR_RANGE = "#000";
+    const COLOR_TRACK = "#f1f1f1";
+    const COLOR_RANGE = "#ddd";
 
 
 
@@ -107,12 +107,12 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
 
             <div className='flex items-center gap-[10px] justify-between pb-[15px]'>
                 <input
-                    // min={MIN}
+                    min={MIN}
                     // readOnly
                     onChange={handleFromInputChange}
                     max={MAX}
                     type="number"
-                    className='border text-[#9a9a9a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
+                    className='border text-[#504a4a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
                     value={fromValue}
                 />
                 <input
@@ -121,7 +121,7 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
                     onChange={handleToInputChange}
                     max={MAX}
                     type="number"
-                    className='border text-[#9a9a9a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
+                    className='border text-[#504a4a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
                     value={toValue}
                 />
             </div>

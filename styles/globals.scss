@@ -1683,7 +1683,7 @@ input[type=range]::-webkit-slider-thumb {
   pointer-events: all;
   width: var(--_marker-size);
   height: var(--_marker-size);
-  background-color: $primary-color;
+  background-color: #fff;
   border-radius: 50%;
   box-shadow: 0 0 0 1px $primary-color;
   cursor: pointer;
@@ -1715,7 +1715,8 @@ input[type="range"] {
   height: var(--_track-heigt);
   width: 100%;
   position: absolute;
-  background-color: $primary-color;
+  // background-color: #000 !important;
+  // background: #b2b1b1 !important;
   pointer-events: none;
 }
 

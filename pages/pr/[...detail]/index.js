@@ -63,7 +63,8 @@ const Detail = () => {
         // productDetail["breadcrumb"] = breadcrumb;
         const detail = localStorage['product_detail']
         if(detail && JSON.parse(detail)){
-            setProductDetail(JSON.parse(detail))
+            setProductDetail({...JSON.parse(detail)})
+            // console.log('deta', JSON.parse(detail))
         }else{
             getProductDetail()
         }
@@ -71,11 +72,11 @@ const Detail = () => {
 
         loadLightGallery();
 
-        return (()=> {
-            if(detail && JSON.parse(detail)){
-                localStorage.removeItem('product_detail')
-            }
-        })
+        // return (()=> {
+        //     if(detail && JSON.parse(detail)){
+        //         localStorage.removeItem('product_detail')
+        //     }
+        // })
 
     }, [router.query]);
 
@@ -251,11 +252,12 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
     let [apiCall, setApicall] = useState(true);
     let [pageLoading, setPageLoading] = useState(false);
 
+    console.log("product", productDetail)
     useEffect(() => {
         if (typeof window != "undefined") {
             setApicall(true);
             setLoader(true);
-            setData(productDetail);
+            setData({...productDetail});
             setLoader(false);
             get_product_details();
         }
@@ -283,6 +285,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
     }, [apiCall, data, details,]);
 
+    // console.log("dedata", data);
     const [relatedData, setRelatedData] = useState([])
     useEffect(() => {
         // console.log("rel", relatedProductData)
@@ -856,7 +859,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                     ) : (
                                                         <a href={check_Image(data.website_image_url)}>
                                                             <Image
-                                                                className={"h-[400px] mx-auto"}
+                                                                className={"h-[400px] mx-auto object-contain"}
                                                                 height={200}
                                                                 width={300}
                                                                 alt={data.item}
@@ -867,7 +870,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 </div>
                                             )}
                                         </div>
-                                        {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_13px] absolute top-3 left-2 rounded-[5px] text-[12px]'>{parseInt(((data.rate - data.offer_rate) / data.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
+                                        {(data.offer_rate) ? <h6 className='bg-[#009f58] text-[#fff] p-[3px_13px] absolute top-0 left-0 rounded-br-md  text-[12px]'>{parseInt(((data.rate - data.offer_rate) / data.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                         {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
                                         {false && (
                                             <div className="md:hidden absolute top-4 right-[-3px] flex">
@@ -952,7 +955,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 />
 
                                                 <div className="flex flex-row mt-1 items-center justify-between gap-3">
-                                                    {(data.offer_rate) ? <h6 className='bg-[#f56c6c] text-[#fff] p-[3px_10px] rounded-[5px] text-[10px]'>{parseInt((data.rate - data.offer_rate) / data.rate * 100)}<span className='px-[0px] text-[#fff] text-[10px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
+                                                    {(data.offer_rate) ? <h6 className='bg-[#009f58] text-[#fff] p-[3px_10px] text-[10px]'>{parseInt((data.rate - data.offer_rate) / data.rate * 100)}<span className='px-[0px] text-[#fff] text-[10px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                                     <div
                                                         className={` font-semibold  openSens`}
                                                     >

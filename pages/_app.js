@@ -92,6 +92,13 @@ function App({ Component, pageProps }) {
       if (e == '/' && localStorage['api_key']) {
         getValue()
       }
+      console.log(e,'e')
+      if(!e.includes('pr')){
+        const detail = localStorage['product_detail'];
+          if(detail && JSON.parse(detail)){
+              localStorage.removeItem('product_detail')
+          }
+      }
       // nProgress.start()
     };
     const handleComplete = (e) => {
@@ -269,7 +276,8 @@ function App({ Component, pageProps }) {
 
               {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
               {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
-              <div key={router.pathname == "/pr/[...detail]" ? pageKey : null} className="page fade-enter fade-enter-active">
+              {/* router.pathname == "/pr/[...detail]" ? pageKey : null */}
+              <div key={pageKey} className="page fade-enter fade-enter-active">
                 <Component  {...pageProps} />
               </div>
               {/* </main> */}

@@ -31,12 +31,12 @@ export default function MobileCategoryFilter({ category_list, closeModal, data }
   const dispatch = useDispatch()
 
   const changeCategory = (item) => {
-      router.push("/list")
+    router.replace(`/list?category=${item}`,null,{locale: true,scroll:false,shallow:true})
       // router.push("/" + item.redirect_url)
       // const val = item.redirect_url.split("=")[1]
       // console.log(val, "val")
-      dispatch(setFilter([item]))
-      dispatch(setBrand([]))
+      // dispatch(setFilter([item]))
+      // dispatch(setBrand([]))
     }
 
 

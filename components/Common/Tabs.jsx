@@ -132,7 +132,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
       return (
         <div>
           {productDetails.barcode && 
-          <tr className="flex justify-center items-center">
+          <tr className="flex justify-center items-center border">
               <Image src={`https://quickchart.io/qr?text=${productDetails.barcode}`} width={30} height={30} className="size-[230px]" />
           </tr>}
         </div>

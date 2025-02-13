@@ -216,6 +216,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
   const navigateDetail = (item) => {
     localStorage['product_detail'] = JSON.stringify(item.document)
+    console.log("product", item.document)
     router.push('/pr/' + item.document.item_code)
   }
 
@@ -247,12 +248,12 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
           {(productList && productList.length != 0 && Array.isArray(productList)) && productList.map((item, index) => {
             return (
               // onMouseEnter={()=>  setQuick(index)} onMouseLeave={() => { setQuick(-1) }}
-              <li  key={index} className={`fade-in ${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px] lg:p-[10px] lg:h-fit lg:gap-[10px] lg:rounded-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] ')} relative your-element border`} >
+              <li key={index} className={`fade-in ${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px] lg:p-[10px] lg:h-fit lg:gap-[10px] lg:rounded-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] lg:flex lg:flex-col lg:justify-between')} relative your-element border`} >
 
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[160px] 2xl:h-[185px] ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:!h-[120px]' : 'md:h-[170px] md:w-[100%] '} your-element `}>
                   <Link onClick={() => navigateDetail(item)} href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[160px] 2xl:h-[185px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : window.innerWidth >= 1400 ? 185 : 160} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px] lg:rounded-[5px]' : 'lg:h-[160px] 2xl:h-[185px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
-                  {(item.document.offer_rate) ? <h6 className={`bg-[#f56c6c] text-[#fff] p-[3px_13px] absolute top-0 ${productBoxView && productBoxView == 'List View' ? 'right-0 left-auto' : 'left-0'} left-0 rounded-[5px] text-[12px]`}>{parseInt(((item.document.rate - item.document.offer_rate) / item.document.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(item.document.rate - item.document.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
+                  {(item.document.offer_rate) ? <h6 className={`bg-[#009f58]  text-[#fff] p-[1px_5px] absolute top-0 ${productBoxView && productBoxView == 'List View' ? 'right-0 left-auto rounded-[0_5px_0_5px]' : 'left-0 rounded-[0_0_5px_0]'} left-0 text-[12px]`}>{parseInt(((item.document.rate - item.document.offer_rate) / item.document.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(item.document.rate - item.document.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                   {/* <div onClick={() => { enableQuickFn(item) }} className={` ${(index == quick) ? 'opacity-100 h-[35px]' : 'opacity-0 h-0'} transition-all delay-[500] duration-[700] md:hidden flex items-center justify-center absolute top-[45%] z-[97] bg-[#f9f9f9ad]  text-[14px] font-medium text-[#000] border-[1px] border-[#fff] rounded-[5px] p-[2px_8px]`}>Quick View</div> */}
                 </div>
 
@@ -260,19 +261,19 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
                   {/* <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link> */}
 
                   <div className={`flex gap-1 mt-2 mb-[5px] ${(productBoxView && productBoxView == 'List View') ? 'lg:m-0 tab:flex-col' : 'flex-row items-center'}`}>
-                      {item.document.product_type && <p className='bg-[#d0d0d0] px-[5px] py-[2px] text-[11px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>{item.document.product_type}</p>}
-                      {item.document.new_arrival === 1 && <p className='bg-[#d0d0d0] px-[5px] py-[2px] text-[11px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>New Arrival</p>}
-                      {item.document.hot_product === 1 && <p className='bg-[#d0d0d0] px-[5px] py-[2px] text-[11px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>Upcoming</p>}
-                    </div>
+                    {item.document.product_type && <p className={`${item.document.product_type.toLowerCase().includes('listed') ? 'bg-[#097be42e] text-[#0889ff]' : 'bg-[#d0d0d0] text-[#000]'} uppercase px-[5px] py-0 text-[10px]  tracking-[0.4px] rounded-[3px] w-fit`}>{item.document.product_type}</p>}
+                    {item.document.new_arrival === 1 && <p className='bg-[#d0d0d0] px-[5px] py-0 text-[10px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>New Arrival</p>}
+                    {item.document.hot_product === 1 && <p className='bg-[#d0d0d0] px-[5px] py-0 text-[10px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>Upcoming</p>}
+                  </div>
 
                   {/* <div className='flex items-center gap-[10px] justify-between mb-1'> */}
-                    <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer min-h-[50px] text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_code}</p>
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-1 cursor-pointer text-[14px] md:text-[12px] font-medium md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>{item.document.item_code}</p>
 
-                    {/* mt-1 mb-[5px] min-h-[20px] */}
-                    
+                  {/* mt-1 mb-[5px] min-h-[20px] */}
+
                   {/* </div> */}
 
-                  <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer min-h-[40px] mb-1 text-[13px] md:text-[12px] md:leading-[2.1] lg:leading-[20px] openSens text-[#888] ${(productBoxView && productBoxView == 'List View') ? 'lg:m-0 lg:line-clamp-1 cursor-pointer min-h-[unset]' : ''}`}>{item.document.item_name}</p>
+                  <p onClick={() => navigateDetail(item)} className={`line-clamp-1 cursor-pointer mb-1 text-[12px] md:text-[11px] md:leading-[2.1] lg:leading-[20px] openSens text-[#888] ${(productBoxView && productBoxView == 'List View') ? 'lg:m-0 lg:line-clamp-1 cursor-pointer min-h-[unset]' : ''}`}>{item.document.item_name}</p>
                   {/* <p dangerouslySetInnerHTML={{ __html: item.document.item_description }} className={`line-clamp-2 text-[13px] md:text-[12px] md:h-[45px] h-[50px] md:leading-[2.1] lg:leading-[25px] openSens innerHtml_desc`} /> */}
 
                   {/* {item.document.brand && <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer text-[15px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}>Brand : <span className='text-[14px]'>{item.document.brand}</span></p>} */}
@@ -282,11 +283,15 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
                   </div>
 
                   <div className='flex items-center justify-between'>
-                    <div>
-                      {item.document.stock > 0 && <p className={`line-clamp-1 uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>({item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''})</p>}
-                      {item.document.stock < 1 && <p className={`uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-red-600`}>OUT OF STOCK</p>}
+                    <div className='flex items-center gap-[4px]'>
+                      <Image src={'/stock.svg'} height={13} width={13} alt='stock' />
+                      {item.document.stock > 0 && <p className={`line-clamp-1 uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>{item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''}</p>}
+                      {item.document.stock < 1 && <p className={`text-[12px] uppercase md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-red-600`}>Out of stock</p>}
                     </div>
-                    {item.document.brand && <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer text-[12px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}><span className='text-[14px]'>{item.document.brand}</span></p>}
+                    {item.document.brand && <div className='flex items-center gap-[4px]'>
+                      <Image src={'/brand.svg'} height={13} width={13} alt='brand' />
+                      <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer text-[12px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}><span className='text-[11px] font-semibold'>{item.document.brand}</span></p>
+                    </div>}
                   </div>
                 </div>
               </li>
