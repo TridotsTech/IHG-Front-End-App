@@ -26,6 +26,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
   const tabs = [
     { id: 0, label: "Product Details" },
     { id: 1, label: "Stock Details" },
+    { id: 2, label: "QR Code" }
   ];
 
   const removeBarcode = (data) => {
@@ -53,10 +54,10 @@ const Tabs = ({ stockDetails, productDetails }) => {
             <tbody>
               {productDetails.barcode && <tr className="text-gray-700 text-center">
                 {/* <td className="border  border-gray-300 px-4 py-2">1</td> */}
-                <td className="border  border-gray-300 px-4 py-2 text-start">QR</td>                
+                {/* <td className="border  border-gray-300 px-4 py-2 text-start">QR</td>
                 <td className="border  border-gray-300 px-4 py-2 flex justify-center items-center">
                   <Image src={`https://quickchart.io/qr?text=${productDetails.barcode}`} width={30} height={30} className="size-[80px]" />
-                </td>
+                </td> */}
               </tr>}
 
               <TableDatas index={2} label={"Product Code"} value={productDetails.item_code} />
@@ -90,7 +91,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
 
         </div>
       );
-    } else {
+    } else if (activeTab === 1) {
       return (
         <div className="space-y-2">
           {stockDetails && stockDetails.length > 0 ? <>
@@ -110,6 +111,11 @@ const Tabs = ({ stockDetails, productDetails }) => {
                     <td className="border  border-gray-300 px-4 py-2 font-bold">{res.actual_qty}</td>
                   </tr>
                 ))}
+                <tr>
+                  <td className="px-4 py-2"></td>
+                  <td className="border  border-gray-300 px-4 py-2 text-start">Total</td>
+                  <td className="border  border-gray-300 px-4 py-2 font-bold text-center">{productDetails.stock}</td>
+                </tr>
               </tbody>
             </table>
 
@@ -122,6 +128,15 @@ const Tabs = ({ stockDetails, productDetails }) => {
             </>}
         </div>
       );
+    } else if (activeTab === 2) {
+      return (
+        <div>
+          {productDetails.barcode && 
+          <tr className="flex justify-center items-center">
+              <Image src={`https://quickchart.io/qr?text=${productDetails.barcode}`} width={30} height={30} className="size-[230px]" />
+          </tr>}
+        </div>
+      )
     }
   };
 

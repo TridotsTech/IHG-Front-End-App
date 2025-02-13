@@ -107,7 +107,7 @@ export default function Home() {
 
       <div className={`lg:hidden sticky top-0 z-[99] bg-white md:min-h-[45px] md:w-full your-element`}>
         {theme_settings && (
-          <MobileHeader home={true} cart={true} theme_settings={theme_settings} />
+          <MobileHeader home={true} cart={true} search={true} theme_settings={theme_settings} />
         )}
       </div>
 

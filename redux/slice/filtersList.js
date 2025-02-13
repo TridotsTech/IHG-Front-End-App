@@ -96,7 +96,7 @@ const initialState = {
         page_no: 1,
         item_code: "",
         item_description: "",
-        sort_by: '',
+        sort_by: 'stock:desc',
         hot_product: false,
         show_promotion: false,
         in_stock: false,
@@ -148,34 +148,13 @@ const FiltersList = createSlice({
             state.filtersValue.brand = payload
         },
 
-        setSwitchFields(state, action) {
-            let value = action.payload
-            if (value) {
-                let key = Object.keys(value);
-                if (key.length != 0) {
-                    key.map(res => {
-                        if (res == 'sort_by') {
-                            state.filtersValue.sort_by = value[res];
-                        } else if (res == 'show_promotion') {
-                            state.filtersValue.show_promotion = value[res];
-                        } else if (res == 'in_stock') {
-                            state.filtersValue.in_stock = value[res];
-                        } else if (res == 'has_variants') {
-                            state.filtersValue.has_variants = value[res];
-                        } else if (res == 'custom_in_bundle_item') {
-                            state.filtersValue.custom_in_bundle_item = value[res];
-                        }
-                    })
-                }
-            }
-        },
         resetFilters(state) {
             state.filtersValue = {
                 q: "*",
                 page_no: 1,
                 item_code: "",
                 item_description: "",
-                sort_by: '',
+                sort_by: 'stock:desc',
                 hot_product: false,
                 show_promotion: false,
                 in_stock: false,
@@ -203,40 +182,6 @@ const FiltersList = createSlice({
                 color_temp_: []
             }
         },
-        resetSwitch(state) {
-            state.filtersValue = {
-                q: "*",
-                page_no: 1,
-                item_code: "",
-                item_description: "",
-                sort_by: '',
-                hot_product: false,
-                show_promotion: false,
-                in_stock: false,
-                brand: [],
-                price_range: { min: 0, max: 1000 },
-                stock_range: { min: 0, max: 1000 },
-                product_type: [],
-                has_variants: false,
-                custom_in_bundle_item: false,
-                category_list: [],
-                item_group: [],
-                beam_angle: [],
-                lumen_output: [],
-                mounting: [],
-                ip_rate: [],
-                lamp_type: [],
-                power: [],
-                input: [],
-                dimension: '',
-                material: [],
-                body_finish: [],
-                warranty_: [],
-                output_voltage: [],
-                output_current: [],
-                color_temp_: []
-            }
-        }
     },
 });
 

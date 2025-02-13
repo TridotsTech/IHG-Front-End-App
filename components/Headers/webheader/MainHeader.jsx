@@ -251,9 +251,15 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
   function navigateToSearch(route) {
     router.push(route)
-    setSearchValue('')
+    // setSearchValue('')
     setActiveSearch(false)
   }
+
+  useEffect(()=>{
+    if(router.asPath === '/list'){
+      setSearchValue('')
+    }
+  },[router.asPath])
 
   const [alertUi, setAlertUi] = useState(false)
 

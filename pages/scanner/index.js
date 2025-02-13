@@ -5,70 +5,19 @@ import { useRouter } from 'next/router';
 import { toast } from 'react-toastify';
 import NoProductFound from '@/components/Common/NoProductFound';
 import MobileHeader from '@/components/Headers/mobileHeader/MobileHeader';
+import { Scanner } from "@yudiel/react-qr-scanner";
 
-function Scanner() {
-  const [scannedBarcode, setScannedBarcode] = useState('');
-  const videoRef = useRef(null);
-  const [scanning, setScanning] = useState(true);
-  const streamRef = useRef(null);
+function QrScanner() {
   const router = useRouter()
-  // Start the scanner automatically when the component mounts
-  useEffect(() => {
-    if (!scanning) return;
-
-    // Initialize Quagga
-    Quagga.init(
-      {
-        inputStream: {
-          name: 'Live',
-          type: 'LiveStream',
-          target: videoRef.current,
-          constraints: {
-            facingMode: 'environment', // Use the rear camera
-          },
-        },
-        decoder: {
-          readers: ['ean_reader'], // Specify the barcode format
-        },
-      },
-      (err) => {
-        if (err) {
-          console.error('Error initializing Quagga:', err);
-          return;
-        }
-        Quagga.start();
-
-        // Get the camera stream and store it in the ref
-        if (videoRef.current && videoRef.current.srcObject) {
-          streamRef.current = videoRef.current.srcObject;
-        }
-      }
-    );
-
-    // Detect barcodes
-    Quagga.onDetected((result) => {
-      setScanning(false); // Stop scanning
-      setScannedBarcode(result.codeResult.code); // Set the scanned barcode
-      getScannedProducts(result.codeResult.code)
-      stopCamera(); // Stop the camera stream
-    });
-
-    // Cleanup function
-    return () => {
-      stopCamera(); // Stop the camera stream when the component unmounts
-      Quagga.stop();
-    };
-  }, [scanning]);
-
-  // Function to stop the camera stream
-  const stopCamera = () => {
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach((track) => track.stop()); // Stop each track in the stream
-      streamRef.current = null; // Clear the stream ref
-    }
-  };
+  const [qrCodeNumber, setQrNumber] = useState('');
 
   const [errorMsg, setErrorMsg] = useState('');
+
+  useEffect(() => {
+    if (qrCodeNumber && qrCodeNumber.length !== 0) {
+      getScannedProducts(qrCodeNumber)
+    }
+  }, [qrCodeNumber])
 
   const getScannedProducts = async (barcode) => {
     console.log(barcode, "barcode")
@@ -94,15 +43,44 @@ function Scanner() {
 
   return (
     <>
-      {<MobileHeader  titleDropDown={true} back_btn={true} search={true} />}
-    <div className='bg-gray-200 min-h-screen flex justify-center items-center'>
+      {<MobileHeader titleDropDown={true} back_btn={true} search={true} />}
+
+      <div className="flex flex-col items-center md:items-center min-h-screen bg-gray-100 p-4">
+        <h1 className="text-2xl font-bold mb-4">QR Code Scanner</h1>
+
+        <div className="w-full max-w-md bg-white shadow-md rounded-lg p-4">
+          {
+            errorMsg === '' ? (
+              <Scanner
+                onScan={(result) => {setQrNumber(result[0].rawValue), console.log(result[0].rawValue)}}
+                //   onDecode={(result) => setScannedData(result)}
+                //   onError={(error) => console.error("QR Scanner Error:", error)}
+                className="w-full"
+              />
+            ) : (
+              <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} heading={'No Products Found!'} />
+            )
+        }
+        </div>
+      </div>
+    </>
+  );
+}
+
+export default QrScanner;
+
+
+
+
+
+
+
+{/* <div className='bg-gray-200 min-h-screen flex justify-center items-center'>
       <div className="w-full h-full">
-        {/* Video Feed */}
         {
           errorMsg === '' ? (
             <div ref={videoRef} className="w-full h-[400px] bg-white relative video_scanner">
               <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full h-36 rounded-lg">
-                {/* Scanning Line */}
                 {scanning && (
                   <div className="absolute top-0 left-0 w-full h-1 bg-green-500 animate-scan" />
                 )}
@@ -113,23 +91,6 @@ function Scanner() {
           )
         }
 
-        {/* Centered Scanning Area */}
 
       </div>
-
-      {/* Close Button */}
-      {/* <button
-        onClick={() => {
-          stopCamera(); // Stop the camera stream
-          onClose(); // Close the scanner
-        }}
-        className="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg"
-      >
-        Close Scanner
-      </button> */}
-    </div>
-    </>
-  );
-}
-
-export default Scanner;
+    </div> */}

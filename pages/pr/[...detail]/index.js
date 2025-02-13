@@ -763,7 +763,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
                                 <div
                                     className="md:hidden pt-3 flex items-center gap-[5px] w-fit cursor-pointer"
-                                    onClick={() => router.back()}
+                                    onClick={() => router.push('/list')}
                                 >
                                     <Image
                                         className="size-[14px]"

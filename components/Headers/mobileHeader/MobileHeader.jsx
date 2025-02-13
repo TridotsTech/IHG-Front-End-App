@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { check_Image, clear_cartitem, get_cart_items } from '@/libs/api';
 import Image from 'next/image';
 import { useRouter } from 'next/router'
@@ -78,9 +78,28 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
 
   function navigateToSearch(route) {
     router.push(route)
-    setSearchValue('')
+    // setSearchValue('')
   }
 
+  async function handleSearch() {
+    if (searchValue !== '') {
+      if (searchValue && searchValue != '') {
+        navigateToSearch('/list?search=' + searchValue)
+      }
+    }
+  }
+
+  useEffect(()=>{
+    if(router.asPath === '/list'){
+      setSearchValue('')
+    }
+
+    if(router.query.search && router.query.search !== ''){
+      setSearchValue(router.query.search)
+    }
+  },[router.asPath, router.query])
+
+  console.log('route', router.query.search)
 
   return (
     <>
@@ -100,33 +119,8 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
       }
 
       <div className='lg:hidden md:min-h-[45px] your-element border-b-[1px] border-b-slate-100 sticky top-0 z-[99] bg-white'>
-        {home &&
-          <div className={`flex items-center md:min-h-[45px] your-element justify-between p-[10px] `}>
-
-            <div className={`flex items-center gap-[10px]`}>
-
-              {/* <div onClick={() => { setSideMenu(sideMenu = !sideMenu) }} className='flex items-center justify-end'>
-                <Image className='h-[25px] w-[25px] object-contain' height={40} width={40} alt='logo' src={'/menu.svg'}></Image>
-              </div> */}
-              <div className='flex items-center justify-start'>
-                {theme_settings.website_logo && <Image className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>}
-              </div>
-
-            </div>
-
-            <div className='flex items-center gap-[8px]'>
-              <div onClick={() => { router.push('/search') }} className='flex items-center justify-end'>
-                <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[20px] object-contain' height={40} width={40} alt='vantage' src={'/search.svg'}></Image>
-              </div>
-              {/* 
-              <div onClick={() => { router.push('/tabs/yourcart') }} className='relative flex items-center justify-end'>
-                <Image onClick={() => { }} style={{ objectFit: 'contain' }} className='h-[22px] w-[22px] object-contain' height={40} width={40} alt='vantage' src={'/cart_h.svg'}></Image>
-                <p className='primary_bg text-[12px] text-[#fff] rounded-[50%] absolute h-[20px] w-[20px] flex items-center justify-center top-[-12px] right-[-10px]'>{cartCount}</p>
-              </div> */}
-            </div>
-          </div>
-        }
-        {!home &&
+        
+        {
           <div className={`flex items-center justify-between p-[10px] min-h[40px]`}>
             {back_btn &&
               <div className='flex items-center gap-5'>
@@ -137,6 +131,14 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
               </div>
             }
 
+            {
+              !back_btn && (
+                <div className='flex items-center gap-5'>
+                <Image onClick={() => router.push('/')} className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>
+              </div>
+              )
+            }
+
             {/* {title &&
               <div onClick={() => { titleClick && titleClick() }} className={`flex items-center justify-center gap-[3px] ${clear_cart ? 'w-[50%]' : 'w-[70%]'}`}>
                 <h6 className={`text-[15px] text-center font-semibold line-clamp-1`}>{title} </h6>
@@ -144,7 +146,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
               </div>
             } */}
 
-            {(search && !router.asPath.includes('search')) &&
+            {(search || (router.query.search)) &&
               <div className={`flex items-center gap-[8px] transition-all ease-in duration-500 delay-100 ${showSearch ? 'w-[180px]' : ''}`}>
                 {search &&
                   <>
@@ -154,8 +156,8 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
                     </div>}
 
                     <div className={`transition-all ease-in duration-500 delay-100 ${!showSearch ? 'h-0 w-0 opacity-0' : 'opacity-100 p-[5px_10px] h-[30px] flex items-center w-full border_color rounded-[20px]'} `}>
-                      <input id='search' value={searchValue} spellcheck="false" onChange={(eve) => { getSearchTxt(eve) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
-                      <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
+                      <input id='search' type='search' value={searchValue} spellcheck="false" onChange={(eve) => { getSearchTxt(eve) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
+                      <Image onClick={() => { searchValue == '' ? null : handleSearch() }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
                     </div>
                   </>
                 }

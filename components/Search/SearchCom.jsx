@@ -134,9 +134,15 @@ export default function SearchCom({ searchRoute = '', title, type }) {
 
   function navigateToSearch(route) {
     router.push(route)
-    setSearchValue('')
+    // setSearchValue('')
     setActiveSearch(false)
   }
+
+  useEffect(()=>{
+    if(router.asPath === '/list'){
+      setSearchValue('')
+    }
+  },[router.asPath])
 
   return (
     <>

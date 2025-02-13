@@ -204,7 +204,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
             }
           </select>
         </div> */}
-        <div className='tab:mb-28'>
+        <div className=''>
           {multiSelectOptions.map(({ type, label, options }) => (
             <MultiSelectBox
               key={type}
@@ -219,7 +219,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           ))}
         </div>
 
-        <div className='pt-1 md:py-2 lg:mb-20'>
+        <div className='pt-1 md:py-2 lg:mb-20 tab:mb-40'>
           <label htmlFor="dimension" className={`${label_classname}`}>Dimension</label>
           <input name='dimension' onChange={(e) => setFilters({ ...filters, dimension: e.target.value })} className={`${input_classname}`} type='text' placeholder='Search by dimension' />
         </div>

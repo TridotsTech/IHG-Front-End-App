@@ -26,7 +26,7 @@ const initialState = {
   page_no: 1,
   item_code: "",
   item_description: "",
-  sort_by: '',
+  sort_by: 'stock:desc',
   hot_product: false,
   show_promotion: false,
   in_stock: false,
@@ -83,9 +83,9 @@ function List({ category, brand, search }) {
 
     return (() => {
       if (localStorage['sort_by']) {
-        filters = {...filters,sort_by:localStorage['sort_by']}
-        setFilters({...filters});
-        const obj = {sort_by:localStorage['sort_by']}
+        filters = { ...filters, sort_by: localStorage['sort_by'] }
+        setFilters({ ...filters });
+        const obj = { sort_by: localStorage['sort_by'] }
         dispatch(setAllFilter({ ...obj }))
         setTimeout(() => {
           localStorage.removeItem('sort_by')
@@ -364,14 +364,14 @@ function List({ category, brand, search }) {
     // console.log(checkInitialValue(price_range?.min,initialState.price_range.min),"price - min")
     // console.log(checkInitialValue(price_range?.max,initialState.price_range.max),"price - max")
 
-    if (checkInitialValue(price_range?.min,initialState.price_range.min) || checkInitialValue(price_range?.max,initialState.price_range.max)) {
+    if (checkInitialValue(price_range?.min, initialState.price_range.min) || checkInitialValue(price_range?.max, initialState.price_range.max)) {
       filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
     }
 
     // console.log(checkInitialValue(stock_range?.min,initialState.stock_range.min),"stock - min")
     // console.log(checkInitialValue(stock_range?.max,initialState.stock_range.max),"stock - max")
 
-    if (checkInitialValue(stock_range?.min,initialState.stock_range.min)  ||  checkInitialValue(stock_range?.max,initialState.stock_range.max)) {
+    if (checkInitialValue(stock_range?.min, initialState.stock_range.min) || checkInitialValue(stock_range?.max, initialState.stock_range.max)) {
       filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
     }
 
@@ -387,7 +387,7 @@ function List({ category, brand, search }) {
     return filterParams.length > 0 ? filterParams.join(" && ") : "";
   };
 
-  const checkInitialValue = (present,past) => {
+  const checkInitialValue = (present, past) => {
     return present != past
   }
 
@@ -396,7 +396,7 @@ function List({ category, brand, search }) {
   const removeFilter = () => {
     // console.log('filter')
     // setClearAllFilters(true);
-   
+
     setpageNo(1)
     // dispatch(resetFilters())
     // if (category) {
@@ -424,25 +424,26 @@ function List({ category, brand, search }) {
 
     dispatch(resetFilters())
     dispatch(resetFilter())
+    // dispatch(setFilter({ ...filters }));
+
     // console.log("checkRange",filters)
     // router.replace(`/list?category=`)
-    // setTimeout(() => {
-    //   router.replace("/list", undefined,  { shallow: true })
-    // }, 400);
+    setTimeout(() => {
+      router.replace("/list", undefined, { shallow: true })
+    }, 400);
   }
 
   const fetchResults = async (reset = false, initialPageNo) => {
     setError(null);
     // console.log("queryfilter", filters)
     const perPage = window.innerWidth >= 1400 ? "15" : "12";
-
     const queryParams = new URLSearchParams({
       q: filters.q ? filters.q : filters.item_description ? `${filters.item_description}*` : '*',
-      query_by: filters.q ? 'item_name,item_code' :filters.item_description ? 'item_description,item_code' : '',
+      query_by: filters.q ? 'item_name,item_code,item_description' : filters.item_description ? 'item_description,item_code' : '',
       page: initialPageNo ? 1 : pageNo,
       per_page: 15,
       exhaustive_search: "true",
-      query_by_weights: "4,2",
+      // query_by_weights: "4,2",
       // query_by_weights: "1,2,3",
       filter_by: buildFilterQuery(),
       // ...buildFilterQuery() && { filter_by: buildFilterQuery() },
@@ -600,8 +601,8 @@ function List({ category, brand, search }) {
 
     dispatch(setFilter({ ...filters }));
     fetchResults(false, true);
-
-  }, [filters.hot_product, filters.sort_by, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item, removeAllFilter]);
+    console.log("re", filters)
+  }, [filters.hot_product, filters.sort_by, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item]);
 
   // Initial
   useEffect(() => {
@@ -609,37 +610,28 @@ function List({ category, brand, search }) {
     // console.log('Query Params:', category);
 
     if (router.query) {
-      if (router.query['category']) {
-        category = router.query['category']
-        search = ""
-      } else if (router.query['brand']) {
-        brand = router.query['brand']
-        search = ""
-      } else if(router.query['search']){
-        search = router.query['search'] ? router.query['search'] : ""
+      // if (router.query['category']) {
+      //   category = router.query['category']
+      //   search = ""
+      // } else if (router.query['brand']) {
+      //   brand = router.query['brand']
+      //   search = ""
+      // } else if(router.query['search']){
+      //   search = router.query['search'] ? router.query['search'] : ""
+      // }
+
+      filters = {
+        ...filters,
+        item_group: router.query['category'] ? (Array.isArray(router.query['category']) ? router.query['category'] : router.query['category'].split(",")) : [],
+        brand: router.query['brand'] ? (Array.isArray(router.query['brand']) ? router.query['brand'] : router.query['brand'].split(",")) : [],
+        q: router.query['search'] ? router.query['search'] : "*"
       }
+
+      setFilters({ ...filters })
+      fetchResults(true, true)
+
     }
 
-    filters = {
-      ...filters,
-      item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
-      brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
-      q: search ? search : "*" 
-    }
-
-    setFilters({ ...filters })
-
-    // setFilters((prevFilters) => ({
-    //   ...prevFilters,
-    //   item_group: category ? (Array.isArray(category) ? category : category.split(",")) : [],
-    //   brand: brand ? (Array.isArray(brand) ? brand : brand.split(",")) : [],
-    // }));
-    // if(){
-
-    // }
-    // console.log(homeFilter, "homeFilter")
-    // console.log(filters,"filters")
-    fetchResults(true, true)
 
 
   }, [router.query]);
@@ -694,7 +686,7 @@ function List({ category, brand, search }) {
       sortByValue = e
     }
 
-    if(localStorage['sort_by']){
+    if (localStorage['sort_by']) {
       localStorage.removeItem('sort_by')
     }
 
@@ -761,7 +753,7 @@ function List({ category, brand, search }) {
         </div>
 
         <div className=''>
-          {typeof window !== "undefined" && <select value={localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options" defaultValue={"Select Options"}>
+          {typeof window !== "undefined" && <select value={localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by} onChange={(e) => handleSortBy(e, "select")} className={` outline-none border-[1px] p-2 rounded-md border-gray-300`} placeholder="Select options">
             {
               sortByOptions.map((item, i) => (
                 <option value={item.value}>{item.text}</option>
@@ -774,7 +766,7 @@ function List({ category, brand, search }) {
       <div className={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in `}>
         {
           ((tabView && openFilter) || !tabView) && (
-            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[124px] tab:top-[186px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
+            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[124px] tab:top-[230px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
               {<Filters mastersData={mastersData || []} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
             </div>
           )
@@ -785,7 +777,7 @@ function List({ category, brand, search }) {
         </div>
 
         <div className='md:hidden tab:block lg:hidden sticky top-[120px] bg-[#f1f5f9] z-[10] w-full '>
-          {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} />}
+          {<TabFilters mastersData={mastersData || []} filtersList={filters} handleSortBy={handleSortBy} setOpenFilter={setOpenFilter} filters={filters} setFilters={setFilters} productBoxView={productBoxView} openFilter={openFilter} changeValue={changeValue} />}
         </div>
 
         <div className={` ${(tabView && openFilter) ? 'tab:ml-[35%] tab:w-[65%] flex-[0_0_auto]' : 'tab:w-full tab:ml-0'} lg:w-[80%] lg:ml-[20%] md:w-full main-width transition-all duration-300 ease-in scale-in`}>
@@ -910,7 +902,7 @@ const MobileFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter
 
 
 
-const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, setFilters, handleSortBy, mastersData, filters, fetchResults, foundValue, setOpenFilter, openFilter }) => {
+const TabFilters = ({ productBoxView, setFilters, handleSortBy, filters, setOpenFilter, openFilter, label_classname, changeValue }) => {
 
   const [isOpen, setIsOpen] = useState(false)
   const [isOpenSort, setIsOpenSort] = useState(false)
@@ -923,15 +915,8 @@ const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, s
     setIsOpenSort(false);
   }
 
-  async function handleKeyDown(event) {
-    if (event.key === 'Enter') {
-      if (searchValue && searchValue != '') {
-        navigateToSearch('/search/' + searchValue)
-      }
-    }
-  }
 
-  const label_classname = "text-[18px] md:text-[13px] font-semibold"
+  // const label_classname = "text-[18px] md:text-[13px] font-semibold"
 
   return (
     <>
@@ -942,59 +927,79 @@ const TabFilters = ({ filtersList, ProductFilter, productBoxView, clearFilter, s
       </div>
       }
 
-      <div className='flex items-center justify-between h-[45px] px-5 border-b-[1px] border-b-slate-100 bg-[#fff]'>
+      <div className='bg-[#fff]'>
+        <div className='flex items-center justify-between h-[45px] px-5 border-b-[1px] border-b-slate-100 bg-[#fff]'>
 
-        <div className=''>
-          <div className='flex items-center gap-5 justify-between'>
-            <div className='flex items-center gap-1'>
-              <Image src={'/filters/tabFilter.svg'} width={20} height={20} />
-              <h5 className={`${label_classname}`}>Filters</h5>
+          <div className=''>
+            <div className='flex items-center gap-5 justify-between'>
+              <div className='flex items-center gap-1'>
+                <Image src={'/filters/tabFilter.svg'} width={20} height={20} />
+                <h5 className={`${label_classname}`}>Filters</h5>
+              </div>
+              <Switch checked={openFilter} onChange={(e) => setOpenFilter(e)} as={Fragment}>
+                {({ checked, disabled }) => (
+                  <button
+                    className={clsx(
+                      'group inline-flex h-6 w-11 items-center rounded-full',
+                      checked ? 'bg-[#000]' : 'bg-gray-200',
+                      disabled && 'cursor-not-allowed opacity-50'
+                    )}
+                  >
+                    <span className="sr-only"></span>
+                    <span
+                      className={clsx('size-4 rounded-full bg-white transition', checked ? 'translate-x-6' : 'translate-x-1')}
+                    />
+                  </button>
+                )}
+              </Switch>
             </div>
-            <Switch checked={openFilter} onChange={(e) => setOpenFilter(e)} as={Fragment}>
-              {({ checked, disabled }) => (
-                <button
-                  className={clsx(
-                    'group inline-flex h-6 w-11 items-center rounded-full',
-                    checked ? 'bg-[#000]' : 'bg-gray-200',
-                    disabled && 'cursor-not-allowed opacity-50'
-                  )}
-                >
-                  <span className="sr-only"></span>
-                  <span
-                    className={clsx('size-4 rounded-full bg-white transition', checked ? 'translate-x-6' : 'translate-x-1')}
-                  />
-                </button>
-              )}
-            </Switch>
           </div>
-        </div>
 
-        <div>
-          {/* <div className={`flex-[0_0_calc(45%_-_0px)]`}>
-                    <div  className={`'w-full'} relative flex justify-end`}>
-                      <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
-                        <input value={searchValue} id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
-                        <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
-                      </div>
-                      {(activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
-                        <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
-                    </div>
-                  </div> */}
-        </div>
-        <div className='flex items-center'>
-          <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-center gap-[7px] mr-5'>
-            <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
-            <span className={`text-[16px] font-normal`}>{productBoxView == 'Grid View' ? 'List' : 'Grid'}</span>
-          </div>
-          <div onClick={() => { setIsOpenSort(true) }} className='h-full flex items-center justify-center border-r-slate-100  border-l-[1px] border-l-slate-100 gap-[7px]'>
-            <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={'/filters/sort-by.svg'}></Image>
-            <span className={`text-[14px] font-normal`}>Sort By</span>
-          </div>
-          {/* <div onClick={() => { setIsOpen(true) }} className='h-full flex items-center justify-center flex-[0_0_33.333%] gap-[7px]'>
-            <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={'/filters/filter.svg'}></Image>
-            <span className={`text-[14px] font-normal line-clamp-1`}>Filters</span>
+          <div>
+            {/* <div className={`flex-[0_0_calc(45%_-_0px)]`}>
+            <div  className={`'w-full'} relative flex justify-end`}>
+              <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
+                <input value={searchValue} id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
+                <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
+              </div>
+              {(activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
+                <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
+            </div>
           </div> */}
+          </div>
+          <div className='flex items-center'>
+            <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className='h-full flex items-center justify-center gap-[7px] mr-5'>
+              <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
+              <span className={`text-[16px] font-normal`}>{productBoxView == 'Grid View' ? 'List' : 'Grid'}</span>
+            </div>
+            <div onClick={() => { setIsOpenSort(true) }} className='h-full flex items-center justify-center border-r-slate-100  border-l-[1px] border-l-slate-100 gap-[7px]'>
+              <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={'/filters/sort-by.svg'}></Image>
+              <span className={`text-[14px] font-normal`}>Sort By</span>
+            </div>
+            {/* <div onClick={() => { setIsOpen(true) }} className='h-full flex items-center justify-center flex-[0_0_33.333%] gap-[7px]'>
+    <Image className='h-[20px] object-contain' height={25} width={25} alt='logo' src={'/filters/filter.svg'}></Image>
+    <span className={`text-[14px] font-normal line-clamp-1`}>Filters</span>
+  </div> */}
+          </div>
         </div>
+        <div className='border-b border-b-slate-100 px-5 py-3 gap-4 flex overflow-x-auto scrollbarHide'>
+          <div className='flex-[0_0_auto]'>
+          <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+          <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+          <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+          <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+          <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
+          </div>
+        </div>
+       
       </div>
     </>
   )
@@ -1100,7 +1105,7 @@ const SwitchComponent = ({ label1, label2, label_classname, checked, changeValue
 
 export async function getServerSideProps(req) {
 
-  const { category = "", brand = "", search="" } = await req.query;
+  const { category = "", brand = "", search = "" } = await req.query;
 
   return {
     props: { category, brand, search }
