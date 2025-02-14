@@ -112,7 +112,7 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
                     onChange={handleFromInputChange}
                     max={MAX}
                     type="number"
-                    className='border text-[#504a4a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
+                    className='border text-[#504a4a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] px-[10px]'
                     value={fromValue}
                 />
                 <input
@@ -121,7 +121,7 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
                     onChange={handleToInputChange}
                     max={MAX}
                     type="number"
-                    className='border text-[#504a4a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] text-[#ddd] px-[10px]'
+                    className='border text-[#504a4a] border-[1px] border-[#0000001F] rounded-[5px] w-[50%] h-[35px] px-[10px]'
                     value={toValue}
                 />
             </div>

@@ -87,9 +87,9 @@ function List({ category, brand, search }) {
         setFilters({ ...filters });
         const obj = { sort_by: localStorage['sort_by'] }
         dispatch(setAllFilter({ ...obj }))
-        setTimeout(() => {
-          localStorage.removeItem('sort_by')
-        }, 400);
+        // setTimeout(() => {
+        //   localStorage.removeItem('sort_by')
+        // }, 400);
       }
     })
   }, [])
@@ -209,24 +209,25 @@ function List({ category, brand, search }) {
 
 
 
-  useEffect(() => {
-    const handleResize = () => {
-      const mobileWidth = 768; // Adjust this value to define your mobile width threshold
-      if (window.innerWidth <= mobileWidth) {
-        dispatch(setBoxView('List View'));
-      } else {
-        dispatch(setBoxView('Grid View'));
-      }
-    };
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     const mobileWidth = 768; // Adjust this value to define your mobile width threshold
+  //     if (window.innerWidth <= mobileWidth) {
+  //       // console.log(window.innerWidth,"window.innerWidth evenet triggered")
+  //       // dispatch(setBoxView('List View'));
+  //     } else {
+  //       // dispatch(setBoxView('Grid View'));
+  //     }
+  //   };
 
-    handleResize(); // Initial check on component mount
+  //   handleResize(); // Initial check on component mount
 
-    window.addEventListener('resize', handleResize); // Event listener for window resize
+  //   window.addEventListener('resize', handleResize); // Event listener for window resize
 
-    return () => {
-      window.removeEventListener('resize', handleResize); // Clean up the event listener
-    };
-  }, []);
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize); // Clean up the event listener
+  //   };
+  // }, []);
 
 
   useMemo(() => {
@@ -549,6 +550,7 @@ function List({ category, brand, search }) {
       if (observer.current) observer.current.disconnect();
 
       observer.current = new IntersectionObserver((entries) => {
+        // console.log(entries[0],"entries")
         if (entries[0].isIntersecting && hasMore) {
           setpageNo((prevPage) => prevPage + 1);
           setPageLoad((prev) => !prev);
@@ -578,6 +580,11 @@ function List({ category, brand, search }) {
   const handleFilterClick = () => {
     setResults([]);
 
+    // if(filters.item_group.length === 0 || filters.brand.length === 0){
+    //   router.replace("/list", undefined, { shallow: true })
+    //   return 
+    // }
+
     // setpageNo(1)
     fetchResults(true, true);
 
@@ -599,6 +606,8 @@ function List({ category, brand, search }) {
       behavior: "smooth",
     });
 
+    localStorage.setItem('sort_by', filters.sort_by);
+
     dispatch(setFilter({ ...filters }));
     fetchResults(false, true);
     console.log("re", filters)
@@ -608,7 +617,6 @@ function List({ category, brand, search }) {
   useEffect(() => {
 
     // console.log('Query Params:', category);
-
     if (router.query) {
       // if (router.query['category']) {
       //   category = router.query['category']
@@ -634,7 +642,6 @@ function List({ category, brand, search }) {
 
       setFilters({ ...filters })
       fetchResults(true, true)
-
     }
 
 
@@ -791,11 +798,11 @@ function List({ category, brand, search }) {
               <Skeleton />
               :
               <div className='min-h-screen '>
-                {((results.length != 0 && Array.isArray(results))) && <ProductBox tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} />}
+                {((results.length != 0 && Array.isArray(results))) && <ProductBox pagination={lastResultRef} tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} />}
                 {!loader && theme_settings && !loading && results.length === 0 && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}
               </div>
             }
-            <div className="" ref={lastResultRef}></div>
+            {/* <div className="" ref={lastResultRef}></div> */}
 
             {loading &&
               <div id="wave" className="loader">
@@ -1031,7 +1038,7 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy, fil
 
       {sorting.map((res, index) => {
         return (
-          <h6 onClick={() => { closeModal(), handleSortBy(res.value, "") }} className={`text-[15px] font-medium p-[10px] ${filters.sort_by === res.value && 'bg-gray-100'}`}>{res.text}</h6>
+          <h6 onClick={() => { closeModal(), handleSortBy(res.value, "") }} className={`text-[15px] font-medium p-[10px] ${(localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by) === res.value && 'bg-gray-100'}`}>{res.text}</h6>
         )
       })}
     </>

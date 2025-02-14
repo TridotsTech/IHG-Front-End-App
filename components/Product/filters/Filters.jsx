@@ -87,9 +87,9 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   ]
 
   const productTypeOptions = [
-    "Listed" ,
+    "Listed",
     "Unlisted",
-    "Obsolete" 
+    "Obsolete"
   ]
 
   const multiSelectOptions = [
@@ -126,7 +126,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
 
   return (
     <>
-    {/* bg-[#F0F0F0] */}
+      {/* bg-[#F0F0F0] */}
       <div className='border-b p-[7px_14px] md:my-[5px] md:hidden sticky top-0 bg-white z-[9]'>
         <h4 className={`text-[16px] font-semibold md:text-[14px] text-center transition-opacity duration-[0.5s] ease-in-out `}>Total  {foundValue}  Products</h4>
       </div>
@@ -244,7 +244,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
       </div>
 
       <div className='lg:hidden flex flex-col h-full'>
-        <h5 className='text-[15px] font-semibold p-[10px_10px_0_10px]'>Filter</h5>
+        <h5 className='text-[15px] font-semibold p-[10px_10px_0_10px]'>Filters</h5>
 
 
         <div className='h-full overflow-auto scrollbarHide p-[10px]'>
@@ -319,11 +319,12 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
           <PriceFilter ProductFilter={ProductFilter} /> */}
         </div>
 
-        <div className={'flex gap-[5px] p-[10px] mt-[10px] border-t-[1px] border-t-slate-100 bg-[#F0F0F0]'}>
-          <button className='w-[50%] text-[#fff] bg-[#f56c6c] rounded-[5px] h-[35px] px-[10px]' onClick={() => { clearFilter(), closeModal() }}>Clear All</button>
-          <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => {fetchResults(), closeModal() }}>Filter</button>
+        <div className={'flex gap-[5px] p-[10px] mt-[10px] border-t-[1px] border-t-slate-100 bg-[#fff]'} style={{ boxShadow: '-1px 0px 1px 2px #eeeeee' }}>
+          <button className='w-[50%] text-[#000] bg-[#ddd] rounded-[5px] h-[35px] px-[10px]' onClick={() => { clearFilter(), closeModal() }}>Clear All</button>
+          <button className='w-[50%] primary_bg text-white rounded-[5px] h-[35px] px-[10px]' onClick={() => { fetchResults(), closeModal() }}>Filter</button>
         </div>
 
+        
       </div>
 
 

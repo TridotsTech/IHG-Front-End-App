@@ -766,7 +766,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
                                 <div
                                     className="md:hidden pt-3 flex items-center gap-[5px] w-fit cursor-pointer"
-                                    onClick={() => router.push('/list')}
+                                    onClick={() => router.back()}
                                 >
                                     <Image
                                         className="size-[14px]"
@@ -872,7 +872,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                         </div>
                                         {(data.offer_rate) ? <h6 className='bg-[#009f58] text-[#fff] p-[3px_13px] absolute top-0 left-0 rounded-br-md  text-[12px]'>{parseInt(((data.rate - data.offer_rate) / data.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                         {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
-                                        {false && (
+                                        {true && (
                                             <div className="md:hidden absolute top-4 right-[-3px] flex">
                                                 <Image
                                                     src="/vector.png"
@@ -984,7 +984,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                     relatedData.length != 0 &&
                                     (
                                         <>
-                                            <div className="m-[15px_0]">
+                                            <div className="m-[15px_0] md:px-[10px]">
                                                 {/* <h3 className='text-[15px] font-[500] mb-[8px]'>Related Products</h3> */}
                                                 <ViewAll
                                                     data={{ title: "Related Products" }}
@@ -993,6 +993,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 {/* <ProductBox productList={data.related_products} rowCount={'flex-[0_0_calc(20%_-_8px)]'} scroll_button={true} scroll_id='related_products'/> */}
                                                 <ProductBox
                                                     productList={relatedData}
+                                                    scroll_button={true} scroll_id='related_products'
                                                     rowCount={"flex-[0_0_calc(20%_-_8px)]"}
                                                 />
                                             </div>

@@ -10,7 +10,7 @@ import { setFilter } from '@/redux/slice/homeFilter'
 const Brands = ({ customCss = "", data }) => {
     const router = useRouter()
 
-    console.log("brand", data);
+    // console.log("brand", data);
 
     const dispatch = useDispatch()
 

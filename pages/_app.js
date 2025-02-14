@@ -92,7 +92,7 @@ function App({ Component, pageProps }) {
       if (e == '/' && localStorage['api_key']) {
         getValue()
       }
-      console.log(e,'e')
+      // console.log(e,'e')
       if(!e.includes('pr')){
         const detail = localStorage['product_detail'];
           if(detail && JSON.parse(detail)){
@@ -234,8 +234,27 @@ function App({ Component, pageProps }) {
         setShown(false)
       }
     }
+
+
+    if(routeLink === '/'){
+      localStorage.removeItem("sort_by");
+    }
   }, [router])
 
+
+  useEffect(()=>{
+    const handleBeforeUnload = (event) => {
+      localStorage.removeItem("sort_by",);
+      // event.preventDefault();
+      // event.returnValue = ""; 
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  },[])
 
   const [masterValue, setMasterValues] = useState()
   const getValue = async () => {

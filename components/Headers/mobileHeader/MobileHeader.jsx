@@ -99,7 +99,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
     }
   },[router.asPath, router.query])
 
-  console.log('route', router.query.search)
+  // console.log('route', router.query.search)
 
   return (
     <>

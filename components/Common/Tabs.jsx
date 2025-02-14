@@ -107,14 +107,14 @@ const Tabs = ({ stockDetails, productDetails }) => {
                 {stockDetails.map((res, index) => (
                   <tr key={res.warehouse} className="text-gray-700 text-center">
                     <td className="border  border-gray-300 px-4 py-2">{index + 1}</td>
-                    <td className="border  border-gray-300 px-4 py-2 text-start">{res.warehouse}</td>
-                    <td className="border  border-gray-300 px-4 py-2 font-bold">{res.actual_qty}</td>
+                    <td className="border  border-gray-300 px-4 py-2 text-start md:text-[12px]">{res.warehouse}</td>
+                    <td className="border  border-gray-300 px-4 py-2 font-bold md:text-[12px]">{res.actual_qty}</td>
                   </tr>
                 ))}
                 <tr>
                   <td className="px-4 py-2"></td>
-                  <td className="border  border-gray-300 px-4 py-2 text-start">Total</td>
-                  <td className="border  border-gray-300 px-4 py-2 font-bold text-center">{productDetails.stock}</td>
+                  <td className="border  border-gray-300 px-4 py-2 text-start md:text-[13px]">Total</td>
+                  <td className="border  border-gray-300 px-4 py-2 font-bold text-center md:text-[13px]">{productDetails.stock}</td>
                 </tr>
               </tbody>
             </table>
@@ -172,8 +172,8 @@ const TableDatas = ({ label, value, index }) => {
 
       {value ? <tr className="text-gray-700 text-center">
         {/* <td className="border  border-gray-300 px-4 py-2">{index}</td> */}
-        <td className="border  border-gray-300 px-4 py-2 text-start">{label}</td>
-        <td className="border  border-gray-300 px-4 py-2 font-bold">{value}</td>
+        <td className="border  border-gray-300 px-4 py-2 text-start md:text-[13px]">{label}</td>
+        <td className="border  border-gray-300 px-4 py-2 font-bold md:text-[12px]">{value}</td>
       </tr> : <></>}
     </>
   )

@@ -262,6 +262,13 @@ export default function MainHeader({ header_template, theme_settings, website_se
     }
   },[router.asPath])
 
+
+  // useEffect(()=>{
+  //   if(router.asPath.includes('/list') && searchValue === ''){
+  //     router.replace("/list")
+  //   }
+  // }, [searchValue])
+
   const [alertUi, setAlertUi] = useState(false)
 
 
@@ -414,7 +421,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
                     <div>
                       <Link href={"/scanner"}>
-                        <Image src="/scanner.svg" height={20} width={20} />
+                        <Image src="/qr_scanner.svg" height={20} width={20} />
                       </Link>
                     </div>
 

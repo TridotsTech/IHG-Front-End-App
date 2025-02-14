@@ -26,7 +26,7 @@ import { useRouter } from 'next/router';
 //   subsets: ['latin']
 // })
 
-export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg, openFilter, tabView }) {
+export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg, openFilter, tabView,pagination }) {
   // console.log('produ', productList)
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const cartItems = useSelector((state) => state.cartSettings.cartItems)
@@ -248,7 +248,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
           {(productList && productList.length != 0 && Array.isArray(productList)) && productList.map((item, index) => {
             return (
               // onMouseEnter={()=>  setQuick(index)} onMouseLeave={() => { setQuick(-1) }}
-              <li key={index} className={`fade-in ${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px] lg:p-[10px] lg:h-fit lg:gap-[10px] lg:rounded-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] lg:flex lg:flex-col lg:justify-between')} relative your-element border`} >
+              <li key={index} ref={index == productList.length - 5 ? pagination : null} className={`fade-in ${rowCount ? rowCount : 'flex-[0_0_calc(25%_-_8px)]'} ${(productBoxView && productBoxView == 'List View') ? 'lg:flex-[0_0_calc(50%_-_5px)] md:flex-[0_0_calc(100%_-_0px)] flex items-center mb-[5px] p-[5px] lg:p-[10px] lg:h-fit lg:gap-[10px] lg:rounded-[5px]' : (scroll_button ? 'md:flex-[0_0_calc(60%_-_0px)] ' : 'md:flex-[0_0_calc(50%_-_0px)] lg:flex lg:flex-col lg:justify-between')} relative your-element border`} >
 
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[160px] 2xl:h-[185px] ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:!h-[120px]' : 'md:h-[170px] md:w-[100%] '} your-element `}>
@@ -261,7 +261,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
                   {/* <Link href={'/pr/' + item.route} className={`${productBoxView && productBoxView == 'List View' ? 'h-fit' : 'h-[50px] lg:h-[65px]'} text-[14px] lg:text-[18px] cursor-pointer py-[5px] font-[700] line-clamp-2 capitalize`}>{item.item}</Link> */}
 
                   <div className={`flex gap-1 mt-2 mb-[5px] ${(productBoxView && productBoxView == 'List View') ? 'lg:m-0 tab:flex-col' : 'flex-row items-center'}`}>
-                    {item.document.product_type && <p className={`${item.document.product_type.toLowerCase().includes('listed') ? 'bg-[#097be42e] text-[#0889ff]' : 'bg-[#d0d0d0] text-[#000]'} uppercase px-[5px] py-0 text-[10px]  tracking-[0.4px] rounded-[3px] w-fit`}>{item.document.product_type}</p>}
+                    {item.document.product_type && <p className={`${item.document.product_type == "Listed" ? 'bg-[#097be42e] text-[#0889ff]' : 'bg-[#d0d0d0] text-[#000]'} uppercase px-[5px] py-0 text-[10px]  tracking-[0.4px] rounded-[3px] w-fit`}>{item.document.product_type}</p>}
                     {item.document.new_arrival === 1 && <p className='bg-[#d0d0d0] px-[5px] py-0 text-[10px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>New Arrival</p>}
                     {item.document.hot_product === 1 && <p className='bg-[#d0d0d0] px-[5px] py-0 text-[10px] text-[#000] tracking-[0.4px] rounded-[3px] w-fit'>Upcoming</p>}
                   </div>
@@ -282,7 +282,7 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
                   </div>
 
-                  <div className='flex items-center justify-between'>
+                  <div className='flex items-center justify-between md:flex-wrap'>
                     <div className='flex items-center gap-[4px]'>
                       <Image src={'/stock.svg'} height={13} width={13} alt='stock' />
                       {item.document.stock > 0 && <p className={`line-clamp-1 uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>{item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''}</p>}
