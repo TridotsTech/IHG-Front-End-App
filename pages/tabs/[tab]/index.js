@@ -39,7 +39,7 @@ export default function index() {
       getValue();
   }, [])
 
-console.log("categ", categoryData);
+// console.log("categ", categoryData);
   
   const [theme_settings, setTheme_settings] = useState()
 

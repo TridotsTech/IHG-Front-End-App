@@ -34,7 +34,7 @@ const ProductSection = ({ data,isMobile,i }) => {
                     home={true}
                     rowCount={"flex-[0_0_calc(20%_-_16px)]"}
                     scroll_button={isMobile ? true : false}
-                    scroll_id={isMobile ? data.section_name + i : null}
+                    scroll_id={data.title}
                 />
             </div>}
         </>

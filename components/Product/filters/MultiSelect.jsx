@@ -163,6 +163,7 @@ const MultiSelectBox = ({ options, filters, type, onSelectionChange, label, labe
       <label className={`${label_classname}`}>{label} ({options && options.length})</label>
       <Select
         isMulti
+        closeMenuOnSelect={false}
         placeholder="Select the value"
         options={options && options.map((opt) => ({ value: opt, label: opt }))}
         value={filters[type]?.map((val) => ({ value: val, label: val })) || []}

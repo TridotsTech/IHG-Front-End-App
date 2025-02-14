@@ -41,23 +41,39 @@ const Tabs = ({ stockDetails, productDetails }) => {
   const renderContent = () => {
     if (activeTab === 0) {
       return (
-        <div className="space-y-2">
+        <div className="space-y-6">
 
-          <table className="w-full border-collapse border border-gray-300">
+          <p
+            className={` `}
+            dangerouslySetInnerHTML={{
+              __html: productDetails.full_description,
+            }}
+          />
+
+          <div className="">
+            {productDetails.last_sold > 0 && (
+              <div className="flex items-center gap-2">
+                <Image src="/calendar.svg" width={20} height={20} />
+                <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-red-700 font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_sold}</span>Since Last Sold</p>
+              </div>
+            )}
+
+            {productDetails.last_brought >0 && (
+              <div className="flex items-center gap-2">
+                <Image src="/calendar.svg" width={20} height={20} />
+                <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-[#009f58] font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_brought}</span>Since Last Buyed</p>
+              </div>
+            )}
+          </div>
+          {/* <table className="w-full border-collapse border border-gray-300">
             <thead>
               <tr className="bg-gray-100">
-                {/* <th className="border border-gray-300 px-4 py-2">No</th> */}
                 <th className="border border-gray-300 px-4 py-2">Detail</th>
                 <th className="border border-gray-300 px-4 py-2">Value</th>
               </tr>
             </thead>
             <tbody>
               {productDetails.barcode && <tr className="text-gray-700 text-center">
-                {/* <td className="border  border-gray-300 px-4 py-2">1</td> */}
-                {/* <td className="border  border-gray-300 px-4 py-2 text-start">QR</td>
-                <td className="border  border-gray-300 px-4 py-2 flex justify-center items-center">
-                  <Image src={`https://quickchart.io/qr?text=${productDetails.barcode}`} width={30} height={30} className="size-[80px]" />
-                </td> */}
               </tr>}
 
               <TableDatas index={2} label={"Product Code"} value={productDetails.item_code} />
@@ -82,12 +98,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
               <TableDatas index={21} label={"warranty"} value={productDetails.warranty_} />
 
             </tbody>
-          </table>
-
-          {/* {productDetails.barcode && <div className="flex justify-between items-center gap-3 py-2 text-gray-700 h-[40px]" >
-            <span className="lg:text-[15px] md:text-[14px] font-normal"> Barcode :</span>
-            <span className="lg:text-[36px] md:text-[36px] barcode-font font-normal">{removeBarcode(productDetails.barcode)}</span>
-          </div>} */}
+          </table> */}
 
         </div>
       );
@@ -131,10 +142,10 @@ const Tabs = ({ stockDetails, productDetails }) => {
     } else if (activeTab === 2) {
       return (
         <div>
-          {productDetails.barcode && 
-          <tr className="flex justify-center items-center border">
+          {productDetails.barcode &&
+            <tr className="flex justify-center items-center border">
               <Image src={`https://quickchart.io/qr?text=${productDetails.barcode}`} width={30} height={30} className="size-[230px]" />
-          </tr>}
+            </tr>}
         </div>
       )
     }

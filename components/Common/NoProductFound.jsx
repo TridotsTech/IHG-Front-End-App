@@ -10,12 +10,12 @@ export default function NoProductFound({api_empty_icon, height, width, cssClass,
     <>
     {/* <div className='flex items-center justify-center flex-col'> */}
      <div className={`${cssClass ? cssClass : ''} flex items-center justify-center main-width p-[25px_0_0_0] gap-[3px]`}>
-       {(empty_icon || api_empty_icon)&& 
+      
        <div className='flex items-center justify-center h-[150px]'>
         {/* <Image className="h-[145px]" height={height ? height : 100} priority width={width ? width : 100} alt='search' src={api_empty_icon ? check_Image(api_empty_icon) : empty_icon} ></Image> */}
         <Image className="h-[145px]" height={height ? height : 100} width={width ? width : 100} alt='search' src={'/Pack.svg'} ></Image>
        </div>
-       }
+       
        {heading && <p className={'text-[15px] font-semibold'}>{heading}</p>}
        {sub_heading && <p className={'text-[13px] font-medium gray_color'}>{sub_heading}</p>}
 

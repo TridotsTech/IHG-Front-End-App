@@ -91,15 +91,15 @@ export default function index() {
   return (
     <>
       {isMobile && <MobileHeader back_btn={true} title={'Brands'} empty_div={false} search={true} share={false} />}
-      <div className='py-10 md:py-3 md:px-[10px] main-width lg:max-w-[1350px] min-h-screen'>
+      <div className='py-10 md:py-3 md:px-[10px] main-width lg:max-w-[1350px] min-h-screen fade-in'>
         <div className='py-[10px]'>
           <h6 className={`text-[16px] lg:text-[24px] font-semibold line-clamp-1`}>Brands </h6>
         </div>
 
-        <div className='grid grid-cols-3 lg:grid-cols-6 gap-3 '>
+        <div className='grid grid-cols-3 lg:grid-cols-6 gap-3 fade-in'>
           {details && details.length > 0 &&
             details.map((item, i) => (
-              <div key={i} ref={details.length === i + 5 ? lastPostElementRef : null} className='border border-[#E9E9E9] rounded-xl cursor-pointer relative min-h-[100px]' onClick={() => changeBrand(item.name)}>
+              <div key={i} ref={details.length === i + 5 ? lastPostElementRef : null} className='fade-in border border-[#E9E9E9] rounded-xl cursor-pointer relative min-h-[100px]' onClick={() => changeBrand(item.name)}>
                 <div className='py-4 px-5'>
                   {item.image && <Image src={check_Image(item.image)} alt={item.name} width={100} height={50} className='w-full h-[50px] object-contain' />}
                   {!item.image && <h1 className='text-center min-h-[50px] flex justify-center items-center text-[20px] md:text-[15px] font-medium'>{item.name}</h1>}

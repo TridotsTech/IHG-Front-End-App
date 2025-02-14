@@ -197,7 +197,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
     const queryParams = new URLSearchParams({
       q: `${inputText ? inputText : '*'}`,
-      query_by: "item_name,item_description,brand,item_code",
+      query_by: "item_name,item_description,item_code",
       // page: "1",
       // per_page: "15",
       // query_by_weights: "1,2,3",

@@ -184,7 +184,7 @@ export default function Navbar({ all_categories, categoryData }) {
                   <div onClick={() => { leaveFormnav(), navigateToDetail1(item) }} className={`flex items-center gap-[5px] relative  first:p-[0_15px_0px_0px] p-[0_15px_0px_15px] text-[#976563]  `}>
                     {/* <Image style={{ objectFit: 'contain' }} className='h-[30px] w-[30px]' height={35}  width={35} alt='vantage' src={check_Image(item.mobile_image)} /> */}
                     <div onClick={() => changeCategory(item)} className={`hoverMenuSec relative cursor-pointer ${(allMenu != 1 && router.asPath.split('/')[1] == item) ? 'active_parent' : ''} `}>
-                      <h6  className={`font-medium text-[#000000B2] uppercase text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item}>{item}</h6>
+                      <h6  className={`font-medium text-[#000000B2] uppercase text-left ${router?.query?.category === item ? 'font-semibold' : ''} navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item}>{item}</h6>
                       {/* <h6 onClick={() => router.push('/list?category=' + item)} className={`font-medium text-[#000000B2] uppercase text-left navigation_c uppercase lg:text-[13px] tracking-[.25px] `} key={item}>{item}</h6> */}
                     </div>
 
@@ -254,8 +254,8 @@ export default function Navbar({ all_categories, categoryData }) {
                   <div className="w-[241px] dropdown top-[25px] overflow-y-auto min-h-[100px] max-h-[400px] select_scrollbar right-[0] shadow-[0_0_5px_#ddd] absolute bg-[#fff] z-[2000]">
                     {categoryData.slice(tabView ? 6 : 10, categoryData.length).map((submenu, sub1) => (
                       <>
-                        <div onClick={() => changeCategory(submenu)} className={`hoverMore cursor-pointer transition-colors ease-in duration-200 delay-50 p-[2px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
-                          <h6 className='text-left text-[11px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>
+                        <div onClick={() => changeCategory(submenu)} className={`hoverMore cursor-pointer transition-colors ease-in duration-200 delay-50 p-[2px_8px] rounded-[5px] flex items-center hoverNav relative justify-between`} key={sub1}>
+                          <h6 className={`text-left text-[11px] ${router?.query?.category === submenu ? 'font-semibold' : ''} uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50`}>{submenu}</h6>
                         </div>
                         {/* <Link href={('/list?category=' + submenu)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
                           <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>

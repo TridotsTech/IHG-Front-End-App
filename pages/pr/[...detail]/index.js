@@ -62,10 +62,10 @@ const Detail = () => {
         // breadcrumb.push({ name: productDetail.item });
         // productDetail["breadcrumb"] = breadcrumb;
         const detail = localStorage['product_detail']
-        if(detail && JSON.parse(detail)){
-            setProductDetail({...JSON.parse(detail)})
+        if (detail && JSON.parse(detail)) {
+            setProductDetail({ ...JSON.parse(detail) })
             // console.log('deta', JSON.parse(detail))
-        }else{
+        } else {
             getProductDetail()
         }
         getDetail();
@@ -95,7 +95,7 @@ const Detail = () => {
 
     const getPrRoute = () => {
         let productRoute = ""
-        if(router.query && router.query.detail){
+        if (router.query && router.query.detail) {
             let detail = router.query.detail
             detail.map((r, i) => {
                 productRoute = productRoute + r + ((detail.length != (i + 1)) ? '/' : '')
@@ -134,29 +134,47 @@ const Detail = () => {
             setDetails([]);
         }
 
-        if (details.related_products && details.related_products.length > 0) {
-            // console.log("che", details.related_products)
-            const filterQuery = details.related_products
-                .map((code) => `item_code:="${code}"`)
-                .join(" || ");
-            const queryParams = new URLSearchParams({
-                q: "*",
-                query_by: "item_name,item_description,brand",
-                query_by_weights: "1,2,3",
-                filter_by: filterQuery,
+        if (details.related_products) {
+            const relatedSections = {};
+
+            Object.entries(details.related_products).forEach(([key, values]) => {
+                if (Array.isArray(values) && values.length > 0) {
+                    const filterQuery = values.map((code) => `item_code:="${code}"`).join(" || ");
+
+                    relatedSections[key] = { query: filterQuery, data: [] };
+                } else {
+                    relatedSections[key] = { query: "", data: [] };
+                }
             });
 
-            const data = await typesense_search_items(queryParams);
-            if (data.hits && data.hits.length > 0) {
-                // setRelatedData(data.hits);
-                setRelatedData(filterData(details.related_products, data.hits));
-                // console.log('filData', filterData(details.related_products, data.hits))
-                // console.log(data.hits, "data.hits")
-            }
+
+            const fetchData = async () => {
+                for (const key in relatedSections) {
+                    if (relatedSections[key].query) {
+                        const queryParams = new URLSearchParams({
+                            q: "*",
+                            query_by: "item_name,item_description,brand",
+                            query_by_weights: "1,2,3",
+                            filter_by: relatedSections[key].query,
+                        });
+
+                        const data = await typesense_search_items(queryParams);
+                        console.log(`Data for ${key}:`, data.hits);
+
+                        if (data.hits && data.hits.length > 0) {
+                            relatedSections[key].data = filterData(details.related_products[key], data.hits);
+                        }
+                    }
+                }
+                setRelatedData(relatedSections);
+            };
+
+            fetchData();
         } else {
-            setRelatedData([]);
+            setRelatedData({});
         }
 
+        // console.log('relatedSections', relatedProductData)
         // const resp = await get_product_details(router.query.detail);
         // const details = await resp.message || []
     };
@@ -252,12 +270,12 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
     let [apiCall, setApicall] = useState(true);
     let [pageLoading, setPageLoading] = useState(false);
 
-    console.log("product", productDetail)
+    // console.log("product", productDetail)
     useEffect(() => {
         if (typeof window != "undefined") {
             setApicall(true);
             setLoader(true);
-            setData({...productDetail});
+            setData({ ...productDetail });
             setLoader(false);
             get_product_details();
         }
@@ -339,7 +357,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
         }
     };
 
-    
+
     useMemo(() => {
         if (webSettings) {
             let datas = [
@@ -872,7 +890,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                         </div>
                                         {(data.offer_rate) ? <h6 className='bg-[#009f58] text-[#fff] p-[3px_13px] absolute top-0 left-0 rounded-br-md  text-[12px]'>{parseInt(((data.rate - data.offer_rate) / data.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                         {/* {(data.discount_percentage != 0 && !isMobile) && <h6 className='absolute md:hidden right-[8px] top-[8px] additional_bg text-[#fff] p-[2px_8px] rounded-[10px] text-[12px]'>{data.discount_percentage}<span className='px-[0px] text-[#fff] text-[12px]'>% Off</span> </h6>} */}
-                                        {true && (
+                                        {false && (
                                             <div className="md:hidden absolute top-4 right-[-3px] flex">
                                                 <Image
                                                     src="/vector.png"
@@ -980,25 +998,26 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                     </div>
                                 </div>
 
-                                {relatedData &&
-                                    relatedData.length != 0 &&
-                                    (
-                                        <>
-                                            <div className="m-[15px_0] md:px-[10px]">
-                                                {/* <h3 className='text-[15px] font-[500] mb-[8px]'>Related Products</h3> */}
-                                                <ViewAll
-                                                    data={{ title: "Related Products" }}
-                                                    viewAll={false}
-                                                />
-                                                {/* <ProductBox productList={data.related_products} rowCount={'flex-[0_0_calc(20%_-_8px)]'} scroll_button={true} scroll_id='related_products'/> */}
-                                                <ProductBox
-                                                    productList={relatedData}
-                                                    scroll_button={true} scroll_id='related_products'
-                                                    rowCount={"flex-[0_0_calc(20%_-_8px)]"}
-                                                />
-                                            </div>
-                                        </>
-                                    )}
+                                {relatedData && Object.keys(relatedData).length > 0 && (
+                                    <>
+                                        {Object.entries(relatedData).map(([key, value]) => (
+                                            value.data.length > 0 && ( 
+                                                <div key={key} className="m-[15px_0] md:px-[10px]">
+                                                    {/* <ViewAll data={{ title: key.replace(/_/g, " ") }} viewAll={false} /> */}
+                                                    <h2 className="text-[14px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">{key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
+
+                                                    <ProductBox
+                                                        productList={value.data}
+                                                        scroll_button={true}
+                                                        rowStyle={true}
+                                                        scroll_id={`related_products_${key}`}
+                                                        rowCount={"flex-[0_0_calc(20%_-_8px)]"}
+                                                    />
+                                                </div>
+                                            )
+                                        ))}
+                                    </>
+                                )}
 
                                 {data.recently_viewed_products &&
                                     data.recently_viewed_products.length != 0 &&

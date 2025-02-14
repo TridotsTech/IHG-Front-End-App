@@ -722,6 +722,22 @@ function List({ category, brand, search }) {
     })
   }
 
+  const checkOpenFilter = () => {
+    if (tabView && openFilter) {
+      return true
+    }
+
+    if (loader && !tabView) {
+      return false
+    }
+
+    if (!loader && tabView) {
+      return false
+    }
+
+    return true
+  }
+
   // console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
   return (
 
@@ -751,13 +767,22 @@ function List({ category, brand, search }) {
 
       <div className='md:hidden tab:hidden main-width pt-3 flex items-center justify-end gap-4'>
 
-        <div className='flex items-center gap-4'>
-          <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
-          <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
-          <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
-          <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
-          <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
-
+      <div className='px-8 gap-4 flex overflow-x-auto scrollbarHide w-[58%]'>
+          <div className='flex-[0_0_auto]'>
+            <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+            <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+            <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+            <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
+          </div>
+          <div className='flex-[0_0_auto]'>
+            <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
+          </div>
         </div>
         <div onClick={() => { dispatch(setBoxView(productBoxView == 'Grid View' ? 'List View' : 'Grid View')); }} className=' flex items-center gap-[7px] cursor-pointer border border-[1px] border-[#ddd] rounded-[5px] p-[5px_10px] min-w-[72px] h-[32px]'>
           <Image className='size-[18px] object-contain' height={25} width={25} alt='logo' src={productBoxView == 'Grid View' ? '/filters/list.svg' : '/filters/grid.svg'}></Image>
@@ -777,11 +802,11 @@ function List({ category, brand, search }) {
 
       <div className={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in `}>
         {
-          ((tabView && openFilter) || !tabView) && (
-            <div id='filter-sec' className={`md:hidden ${(tabView && openFilter) && 'tab:w-[35%] tab:z-0'} border-r border-r-[1px] border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[112px] tab:top-[220px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
-              {<Filters mastersData={mastersData || []} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
-            </div>
-          )
+
+          <div id='filter-sec' className={`md:hidden ${checkOpenFilter() ? 'opacity-100 fade-in' : 'opacity-0'}  ${(tabView && openFilter) ? 'tab:w-[35%] tab:z-0' : ''} border-r border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[112px] tab:top-[220px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
+            {<Filters mastersData={mastersData || []} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
+          </div>
+
         }
 
         <div className="lg:hidden tab:hidden sticky top-[50px] bg-[#f1f5f9] z-[99] ">
@@ -996,22 +1021,22 @@ const TabFilters = ({ productBoxView, setFilters, handleSortBy, filters, setOpen
         </div>
         <div className='border-b border-b-slate-100 px-5 py-3 gap-4 flex overflow-x-auto scrollbarHide'>
           <div className='flex-[0_0_auto]'>
-          <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
+            <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           </div>
           <div className='flex-[0_0_auto]'>
-          <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
+            <SwitchComponent label_classname={label_classname} label1={"Show Promotion"} type={'show_promotion'} checked={filters.show_promotion} label2={"Show promotion products only"} changeValue={changeValue} />
           </div>
           <div className='flex-[0_0_auto]'>
-          <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
+            <SwitchComponent label_classname={label_classname} label1={"In Stock"} type={'in_stock'} checked={filters.in_stock} label2={"Show Instock products only"} changeValue={changeValue} />
           </div>
           <div className='flex-[0_0_auto]'>
-          <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
+            <SwitchComponent label_classname={label_classname} label1={"Has Variants"} type={'has_variants'} checked={filters.has_variants} label2={"Show Variants products only"} changeValue={changeValue} />
           </div>
           <div className='flex-[0_0_auto]'>
-          <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
+            <SwitchComponent label_classname={label_classname} label1={"Bundle Item"} type={'custom_in_bundle_item'} checked={filters.custom_in_bundle_item} label2={"Show Bundle Item products only"} changeValue={changeValue} />
           </div>
         </div>
-       
+
       </div>
     </>
   )
