@@ -1008,7 +1008,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
                                                     <ProductBox
                                                         productList={value.data}
-                                                        scroll_button={true}
+                                                        scroll_button={isMobile}
                                                         rowStyle={true}
                                                         scroll_id={`related_products_${key}`}
                                                         rowCount={"flex-[0_0_calc(20%_-_8px)]"}
