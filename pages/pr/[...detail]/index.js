@@ -137,16 +137,20 @@ const Detail = () => {
 
         if (details.related_products) {
             let relatedSections = {};
-        
-            const mustFetch = ["bought_together", "add-ons"];
-        
-            const hasBoughtTogether = Array.isArray(details.related_products.bought_together) &&
-                                      details.related_products.bought_together.length > 0;
-        
-            const keysToFetch = hasBoughtTogether 
-                ? mustFetch
-                : [...mustFetch, ...Object.keys(details.related_products).filter(k => !mustFetch.includes(k))];
-        
+
+            const relatedKeys = {
+                bought_together: "Bought Together",
+                must_use: "Must Use",
+                add_on: "Add On",
+                category_list: "category_list"
+            };
+
+            const hasBoughtTogether = Array.isArray(details.related_products[relatedKeys.bought_together]) &&
+                details.related_products[relatedKeys.bought_together].length > 0;
+
+            const keysToFetch = hasBoughtTogether
+                ? [relatedKeys.bought_together, relatedKeys.must_use, relatedKeys.add_on] 
+                : [relatedKeys.category_list]; 
             keysToFetch.forEach((key) => {
                 const values = details.related_products[key];
                 if (Array.isArray(values) && values.length > 0) {
@@ -156,7 +160,7 @@ const Detail = () => {
                     relatedSections[key] = { query: "", data: [] };
                 }
             });
-        
+
             const fetchData = async () => {
                 for (const key in relatedSections) {
                     if (relatedSections[key].query) {
@@ -166,10 +170,10 @@ const Detail = () => {
                             query_by_weights: "1,2,3",
                             filter_by: relatedSections[key].query,
                         });
-        
+
                         const data = await typesense_search_items(queryParams);
                         console.log(`Data for ${key}:`, data.hits);
-        
+
                         if (data.hits && data.hits.length > 0) {
                             relatedSections[key].data = filterData(details.related_products[key], data.hits);
                         }
@@ -177,14 +181,19 @@ const Detail = () => {
                 }
                 setRelatedData(relatedSections);
             };
-        
+
             fetchData();
         } else {
             setRelatedData({});
         }
-        
-        
 
+
+
+
+
+
+
+        console.log(relatedProductData, 'rela')
         // console.log('relatedSections', relatedProductData)
         // const resp = await get_product_details(router.query.detail);
         // const details = await resp.message || []
@@ -314,7 +323,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
     }, [apiCall, data, details,]);
 
-    // console.log("dedata", data);
+
     const [relatedData, setRelatedData] = useState([])
     useEffect(() => {
         // console.log("rel", relatedProductData)
@@ -322,6 +331,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
     }, [relatedProductData])
 
     //   console.log(data,'data')
+    console.log("dedata", relatedData);
 
     const productQty = (data) => {
         if (data) {
@@ -795,7 +805,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
                                 <div
                                     className="md:hidden pt-3 flex items-center gap-[5px] w-fit cursor-pointer"
-                                    onClick={() => router.back()}
+                                    onClick={() => router.push('/list')}
                                 >
                                     <Image
                                         className="size-[14px]"
@@ -920,14 +930,14 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                         {!isMobile ? (
                                             <>
                                                 {/* <h6 className='text-[12px] font-semibold primary_color capitalize'>{data.centre}</h6> */}
-                                                <span className='text-lg text-[#1F1F1F]'>{data.item_code}</span>
+                                                <span className='text-lg text-[#1F1F1F] pb-[5px]'>{data.item_code}</span>
                                                 <h3 className="text-[20px] md:text-[16px] py-[5px] font-bold capitalize">
                                                     {data.item_name}
                                                 </h3>
 
                                                 {data.item_description && (
                                                     <p
-                                                        className={`text-[14px] gray_color font-[400] mb-[10px] `}
+                                                        className={`text-[14px] gray_color font-[400] py-[5px] `}
                                                         dangerouslySetInnerHTML={{
                                                             __html: data.item_description,
                                                         }}
@@ -937,7 +947,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 <div className="flex items-center gap-3">
 
                                                     <div
-                                                        className={``}
+                                                        className={`py-[5px]`}
                                                     >
                                                         <h3 className={`text-[16px] primary_color inline-flex gap-[6px] items-center font-semibold openSens `}>AED {data.offer_rate > 0 ? (<p className='text-green-600 font-semibold text-[16px]'>{parseFloat(data.offer_rate).toFixed(2)} <span className=' line-through font-medium text-gray-700 ml-[2px] text-[16px]'>{parseFloat(data.rate).toFixed(2)}</span></p>) : (<p className='font-semibold text-[16px]'>{parseFloat(data.rate).toFixed(2)}</p>)}</h3>
 
@@ -945,12 +955,12 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 </div>
 
                                                 {data.stock && data.stock > 0 ? (
-                                                    <p className="text-base text-[#1A9A62] lg:text-[16px] md:text-[13px] font-semibold mt-1">
+                                                    <p className="text-base text-[#1A9A62] lg:text-[16px] md:text-[13px] font-semibold mt-[5px]">
                                                         IN STOCK ({data.stock} NOS)
                                                     </p>
                                                 ) : (
-                                                    <p className="text-base lg:text-[16px] md:text-[13px] font-semibold mt-1 text-[#d11111]">
-                                                        No Stock
+                                                    <p className="text-base lg:text-[16px] md:text-[13px] font-semibold mt-[5px] text-[#d11111]">
+                                                        OUT OF STOCK
                                                     </p>
                                                 )}
                                             </>
@@ -959,17 +969,17 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 <div className="flex justify-between gap-5">
                                                     <div>
                                                         {/* {data.centre && <h6 className='text-[14px] font-semibold primary_color capitalize'>{data.centre}</h6>} */}
-                                                        <span className='text-[#1F1F1F] text-sm'>{data.item_code}</span>
-                                                        <h3 className="text-[18px] py-[5px] font-semibold line-clamp-2 capitalize">
+                                                        <span className='text-[#1F1F1F] text-sm pb-[5px]'>{data.item_code}</span>
+                                                        <h3 className="text-[18px] py-[4px] font-semibold line-clamp-2 capitalize">
                                                             {data.item_name}
                                                         </h3>
                                                         {data.stock && data.stock > 0 ? (
-                                                            <p className="text-base text-[#1A9A62] font-semibold mt-1">
+                                                            <p className="text-base text-[#1A9A62] font-semibold py-[4px]">
                                                                 IN STOCK ({data.stock} NOS)
                                                             </p>
                                                         ) : (
-                                                            <p className="text-base font-semibold mt-1 text-[#d11111]">
-                                                                Out Of Stock
+                                                            <p className="text-base font-semibold text-[#d11111] py-[4px]">
+                                                                OUT OF STOCK
                                                             </p>
                                                         )}
                                                         {/* {data.stock && <p>{data.stock}</p>} */}
@@ -977,13 +987,13 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 </div>
 
                                                 <p
-                                                    className={`text-[11px] gray_color font-[400] mt-[10px] `}
+                                                    className={`text-[11px] gray_color font-[400] py-[4px] `}
                                                     dangerouslySetInnerHTML={{
                                                         __html: data.item_description,
                                                     }}
                                                 />
 
-                                                <div className="flex flex-row mt-1 items-center justify-between gap-3">
+                                                <div className="flex flex-row mt-[4px] items-center justify-between gap-3">
                                                     {(data.offer_rate) ? <h6 className='bg-[#009f58] text-[#fff] p-[3px_10px] text-[10px]'>{parseInt((data.rate - data.offer_rate) / data.rate * 100)}<span className='px-[0px] text-[#fff] text-[10px]'>% (AED {parseFloat(data.rate - data.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
                                                     <div
                                                         className={` font-semibold  openSens`}
@@ -1009,26 +1019,45 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                     </div>
                                 </div>
 
-                                {relatedData && Object.keys(relatedData).length > 0 && (
-                                    <>
-                                        {Object.entries(relatedData).map(([key, value]) => (
-                                            value.data.length > 0 && ( 
-                                                <div key={key} className="m-[15px_0] md:px-[10px]">
-                                                    {/* <ViewAll data={{ title: key.replace(/_/g, " ") }} viewAll={false} /> */}
-                                                    <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">{(key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())) === ('Category List' || 'Bought Together') ? 'Related Products' : key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
 
-                                                    <ProductBox
-                                                        productList={value.data}
-                                                        scroll_button={isMobile}
-                                                        rowStyle={true}
-                                                        scroll_id={`related_products_${key}`}
-                                                        rowCount={"flex-[0_0_calc(20%_-_8px)]"}
-                                                    />
-                                                </div>
-                                            )
-                                        ))}
-                                    </>
-                                )}
+                                {relatedData && Object.keys(relatedData).length > 0 && (() => {
+                                    const hasBoughtTogether = relatedData["Bought Together"] && relatedData["Bought Together"].data.length > 0;
+                                    const hasMustUse = relatedData["Must Use"] && relatedData["Must Use"].data.length > 0;
+                                    const hasAddOn = relatedData["Add On"] && relatedData["Add On"].data.length > 0;
+                                    const hasCategoryList = relatedData["category_list"] && relatedData["category_list"].data.length > 0;
+
+                                    return (
+                                        <>
+                                            {/* {hasBoughtTogether && (
+                                                <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">Related Products</h2>
+                                            )} */}
+
+                                            {Object.entries(relatedData).map(([key, value]) => (
+                                                value.data.length > 0 && (
+                                                    <div key={key} className="m-[15px_0] md:px-[10px]">
+                                                        {(key === "Bought Together" || key === "category_list") ? (
+                                                            <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">Related Products</h2>
+                                                        ) : (
+                                                            <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
+                                                                {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                            </h2>
+                                                        )}
+
+                                                        <ProductBox
+                                                            productList={value.data}
+                                                            scroll_button={isMobile}
+                                                            rowStyle={true}
+                                                            scroll_id={`related_products_${key}`}
+                                                            rowCount={"flex-[0_0_calc(20%_-_8px)]"}
+                                                        />
+                                                    </div>
+                                                )
+                                            ))}
+                                        </>
+                                    );
+                                })()}
+
+
 
                                 {data.recently_viewed_products &&
                                     data.recently_viewed_products.length != 0 &&

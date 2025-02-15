@@ -195,23 +195,25 @@ export default function MainHeader({ header_template, theme_settings, website_se
     // }
 
 
-    const queryParams = new URLSearchParams({
-      q: `${inputText ? inputText : '*'}`,
-      query_by: "item_name,item_description,item_code",
-      // page: "1",
-      // per_page: "15",
-      // query_by_weights: "1,2,3",
-      exhaustive_search: "true",
-      // filter_by: `item_code:${inputText}* || item_description:${inputText}*`
-    });
+    if (inputText.length>=3) {
+      const queryParams = new URLSearchParams({
+        q: `${inputText ? inputText : '*'}`,
+        query_by: "item_name,item_description,item_code",
+        page: "1",
+        per_page: "20",
+        // query_by_weights: "1,2,3",
+        exhaustive_search: "true",
+        // filter_by: `item_code:${inputText}* || item_description:${inputText}*`
+      });
 
-    const data = await typesense_search_items(queryParams);
-    const initialData = data.hits || [];
-    setLoader(false)
-    if (initialData && initialData.length > 0) {
-      setSearchProducts(initialData);
-    } else {
-      setSearchProducts([]);
+      const data = await typesense_search_items(queryParams);
+      const initialData = data.hits || [];
+      setLoader(false)
+      if (initialData && initialData.length > 0) {
+        setSearchProducts(initialData);
+      } else {
+        setSearchProducts([]);
+      }
     }
     // console.log(initialData, "initialData")
 
@@ -256,11 +258,11 @@ export default function MainHeader({ header_template, theme_settings, website_se
     setActiveSearch(false)
   }
 
-  useEffect(()=>{
-    if(router.asPath === '/list'){
+  useEffect(() => {
+    if (router.asPath === '/list') {
       setSearchValue('')
     }
-  },[router.asPath])
+  }, [router.asPath])
 
 
   // useEffect(()=>{
@@ -356,22 +358,22 @@ export default function MainHeader({ header_template, theme_settings, website_se
   // }, []);
 
   useEffect(() => {
-        const handleClickOutside = (event) => {
-          if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-            setIsLogout(false);
-          }
-        };
-    
-        if (isLogout) {
-          document.addEventListener("mousedown", handleClickOutside);
-        } else {
-          document.removeEventListener("mousedown", handleClickOutside);
-        }
-    
-        return () => {
-          document.removeEventListener("mousedown", handleClickOutside);
-        };
-      }, [isLogout]);
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsLogout(false);
+      }
+    };
+
+    if (isLogout) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isLogout]);
 
 
   return (
@@ -407,9 +409,9 @@ export default function MainHeader({ header_template, theme_settings, website_se
                       <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
                         <input value={searchValue} autoComplete='off' id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
                         {searchValue && <Image onClick={() => setSearchValue('')} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer mr-2' height={25} width={25} alt='vantage' src={'/Navbar/cancel.svg'}></Image>}
-                        <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/search/' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
+                        <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/list?search=' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
                       </div>
-                      {searchValue && (activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
+                      {searchValue.length >= 3 && (activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
                         <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
                     </div>
                   </div>
@@ -436,30 +438,30 @@ export default function MainHeader({ header_template, theme_settings, website_se
                     </div> */}
 
                     <div className="relative">
-                    <button
-                      onClick={() => setIsLogout(true)}
-                      className="flex items-center justify-center"
-                    >
-                      <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? (customerName) : 'Login'}</p>
+                      <button
+                        onClick={() => setIsLogout(true)}
+                        className="flex items-center justify-center"
+                      >
+                        <p className='text-[16px] font-bold text-center line-clamp-1 bottom-[-21px]'>{customerName ? (customerName) : 'Login'}</p>
 
-                      <div className='headerBtbs'>
-                        <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={'/profile.svg'}></Image>
-                      </div>
-                    </button>
+                        <div className='headerBtbs'>
+                          <Image style={{ objectFit: 'contain' }} className='h-[25px] w-[23px]' height={25} width={25} alt='vantage' src={'/profile.svg'}></Image>
+                        </div>
+                      </button>
 
-                    {isLogout && customerName && (
-                      <div ref={dropdownRef} className="absolute right-0 mt-1 w-48 bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 z-50">
-                        <div className="text-gray-700">
-                          <div
-                            className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => { checkUser() }} onMouseEnter={() => customerName ? setCustomerMenu(true) : null}
-                          >
-                        <Image height={20} width={20} className='size-[15px]' alt='forward' src={'/Navbar/Logout.svg'}></Image>
-                            Logout
+                      {isLogout && customerName && (
+                        <div ref={dropdownRef} className="absolute right-0 mt-1 w-48 bg-white shadow-lg rounded-lg overflow-hidden border border-gray-200 z-50">
+                          <div className="text-gray-700">
+                            <div
+                              className="flex items-center gap-2 px-4 py-2 text-red-500 hover:bg-gray-100 cursor-pointer"
+                              onClick={() => { checkUser() }} onMouseEnter={() => customerName ? setCustomerMenu(true) : null}
+                            >
+                              <Image height={20} width={20} className='size-[15px]' alt='forward' src={'/Navbar/Logout.svg'}></Image>
+                              Logout
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    )}
+                      )}
                     </div>
                   </div>
                 }

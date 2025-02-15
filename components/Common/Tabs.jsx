@@ -43,14 +43,16 @@ const Tabs = ({ stockDetails, productDetails }) => {
       return (
         <div className="space-y-6">
 
-          <p
-            className={` `}
-            dangerouslySetInnerHTML={{
-              __html: productDetails.full_description,
-            }}
-          />
+          <div className="item-desc">
+            <p
+              className='leading-[30px]'
+              dangerouslySetInnerHTML={{
+                __html: productDetails.full_description,
+              }}
+            />
+          </div>
 
-          <div className="">
+          <div className="space-y-2">
             {productDetails.last_sold > 0 && (
               <div className="flex items-center gap-2">
                 <Image src="/calendar.svg" width={20} height={20} />
@@ -58,7 +60,7 @@ const Tabs = ({ stockDetails, productDetails }) => {
               </div>
             )}
 
-            {productDetails.last_brought >0 && (
+            {productDetails.last_brought > 0 && (
               <div className="flex items-center gap-2">
                 <Image src="/calendar.svg" width={20} height={20} />
                 <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-[#009f58] font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_brought}</span>Days Since Last Buyed</p>
@@ -146,6 +148,12 @@ const Tabs = ({ stockDetails, productDetails }) => {
             <tr className="flex justify-center items-center border">
               <Image src={`https://quickchart.io/qr?text=${productDetails.barcode}`} width={30} height={30} className="size-[230px]" />
             </tr>}
+
+          {!productDetails.barcode && (
+            <div className="flex justify-center items-center text-[14px] font-semibold">
+              <h2>QR Not Available</h2>
+            </div>
+          )}
         </div>
       )
     }

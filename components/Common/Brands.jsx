@@ -108,7 +108,7 @@ const Brands = ({ customCss = "", data }) => {
     ]
 
     const changeBrand = (item) => {
-        !router.asPath.includes('list') ? router.push('/list?brand='+item) : null
+        router.push('/list?brand='+item)
         // console.log("log", item)
         // dispatch(setFilter({ brand: [item] }));
     }

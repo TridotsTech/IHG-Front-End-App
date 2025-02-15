@@ -67,13 +67,13 @@ const RangeSlider = ({ MIN = 0, MAX = 100000, label, label_classname, setRanges,
 
     // Handle slider input change
     const handleFromSliderChange = (e) => {
-        const newFromValue = e.target.value;
+        const newFromValue = Math.min(Number(e.target.value), toValue); // Ensure fromValue <= toValue
         setFromValue(newFromValue);
         setRanges({ ...ranges, min: newFromValue, max: toValue });
     };
-
+    
     const handleToSliderChange = (e) => {
-        const newToValue = e.target.value;
+        const newToValue = Math.max(Number(e.target.value), fromValue); // Ensure toValue >= fromValue
         setToValue(newToValue);
         setRanges({ ...ranges, min: fromValue, max: newToValue });
     };

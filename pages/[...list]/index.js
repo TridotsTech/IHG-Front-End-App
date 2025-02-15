@@ -366,14 +366,14 @@ function List({ category, brand, search }) {
     // console.log(checkInitialValue(price_range?.max,initialState.price_range.max),"price - max")
 
     if (checkInitialValue(price_range?.min, initialState.price_range.min) || checkInitialValue(price_range?.max, initialState.price_range.max)) {
-      filterParams.push(`rate:>${price_range.min} && rate:<${price_range.max}`);
+      filterParams.push(`rate:>=${price_range.min} && rate:<=${price_range.max}`);
     }
 
     // console.log(checkInitialValue(stock_range?.min,initialState.stock_range.min),"stock - min")
     // console.log(checkInitialValue(stock_range?.max,initialState.stock_range.max),"stock - max")
 
     if (checkInitialValue(stock_range?.min, initialState.stock_range.min) || checkInitialValue(stock_range?.max, initialState.stock_range.max)) {
-      filterParams.push(`stock:>${stock_range.min} && stock:<${parseFloat(stock_range.max)}`);
+      filterParams.push(`stock:>=${stock_range.min} && stock:<=${parseFloat(stock_range.max)}`);
     }
 
     // if (price_range?.min > 0 && price_range?.max) {
@@ -630,8 +630,10 @@ function List({ category, brand, search }) {
 
       filters = {
         ...filters,
-        item_group: router.query['category'] ? (Array.isArray(router.query['category']) ? router.query['category'] : router.query['category'].split(",")) : [],
-        brand: router.query['brand'] ? (Array.isArray(router.query['brand']) ? router.query['brand'] : router.query['brand'].split(",")) : [],
+        price_range: productFilter.price_range,
+        stock_range: productFilter.stock_range,
+        item_group: router.query['category'] ? (Array.isArray(router.query['category']) ? router.query['category'] : router.query['category'].split(",")) : productFilter.item_group.length > 0 ? productFilter.item_group : [],
+        brand: router.query['brand'] ? (Array.isArray(router.query['brand']) ? router.query['brand'] : router.query['brand'].split(",")) : productFilter.brand.length > 0 ? productFilter.brand : [],
         q: router.query['search'] ? router.query['search'] : "*"
       }
 
@@ -640,7 +642,7 @@ function List({ category, brand, search }) {
         behavior: "smooth",
       });
 
-      setFilters({ ...filters })
+      setFilters({ ...filters})
       fetchResults(true, true)
     }
 
@@ -668,7 +670,8 @@ function List({ category, brand, search }) {
 
 
   useEffect(() => {
-    dispatch(setAllFilter({ ...filters }))
+    dispatch(setAllFilter({ ...filters}))
+    console.log("price", productFilter)
     // console.log("checkFill", productFilter)
 
   }, [filters])
@@ -686,11 +689,11 @@ function List({ category, brand, search }) {
     { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
     { text: 'Discount high to low', value: 'discount_percentage:desc' },
-    { text: 'Discount low to high', value: 'discount_percentage:asc' },
+    // { text: 'Discount low to high', value: 'discount_percentage:asc' },
   ]
 
   const handleSortBy = (e, type = "") => {
-    // console.log('targetvalue', e.target.value)
+    console.log('targetvalue', e)
     let sortByValue = ""
     if (type == "select") {
       sortByValue = e.target.value;
@@ -698,9 +701,9 @@ function List({ category, brand, search }) {
       sortByValue = e
     }
 
-    if (localStorage['sort_by']) {
-      localStorage.removeItem('sort_by')
-    }
+    // if (localStorage['sort_by']) {
+    //   localStorage.removeItem('sort_by')
+    // }
 
     setFilters((prevFilters) => ({
       ...prevFilters,
@@ -758,7 +761,7 @@ function List({ category, brand, search }) {
       {loadSpinner && <Backdrop />}
       {isOpenCat && <div className='filtersPopup'>
         <Rodal visible={isOpenCat} enterAnimation='slideDown' animation='' onClose={closeModal}>
-          <MobileCategoryFilter closeModal={closeModal} />
+          <MobileCategoryFilter closeModal={closeModal} handleSortBy={handleSortBy} />
         </Rodal>
       </div>
       }
@@ -803,7 +806,7 @@ function List({ category, brand, search }) {
       <div className={`md:mb-[60px] lg:flex tab:flex tab:flex-col lg:py-5 lg:gap-[17px] md:gap-[10px] transition-all duration-300 ease-in `}>
         {
 
-          <div id='filter-sec' className={`md:hidden ${checkOpenFilter() ? 'opacity-100 fade-in' : 'opacity-0'}  ${(tabView && openFilter) ? 'tab:w-[35%] tab:z-0' : ''} border-r border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[112px] tab:top-[220px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[98]  `}>
+          <div id='filter-sec' className={`md:hidden ${checkOpenFilter() ? 'opacity-100 fade-in' : 'opacity-0'}  ${(tabView && openFilter) ? 'tab:w-[35%] tab:z-0' : ''} border-r border-r-[#0000001F] fixed lg:w-[20%] transition-all duration-300 ease-in mr-[10px] lg:top-[112px] tab:top-[220px] overflow-auto scrollbarHide h-[calc(100vh_-_125px)] bg-[#fff] z-[0]  `}>
             {<Filters mastersData={mastersData || []} ProductFilter={ProductFilter} priceBetween={priceBetween} setPriceBetween={setPriceBetween} filters={filters} setFilters={setFilters} fetchResults={handleFilterClick} clearFilter={removeFilter} foundValue={foundValue} />}
           </div>
 
@@ -1053,8 +1056,15 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy, fil
     { text: 'Mostly Sold', value: 'sold_last_30_days:desc' },
     { text: 'Least Sold', value: 'sold_last_30_days:asc' },
     { text: 'Discount high to low', value: 'discount_percentage:desc' },
-    { text: 'Discount low to high', value: 'discount_percentage:asc' },
+    // { text: 'Discount low to high', value: 'discount_percentage:asc' },
   ]
+
+  const handleSortOption = (value)=>{
+    handleSortBy(value, "")
+    closeModal()
+    // console.log(value);
+    
+  }
 
 
   return (
@@ -1063,7 +1073,7 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy, fil
 
       {sorting.map((res, index) => {
         return (
-          <h6 onClick={() => { closeModal(), handleSortBy(res.value, "") }} className={`text-[15px] font-medium p-[10px] ${(localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by) === res.value && 'bg-gray-100'}`}>{res.text}</h6>
+          <h6 onClick={() => { handleSortOption(res.value)  }} className={`text-[15px] font-medium z-[99999999999] p-[10px] ${(localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by) === res.value && 'bg-gray-100'}`}>{res.text}</h6>
         )
       })}
     </>

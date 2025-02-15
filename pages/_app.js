@@ -296,7 +296,8 @@ function App({ Component, pageProps }) {
               {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
               {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
               {/* router.pathname == "/pr/[...detail]" ? pageKey : null */}
-              <div key={pageKey} className="page fade-enter fade-enter-active">
+              {/* <div key={pageKey} className="page fade-enter fade-enter-active"> */}
+              <div className="page fade-enter fade-enter-active">
                 <Component  {...pageProps} />
               </div>
               {/* </main> */}
