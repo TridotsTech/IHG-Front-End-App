@@ -255,7 +255,7 @@ export default function Navbar({ all_categories, categoryData }) {
                     {categoryData.slice(tabView ? 6 : 10, categoryData.length).map((submenu, sub1) => (
                       <>
                         <div onClick={() => changeCategory(submenu)} className={`hoverMore cursor-pointer transition-colors ease-in duration-200 delay-50 p-[2px_8px] rounded-[5px] flex items-center hoverNav relative justify-between`} key={sub1}>
-                          <h6 className={`text-left text-[11px] ${router?.query?.category === submenu ? 'font-semibold' : ''} uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50`}>{submenu}</h6>
+                          <h6 className={`text-left text-[#000000B2] text-[13px] ${router?.query?.category === submenu ? 'font-semibold' : ''} uppercase p-[5px_10px] transition-colors ease-in duration-200 delay-50`}>{submenu}</h6>
                         </div>
                         {/* <Link href={('/list?category=' + submenu)}  className={`hoverMore transition-colors ease-in duration-200 delay-50 p-[7px_8px] rounded-[5px] flex items-center cursor-pointer hoverNav relative justify-between`} key={sub1}>
                           <h6 className='text-left text-[14px] uppercase text-[#000] p-[5px_10px] transition-colors ease-in duration-200 delay-50'>{submenu}</h6>

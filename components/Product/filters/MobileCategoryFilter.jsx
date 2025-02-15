@@ -1,22 +1,17 @@
 import { useState, useMemo } from 'react'
 import Image from 'next/image';
-import { check_Image } from '@/libs/api';
 import { useSelector } from 'react-redux';
 import { useRouter } from 'next/router'
-import { useDispatch } from "react-redux";
-import { setBrand, setFilter } from "@/redux/slice/filtersList";
 
 export default function MobileCategoryFilter({ category_list, closeModal, data }) {
 
   const webSettings = useSelector((state) => state.webSettings.websiteSettings)
-  let [current_category, setCurrent_category] = useState()
   const router = useRouter();
-  let [child, setChild] = useState({ child_1: true })
 
   useMemo(() => {
 
     if (webSettings && webSettings.all_categories) {
-      setCurrent_category(webSettings.all_categories);
+      // setCurrent_category(webSettings.all_categories);
     }
 
   }, [webSettings, category_list])
@@ -28,37 +23,36 @@ export default function MobileCategoryFilter({ category_list, closeModal, data }
   }
 
 
-  const dispatch = useDispatch()
 
   const changeCategory = (item) => {
-    router.replace(`/list?category=${item}`,null,{locale: true,scroll:false,shallow:true})
-      // router.push("/" + item.redirect_url)
-      // const val = item.redirect_url.split("=")[1]
-      // console.log(val, "val")
-      // dispatch(setFilter([item]))
-      // dispatch(setBrand([]))
-    }
+    router.replace(`/list?category=${item}`, null, { locale: true, scroll: false, shallow: true })
+    // router.push("/" + item.redirect_url)
+    // const val = item.redirect_url.split("=")[1]
+    // console.log(val, "val")
+    // dispatch(setFilter([item]))
+    // dispatch(setBrand([]))
+  }
 
 
   return (
     <>
-      {data &&
-        <div className='h-full overflow-auto scrollbarHide min-h-screen'>
-          {data.length != 0 &&
-            data.map((child1, index1) => {
-              return (
-                <div className='border-[1px] border-slate-100 rounded-[5px] p-[10px] m-[10px]'>
 
-                  <div className='flex items-center'>
-                    <h6 key={index1} className="flex items-center w-full gap-[5px] min-h-[40px]">
-                      {/* <Image className='cursor-pointer h-[50px] w-[50px] pr-[7px] object-contain rounded-[7px]' height={80} width={80} alt='logo' src={check_Image(child1.mobile_image)}></Image> */}
-                      <span onClick={() => { changeCategory(child1) }} className={`${(router.asPath == ('/' + child1)) ? 'primary_color' : ''} w-full cursor-pointer text-[13px] font-medium line-clamp-1`}>{child1}</span>
-                    </h6>
-                    <Image onClick={() => { changeCategory(child1) }} className='cursor-pointer h-[10px] object-contain opacity-60' height={14} width={14} alt='logo' src={'/Arrow/arrowBlack.svg'}></Image>
-                  </div>
+      <div className={`h-full ${data ? "opacity-100" : "opacity-0"} transition-all duration-500 ease-linear overflow-auto scrollbarHide min-h-screen fade-in`}>
+        {data.length != 0 &&
+          data.map((child1, index1) => {
+            return (
+              <div className='border-[1px] border-slate-100 rounded-[5px] p-[10px] m-[10px]'>
+
+                <div className='flex items-center'>
+                  <h6 key={index1} className="flex items-center w-full gap-[5px] min-h-[40px]">
+                    {/* <Image className='cursor-pointer h-[50px] w-[50px] pr-[7px] object-contain rounded-[7px]' height={80} width={80} alt='logo' src={check_Image(child1.mobile_image)}></Image> */}
+                    <span onClick={() => { changeCategory(child1) }} className={`${(router.asPath == ('/' + child1)) ? 'primary_color' : ''} w-full cursor-pointer text-[13px] font-medium line-clamp-1`}>{child1}</span>
+                  </h6>
+                  <Image onClick={() => { changeCategory(child1) }} className='cursor-pointer h-[10px] object-contain opacity-60' height={14} width={14} alt='logo' src={'/Arrow/arrowBlack.svg'}></Image>
+                </div>
 
 
-                  {/* {(child && child.activeChild == (index1 + 1)) && child1.child.length != 0 &&
+                {/* {(child && child.activeChild == (index1 + 1)) && child1.child.length != 0 &&
                     child1.child.map((child2, index2) => {
                       return (
                         <>
@@ -81,12 +75,12 @@ export default function MobileCategoryFilter({ category_list, closeModal, data }
 
                     })} */}
 
-                </div>
-              )
-            })
-          }
-        </div>
-      }
+              </div>
+            )
+          })
+        }
+      </div>
+
     </>
   )
 }

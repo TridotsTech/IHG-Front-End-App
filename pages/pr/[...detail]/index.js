@@ -62,7 +62,8 @@ const Detail = () => {
         // breadcrumb.push({ name: productDetail.item });
         // productDetail["breadcrumb"] = breadcrumb;
         const detail = localStorage['product_detail']
-        if (detail && JSON.parse(detail)) {
+        if (detail && JSON.parse(detail) && (JSON.parse(detail).item_code) === getPrRoute()) {
+            console.log("deta", JSON.parse(detail))
             setProductDetail({ ...JSON.parse(detail) })
             // console.log('deta', JSON.parse(detail))
         } else {
@@ -135,19 +136,27 @@ const Detail = () => {
         }
 
         if (details.related_products) {
-            const relatedSections = {};
-
-            Object.entries(details.related_products).forEach(([key, values]) => {
+            let relatedSections = {};
+        
+            const mustFetch = ["bought_together", "add-ons"];
+        
+            const hasBoughtTogether = Array.isArray(details.related_products.bought_together) &&
+                                      details.related_products.bought_together.length > 0;
+        
+            const keysToFetch = hasBoughtTogether 
+                ? mustFetch
+                : [...mustFetch, ...Object.keys(details.related_products).filter(k => !mustFetch.includes(k))];
+        
+            keysToFetch.forEach((key) => {
+                const values = details.related_products[key];
                 if (Array.isArray(values) && values.length > 0) {
                     const filterQuery = values.map((code) => `item_code:="${code}"`).join(" || ");
-
                     relatedSections[key] = { query: filterQuery, data: [] };
                 } else {
                     relatedSections[key] = { query: "", data: [] };
                 }
             });
-
-
+        
             const fetchData = async () => {
                 for (const key in relatedSections) {
                     if (relatedSections[key].query) {
@@ -157,10 +166,10 @@ const Detail = () => {
                             query_by_weights: "1,2,3",
                             filter_by: relatedSections[key].query,
                         });
-
+        
                         const data = await typesense_search_items(queryParams);
                         console.log(`Data for ${key}:`, data.hits);
-
+        
                         if (data.hits && data.hits.length > 0) {
                             relatedSections[key].data = filterData(details.related_products[key], data.hits);
                         }
@@ -168,11 +177,13 @@ const Detail = () => {
                 }
                 setRelatedData(relatedSections);
             };
-
+        
             fetchData();
         } else {
             setRelatedData({});
         }
+        
+        
 
         // console.log('relatedSections', relatedProductData)
         // const resp = await get_product_details(router.query.detail);
@@ -909,7 +920,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                         {!isMobile ? (
                                             <>
                                                 {/* <h6 className='text-[12px] font-semibold primary_color capitalize'>{data.centre}</h6> */}
-                                                {/* <span className='text-lg text-[#1F1F1F]'>{data.item_code}</span> */}
+                                                <span className='text-lg text-[#1F1F1F]'>{data.item_code}</span>
                                                 <h3 className="text-[20px] md:text-[16px] py-[5px] font-bold capitalize">
                                                     {data.item_name}
                                                 </h3>
@@ -948,7 +959,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                                 <div className="flex justify-between gap-5">
                                                     <div>
                                                         {/* {data.centre && <h6 className='text-[14px] font-semibold primary_color capitalize'>{data.centre}</h6>} */}
-                                                        {/* <span className='text-[#1F1F1F] text-sm'>{data.item_code}</span> */}
+                                                        <span className='text-[#1F1F1F] text-sm'>{data.item_code}</span>
                                                         <h3 className="text-[18px] py-[5px] font-semibold line-clamp-2 capitalize">
                                                             {data.item_name}
                                                         </h3>
@@ -1004,7 +1015,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
                                             value.data.length > 0 && ( 
                                                 <div key={key} className="m-[15px_0] md:px-[10px]">
                                                     {/* <ViewAll data={{ title: key.replace(/_/g, " ") }} viewAll={false} /> */}
-                                                    <h2 className="text-[14px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">{key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
+                                                    <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">{(key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())) === ('Category List' || 'Bought Together') ? 'Related Products' : key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}</h2>
 
                                                     <ProductBox
                                                         productList={value.data}

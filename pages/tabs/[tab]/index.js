@@ -53,7 +53,7 @@ export default function index() {
   }, [webSettings])
 
   return (
-    <div class={`main-width lg:py-[25px] mb-[20px]`}>
+    <div class={`main-width lg:py-[25px] mb-[20px] fade-in`}>
        {(theme_settings && routeName) && <MobileHeader back_btn={true} title={title} search={true} theme_settings={theme_settings}/>}
        {routeName == 'category' && <MobileCategoryFilter data={categoryData} />}
     </div>

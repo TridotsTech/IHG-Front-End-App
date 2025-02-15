@@ -54,14 +54,14 @@ const Tabs = ({ stockDetails, productDetails }) => {
             {productDetails.last_sold > 0 && (
               <div className="flex items-center gap-2">
                 <Image src="/calendar.svg" width={20} height={20} />
-                <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-red-700 font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_sold}</span>Since Last Sold</p>
+                <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-red-700 font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_sold}</span>Days Since Last Sold</p>
               </div>
             )}
 
             {productDetails.last_brought >0 && (
               <div className="flex items-center gap-2">
                 <Image src="/calendar.svg" width={20} height={20} />
-                <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-[#009f58] font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_brought}</span>Since Last Buyed</p>
+                <p className="text-[15px] md:text-[13px] font-semibold"><span className="text-[#009f58] font-bold text-[15px] md:text-[13px] mr-2">{productDetails.last_brought}</span>Days Since Last Buyed</p>
               </div>
             )}
           </div>
@@ -153,11 +153,11 @@ const Tabs = ({ stockDetails, productDetails }) => {
 
   return (
     <div className="w-full mt-2">
-      <div className="flex gap-4 border-b border-gray-300">
+      <div className="flex gap-4 border-b border-gray-300 tab:overflow-auto scrollbarHide">
         {tabs.map((tab) => (
           <button
             key={tab.id}
-            className={`py-2 text-[15px] lg:text-[16px] font-medium border-b-2 transition-all duration-300 ${activeTab === tab.id
+            className={`py-2 text-[15px] flex-[0_0_auto] lg:text-[16px] font-medium border-b-2 transition-all duration-300 ${activeTab === tab.id
               ? "text-black border-black"
               : "text-[#7C8184] border-transparent"
               }`}
