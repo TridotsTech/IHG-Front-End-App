@@ -92,6 +92,7 @@ function App({ Component, pageProps }) {
       if (e == '/' && localStorage['api_key']) {
         getValue()
       }
+      document.body.style.overflow = "unset"
       // console.log(e,'e')
       if(!e.includes('pr')){
         const detail = localStorage['product_detail'];

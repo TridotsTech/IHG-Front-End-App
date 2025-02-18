@@ -4,11 +4,13 @@ import dynamic from 'next/dynamic';
 const ImageLoader = dynamic(() => import('@/components/ImageLoader'))
 import { useSelector } from 'react-redux';
 import { check_Image, checkMobile } from '@/libs/api';
-import Link from 'next/link'
+// import Link from 'next/link'
 import { useRouter } from 'next/router';
+const ProductDetail = dynamic(()=> import('../Detail/ProductDetail'))
+// import ProductDetail from '../Detail/ProductDetail';
 
-export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg, openFilter, tabView,pagination }) {
- 
+export default function ProductBox({ productList, size, rowCount, leftHorizontalImage, scroll_button, scroll_id, productBoxView, home, remove_bg, openFilter, tabView, pagination,openDetail }) {
+
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
   const [sample, setSample] = useState(0)
 
@@ -73,20 +75,28 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
   }
 
   const router = useRouter()
-
+  // const [visible, setVisible] = useState(false)
+  // const [currentProduct,setCurrentProduct] = useState(null)
   const navigateDetail = (item) => {
-    localStorage['product_detail'] = JSON.stringify(item.document)
-    // console.log("product", item.document)
-    router.push('/pr/' + item.document.item_code)
+    openDetail(item)
+    
+    // localStorage['product_detail'] = JSON.stringify(item.document)
+    // router.push('/pr/' + item.document.item_code)
   }
+
+  // const hide = (status) => {
+  //   setVisible(false)
+  //   setCurrentProduct(null)
+  // }
 
   return (
     <>
+      {/* {visible && <ProductDetail visible={visible} data={currentProduct} hide={hide} />} */}
       <div className={`w-full relative your-element ${home ? 'md:min-h-[300px]' : ''}`}>
 
         <div className={`${!scroll_button && 'hidden'} absolute top-[40%] left-[-22px] h-[35px] w-[35px] z-10 bg-[#fff] text-black border-[1px]  border-slate-100 rounded-full flex items-center justify-center  cursor-pointer md:hidden`} onClick={() => sctollTo('prev')} id={'prev_' + (scroll_id ? scroll_id : '')}> <Image className='h-[12px] object-contain' alt="Prev" src={'/rightArrow.svg'} width={35} height={35} /></div>
 
-        <ul  id={'sliderID' + (scroll_id ? scroll_id : '')} className={`fade-in ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'md:grid md:grid-cols-2'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] md:grid md:!grid-cols-1 lg:grid lg:grid-cols-2 tab:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-5 tab:grid-cols-3 2xl:grid-cols-5 lg:gap-3'} ${openFilter && tabView ? (productBoxView && productBoxView == 'List View') ? 'tab:!grid-cols-1' : 'tab:!grid-cols-2' : ''} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
+        <ul id={'sliderID' + (scroll_id ? scroll_id : '')} className={`fade-in ${home ? 'lg:gap-[20px]' : 'lg:gap-[10px]'} ${!scroll_button && 'md:grid md:grid-cols-2'} ${scroll_button ? 'gap-[10px]' : ''} product_box w-full flex overflow-auto scrollbarHide ${(productBoxView && productBoxView == 'List View') ? 'p-[5px] md:grid md:!grid-cols-1 lg:grid lg:grid-cols-2 tab:grid-cols-2 lg:gap-5' : 'lg:grid lg:grid-cols-5 tab:grid-cols-3 2xl:grid-cols-5 lg:gap-3'} ${openFilter && tabView ? (productBoxView && productBoxView == 'List View') ? 'tab:!grid-cols-1' : 'tab:!grid-cols-2' : ''} ${(home) ? 'md:min-h-[300px] md:w-full your-element' : ''}`}>
 
           {leftHorizontalImage && <Image src={check_Image(leftHorizontalImage)} width={400} height={400} alt="icon1" className="lg:hidden h-[300px] w-[200px] object-cover" />}
 
@@ -97,9 +107,10 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
 
                 <div className={`${remove_bg ? '' : 'product_images'} product_images_container  flex cursor-pointer items-center justify-center lg:h-[160px] 2xl:h-[185px] ${(productBoxView && productBoxView == 'List View') ? 'md:h-[140] md:w-[140px] lg:w-[25%] lg:!h-[120px]' : 'md:h-[170px] md:w-[100%] '} your-element `}>
-                  <Link onClick={() => navigateDetail(item)} href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[160px] 2xl:h-[185px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : window.innerWidth >= 1400 ? 185 : 160} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px] lg:rounded-[5px]' : 'lg:h-[160px] 2xl:h-[185px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link>
+                  <div onClick={() => navigateDetail(item)} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[160px] 2xl:h-[185px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : window.innerWidth >= 1400 ? 185 : 160} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px] lg:rounded-[5px]' : 'lg:h-[160px] 2xl:h-[185px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></div>
+                  {/* <Link onClick={() => navigateDetail(item)} href={'/pr/' + item.document.item_code} className={` ${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px]' : 'lg:h-[160px] 2xl:h-[185px]'}  md:h-[125px] md:w-[125px] lg:w-full your-element`}><ImageLoader height={(productBoxView && productBoxView == 'List View') ? (isMobile ? 120 : 120) : isMobile ? 125 : window.innerWidth >= 1400 ? 185 : 160} width={'100'} style={`${productBoxView && productBoxView == 'List View' ? 'lg:!h-[120px] lg:rounded-[5px]' : 'lg:h-[160px] 2xl:h-[185px]'}  lg:w-full md:h-[125px] md:w-[125px] object-cover your-element`} src={item.document.website_image_url} title={item.item ? item.item : ''} /></Link> */}
                   {(item.document.offer_rate && (item.document.offer_rate < item.document.rate)) ? <h6 className={`bg-[#009f58]  text-[#fff] p-[1px_5px] absolute top-0 ${productBoxView && productBoxView == 'List View' ? 'right-0 left-auto rounded-[0_5px_0_5px]' : 'left-0 rounded-[0_0_5px_0]'} left-0 text-[12px]`}>{parseInt(((item.document.rate - item.document.offer_rate) / item.document.rate) * 100)}<span className='px-[0px] text-[#fff] text-[12px]'>% (AED {parseFloat(item.document.rate - item.document.offer_rate).toFixed(2)}) off</span> </h6> : <></>}
-                 
+
                 </div>
 
                 <div className={`${(productBoxView && productBoxView == 'List View') ? 'md:w-full lg:w-[75%] lg:p-0' : ''} p-[10px]`}>

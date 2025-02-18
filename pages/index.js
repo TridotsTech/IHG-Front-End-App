@@ -11,7 +11,7 @@ import { resetFilters } from "@/redux/slice/filtersList";
 
 import Head from 'next/head'
 import { useDispatch } from "react-redux";
-
+const ProductDetail = dynamic(() => import('@/components/Detail/ProductDetail'))
 export default function Home() {
   let [isMobile, setIsMobile] = useState(false);
   const webSettings = useSelector((state) => state.webSettings.websiteSettings);
@@ -73,6 +73,23 @@ export default function Home() {
     };
   }, []);
 
+  
+  const [visible, setVisible] = useState(false)
+  const [currentProduct, setCurrentProduct] = useState(null)
+
+  const navigateDetail = (item) => {
+    // console.log(item, "item")
+    setCurrentProduct(item.document)
+    document.body.style.overflow = "hidden"
+    setVisible(true)
+  }
+
+  const hide = (status) => {
+    setVisible(false)
+    document.body.style.overflow = "unset"
+    setCurrentProduct(null)
+  }
+
 
   const memoizedData = useMemo(() => {
     // console.log(data, "data")
@@ -81,7 +98,7 @@ export default function Home() {
         <>
           {
             data.page_content.map((res, i) => (
-              <WebPageSection key={res.section} isLast={i == data.page_content.length - 1} data={res} />
+              <WebPageSection openDetail={navigateDetail} key={res.section} isLast={i == data.page_content.length - 1} data={res} />
             ))
           }
         </>
@@ -91,8 +108,11 @@ export default function Home() {
   }, [data])
 
 
+
+
   return (
     <>
+      {visible && <ProductDetail visible={visible} product={currentProduct} hide={hide} />}
       <Head>
         {/* <title>{data?.meta_info?.meta_title ? data?.meta_info?.meta_title : "Single Vendor"}</title> */}
         <title>{"IHG"}</title>

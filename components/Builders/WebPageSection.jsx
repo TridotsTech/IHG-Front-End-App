@@ -43,7 +43,7 @@ const Sliders = dynamic(() => import('@/components/Sliders/index'));
 // import HorizontalSlider from "./HorizontalSlider";
 
 
-export default function WebPageSection({ data, i, isLast }) {
+export default function WebPageSection({ data, i, isLast,openDetail }) {
   // console.log(data)
 
   const router = useRouter()
@@ -220,7 +220,7 @@ export default function WebPageSection({ data, i, isLast }) {
           data.section_name == "Dynamic Product Section" && data.filters && (
             <>
               {/* <ChooseCategory data={data} /> */}
-              <ProductSection data={data} isMobile={isMobile} />
+              <ProductSection data={data} openDetail={openDetail} isMobile={isMobile} />
             </>
           )
         }

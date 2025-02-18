@@ -15,7 +15,7 @@ import { setCartItems } from '@/redux/slice/cartSettings'
 import Cookies from 'js-cookie';
 // import Modals from '@/components/Detail/Modals'
 
-export default function MobileHeader({ home, back_btn, share, search, cart, clear_cart, title, titleDropDown, titleClick, empty_div, navigateLink, theme_settings }) {
+export default function MobileHeader({ home, back_btn, share, search, cart, clear_cart, title, titleDropDown, titleClick, empty_div, navigateLink, theme_settings,detailModal }) {
 
   const router = useRouter();
   const cartCount = useSelector((state) => state.cartSettings.cartCount)
@@ -124,7 +124,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
           <div className={`flex items-center justify-between p-[10px] min-h[40px]`}>
             {back_btn &&
               <div className='flex items-center gap-5'>
-                <div onClick={() => { navigateLink ? router.push(navigateLink) : router.back() }} className='flex items-center justify-center  h-[30px] w-[30px] cursor-pointer primary_bg rounded-[50%]'>
+                <div onClick={() => { detailModal ? detailModal(null) : navigateLink ? router.push(navigateLink) : router.back() }} className='flex items-center justify-center  h-[30px] w-[30px] cursor-pointer primary_bg rounded-[50%]'>
                   <Image style={{ objectFit: 'contain' }} className='h-[15px] object-contain' height={40} width={40} alt='vantage' src={'/Arrow/rightArrowWhite.svg'}></Image>
                 </div>
                 <Image onClick={() => router.push('/')} className='w-auto h-[20px] object-contain' height={60} width={100} alt='logo' src={'/logo.png'}></Image>

@@ -464,6 +464,19 @@ input {
   .react-multi-carousel-track {
     height: 120px !important;
   }
+
+  .product_detail{
+    .rodal-dialog {
+      padding: 0 !important;
+      margin: 0 0 0 auto !important;
+      height: 100% !important;
+      width: 100% !important;
+    }
+
+    .rodal-close{
+      display: none !important;
+    }
+  }
 }
 
 @media (min-width: 768px) {
@@ -516,6 +529,24 @@ input {
       margin: 0 0 0 auto !important;
       height: 100% !important;
       width: 345px !important;
+    }
+  }
+
+  .product_detail{
+    .rodal{
+      z-index: 1 !important;
+    }
+    
+    .rodal-dialog {
+      padding: 0 !important;
+      margin: 0 0 0 auto !important;
+      height: 100% !important;
+      width: 100% !important;
+      top: 110px;
+    }
+
+    .rodal-close{
+      display: none !important;
     }
   }
 

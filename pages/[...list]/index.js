@@ -7,6 +7,7 @@ const Filters = dynamic(() => import('@/components/Product/filters/Filters'))
 const NoProductFound = dynamic(() => import('@/components/Common/NoProductFound'))
 const MobileHeader = dynamic(() => import('@/components/Headers/mobileHeader/MobileHeader'))
 const MobileCategoryFilter = dynamic(() => import('@/components/Product/filters/MobileCategoryFilter'))
+const ProductDetail = dynamic(()=> import('@/components/Detail/ProductDetail'))
 import { useRouter } from 'next/router'
 import Image from 'next/image';
 import Rodal from 'rodal';
@@ -20,6 +21,7 @@ import { Switch } from '@headlessui/react';
 import clsx from 'clsx'
 import useTabView from '@/libs/hooks/useTabView';
 import { resetFilter } from '@/redux/slice/homeFilter';
+// import ProductDetail from '@/components/Detail/ProductDetail';
 
 const initialState = {
   q: "*",
@@ -141,7 +143,8 @@ function List({ category, brand, search }) {
       setLoader(true);
       setPageLoading(false);
       no_product = false
-      setNoProduct(no_product)
+      setNoProduct(no_product);
+      hide()
       // getProductList();
     }
 
@@ -610,7 +613,7 @@ function List({ category, brand, search }) {
 
     dispatch(setFilter({ ...filters }));
     fetchResults(false, true);
-    console.log("re", filters)
+    // console.log("re", filters)
   }, [filters.hot_product, filters.sort_by, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item]);
 
   // Initial
@@ -642,7 +645,7 @@ function List({ category, brand, search }) {
         behavior: "smooth",
       });
 
-      setFilters({ ...filters})
+      setFilters({ ...filters })
       fetchResults(true, true)
     }
 
@@ -670,8 +673,8 @@ function List({ category, brand, search }) {
 
 
   useEffect(() => {
-    dispatch(setAllFilter({ ...filters}))
-    console.log("price", productFilter)
+    dispatch(setAllFilter({ ...filters }))
+    // console.log("price", productFilter)
     // console.log("checkFill", productFilter)
 
   }, [filters])
@@ -693,7 +696,7 @@ function List({ category, brand, search }) {
   ]
 
   const handleSortBy = (e, type = "") => {
-    console.log('targetvalue', e)
+    // console.log('targetvalue', e)
     let sortByValue = ""
     if (type == "select") {
       sortByValue = e.target.value;
@@ -741,6 +744,22 @@ function List({ category, brand, search }) {
     return true
   }
 
+
+  const [visible, setVisible] = useState(false)
+  const [currentProduct,setCurrentProduct] = useState(null)
+
+  const navigateDetail = (item) => {
+    setCurrentProduct(item.document)
+    document.body.style.overflow = "hidden"
+    setVisible(true)
+  }
+  
+  const hide = (status) => {
+    setVisible(false)
+    document.body.style.overflow = "unset"
+    setCurrentProduct(null)
+  }
+
   // console.log('tabView', (tabView && openFilter) || !tabView, openFilter, tabView)
   return (
 
@@ -757,6 +776,7 @@ function List({ category, brand, search }) {
         <meta name="twitter:image" content={seo_Image(filterInfo?.meta_info?.meta_image)}></meta>
       </Head> */}
 
+      {visible && <ProductDetail visible={visible} product={currentProduct} hide={hide} />}
 
       {loadSpinner && <Backdrop />}
       {isOpenCat && <div className='filtersPopup'>
@@ -770,7 +790,7 @@ function List({ category, brand, search }) {
 
       <div className='md:hidden tab:hidden main-width pt-3 flex items-center justify-end gap-4'>
 
-      <div className='px-8 gap-4 flex overflow-x-auto scrollbarHide w-[58%]'>
+        <div className='px-8 gap-4 flex overflow-x-auto scrollbarHide w-[58%]'>
           <div className='flex-[0_0_auto]'>
             <SwitchComponent label_classname={label_classname} label1={"Upcoming Products"} type={'hot_product'} checked={filters.hot_product} label2={"Show Upcoming products only"} changeValue={changeValue} />
           </div>
@@ -826,7 +846,7 @@ function List({ category, brand, search }) {
               <Skeleton />
               :
               <div className='min-h-screen '>
-                {((results.length != 0 && Array.isArray(results))) && <ProductBox pagination={lastResultRef} tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} />}
+                {((results.length != 0 && Array.isArray(results))) && <ProductBox openDetail={navigateDetail} pagination={lastResultRef} tabView={tabView} productList={results} openFilter={openFilter} rowCount={'lg:flex-[0_0_calc(25%_-_8px)] 2xl:flex-[0_0_calc(20%_-_8px)]'} productBoxView={productBoxView} />}
                 {!loader && theme_settings && !loading && results.length === 0 && <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} api_empty_icon={theme_settings.nofound_img} heading={'No Products Found!'} />}
               </div>
             }
@@ -1059,11 +1079,11 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy, fil
     // { text: 'Discount low to high', value: 'discount_percentage:asc' },
   ]
 
-  const handleSortOption = (value)=>{
+  const handleSortOption = (value) => {
     handleSortBy(value, "")
     closeModal()
     // console.log(value);
-    
+
   }
 
 
@@ -1073,7 +1093,7 @@ const SortByFilter = ({ ProductFilter, closeModal, setFilters, handleSortBy, fil
 
       {sorting.map((res, index) => {
         return (
-          <h6 onClick={() => { handleSortOption(res.value)  }} className={`text-[15px] font-medium z-[99999999999] p-[10px] ${(localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by) === res.value && 'bg-gray-100'}`}>{res.text}</h6>
+          <h6 onClick={() => { handleSortOption(res.value) }} className={`text-[15px] font-medium z-[99999999999] p-[10px] ${(localStorage['sort_by'] ? localStorage['sort_by'] : filters.sort_by) === res.value && 'bg-gray-100'}`}>{res.text}</h6>
         )
       })}
     </>
