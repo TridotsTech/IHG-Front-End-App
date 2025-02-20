@@ -136,6 +136,7 @@ const FiltersList = createSlice({
 
         setAllFilter(state, action) {
             const payload = action.payload;
+            console.log('pay', payload)
             Object.keys(payload).forEach(key => {
                 if (state.filtersValue.hasOwnProperty(key)) {
                     state.filtersValue[key] = payload[key];
@@ -149,6 +150,7 @@ const FiltersList = createSlice({
         },
 
         resetFilters(state) {
+            console.log("filter reset")
             state.filtersValue = {
                 q: "*",
                 page_no: 1,

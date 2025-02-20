@@ -34,15 +34,34 @@ function QrScanner() {
     const data = await typesense_search_items(queryParams);
     console.log(data, "data")
     if (data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document) {
-      router.push(`/pr/${data.hits[0].document.item_code}`)
+      setDetailVisible(true);
+      navigateDetail(data.hits[0].document);
+      // router.push(`/pr/${data.hits[0].document.item_code}`)
     } else {
       toast.error('Something went wrong!')
       setErrorMsg("No product found!");
     }
   }
 
+  const [detailVisible, setDetailVisible] = useState(false)
+  const [currentProduct, setCurrentProduct] = useState(null)
+
+  const navigateDetail = (item) => {
+    setCurrentProduct(item)
+    document.body.style.overflow = "hidden"
+    setDetailVisible(true)
+  }
+
+  const DetailHide = (status) => {
+    setDetailVisible(false)
+    document.body.style.overflow = "unset"
+    setCurrentProduct(null)
+  }
+
   return (
     <>
+      {detailVisible && <ProductDetail visible={detailVisible} product={currentProduct} hide={DetailHide} />}
+
       {<MobileHeader titleDropDown={true} back_btn={true} search={true} />}
 
       <div className="flex flex-col items-center md:items-center min-h-screen bg-gray-100 p-4">
@@ -52,7 +71,7 @@ function QrScanner() {
           {
             errorMsg === '' ? (
               <Scanner
-                onScan={(result) => {setQrNumber(result[0].rawValue), console.log(result[0].rawValue)}}
+                onScan={(result) => { setQrNumber(result[0].rawValue), console.log(result[0].rawValue) }}
                 //   onDecode={(result) => setScannedData(result)}
                 //   onError={(error) => console.error("QR Scanner Error:", error)}
                 className="w-full"
@@ -60,7 +79,7 @@ function QrScanner() {
             ) : (
               <NoProductFound cssClass={'flex-col lg:h-[calc(100vh_-_265px)] md:h-[calc(100vh_-_200px)]'} heading={'No Products Found!'} />
             )
-        }
+          }
         </div>
       </div>
     </>

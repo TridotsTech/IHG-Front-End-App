@@ -24,6 +24,7 @@ const BrandCategory = dynamic(() => import('@/components/Common/BrandCategory'))
 import settig from '@/libs/websiteSettings'
 import ScrollToTopButton from '@/components/Common/ScrollToTop';
 import Image from 'next/image';
+const ProductDetail = dynamic(() => import('@/components/Detail/ProductDetail'))
 // console.log('setting', settig.message)
 
 // import { GoogleOAuthProvider } from '@react-oauth/google';
@@ -93,12 +94,13 @@ function App({ Component, pageProps }) {
         getValue()
       }
       document.body.style.overflow = "unset"
+      setDetailVisible(false);
       // console.log(e,'e')
-      if(!e.includes('pr')){
+      if (!e.includes('pr')) {
         const detail = localStorage['product_detail'];
-          if(detail && JSON.parse(detail)){
-              localStorage.removeItem('product_detail')
-          }
+        if (detail && JSON.parse(detail)) {
+          localStorage.removeItem('product_detail')
+        }
       }
       // nProgress.start()
     };
@@ -237,13 +239,13 @@ function App({ Component, pageProps }) {
     }
 
 
-    if(routeLink === '/'){
+    if (routeLink === '/') {
       localStorage.removeItem("sort_by");
     }
   }, [router])
 
 
-  useEffect(()=>{
+  useEffect(() => {
     const handleBeforeUnload = (event) => {
       localStorage.removeItem("sort_by",);
       // event.preventDefault();
@@ -251,11 +253,11 @@ function App({ Component, pageProps }) {
     };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
-    
+
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  },[])
+  }, [])
 
   const [masterValue, setMasterValues] = useState()
   const getValue = async () => {
@@ -278,10 +280,26 @@ function App({ Component, pageProps }) {
   }
 
 
+  const [detailVisible, setDetailVisible] = useState(false)
+  const [currentProduct, setCurrentProduct] = useState(null)
+
+  const navigateDetail = (item) => {
+    setCurrentProduct(item)
+    document.body.style.overflow = "hidden"
+    setDetailVisible(true)
+  }
+
+  const DetailHide = (status) => {
+    setDetailVisible(false)
+    document.body.style.overflow = "unset"
+    setCurrentProduct(null)
+  }
+
+  // console.log(detailVisible);
+
   return (
     <>
       <script src="https://cdn.jsdelivr.net/npm/typesense-instantsearch-adapter@2/dist/typesense-instantsearch-adapter.min.js"></script>
-
       {/* <!-- You might want to pin the version of the adapter used if you don't want to always receive the latest minor version --> */}
       <div className="page-container">
         <ErrorBoundary >
@@ -294,10 +312,11 @@ function App({ Component, pageProps }) {
                   <link rel="shortcut icon" href={'/logo.png'} />
                 </Head>}
 
-              {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} />}
+              {router.pathname != "/login" && router.pathname != "/seller/[login]" && <WebHeader website_settings={website_settings && website_settings} categoryData={categoryData} navigateDetail={navigateDetail} />}
               {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
               {/* router.pathname == "/pr/[...detail]" ? pageKey : null */}
               {/* <div key={pageKey} className="page fade-enter fade-enter-active"> */}
+              {detailVisible && <ProductDetail visible={detailVisible} product={currentProduct} hide={DetailHide} />}
               <div className="page fade-enter fade-enter-active">
                 <Component  {...pageProps} />
               </div>

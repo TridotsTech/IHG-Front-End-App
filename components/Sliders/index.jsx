@@ -164,7 +164,7 @@ const Skeleton = () => {
 
 const CustomPrevArrow = ({ onClick }) => (
   <button
-    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white text-white p-4 rounded-full shadow-lg z-10 opacity-75 hover:opacity-100"
+    className="absolute md:hidden left-4 top-1/2 transform -translate-y-1/2 bg-white text-white p-4 rounded-full shadow-lg z-10 opacity-75 hover:opacity-100"
     onClick={onClick}
   >
     <Image src={'/rightArrow.svg'} width={15} height={15} />
@@ -173,7 +173,7 @@ const CustomPrevArrow = ({ onClick }) => (
 
 const CustomNextArrow = ({ onClick }) => (
   <button
-    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white text-white p-4 rounded-full shadow-lg z-10 opacity-75 hover:opacity-100"
+    className="absolute md:hidden right-4 top-1/2 transform -translate-y-1/2 bg-white text-white p-4 rounded-full shadow-lg z-10 opacity-75 hover:opacity-100"
     onClick={onClick}
   >
     <Image src={'/leftArrow.svg'} width={15} height={15} />
@@ -188,7 +188,7 @@ const SliderCom = ({data, isMobile, perView, imgClass, event,}) => {
     slidesToShow: 1,
     slidesToScroll: 1,
     autoplay: true,
-    autoplaySpeed: 7000,
+    autoplaySpeed: 2000,
     prevArrow: <CustomPrevArrow />,
     nextArrow: <CustomNextArrow />,
   };
@@ -205,12 +205,12 @@ const SliderCom = ({data, isMobile, perView, imgClass, event,}) => {
       {data.map((res, index) => {
                   return (
                     <div onClick={() => res.route ? router.push(`/${router.asPath.split('/')[1]}/category/${res.route}`) : null} key={index}>
-                      <div className={`lg:flex-[0_0_calc(30%_-_10px)] home md:min-h-[170px] your-element md:w-full`}>
+                      <div className={`home your-element md:w-full`}>
                         {/* {isMobile ? */}
                         {/* <ImageLoader slide={true} isMobile={isMobile} style={`${imgClass ? imgClass : 'h-[300px]'} w-full your-element`} height={570} width={1500} src={(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} title={res.item ? res.item : ''} /> */}
                         {/* // : */}
 
-                        <Image alt={''}  loading='lazy' src={check_Image(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} height={isMobile ? 250 : 500} width={isMobile ? 500 : 1500} className={`${imgClass ? imgClass : 'h-[300px]'} your-element w-full `} />
+                        <Image alt={''}  loading='lazy' src={check_Image(isMobile ? res.mobile_image1 : res.image ? res.image : res.web_image1 ? res.web_image1 : null)} height={isMobile ? 250 : 500} width={isMobile ? 500 : 1500} className={`${'h-full w-full object-cover'} your-element w-full `} />
                         {/* } */}
                       </div>
                     </div>

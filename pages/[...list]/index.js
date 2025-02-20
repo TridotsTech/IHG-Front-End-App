@@ -7,7 +7,7 @@ const Filters = dynamic(() => import('@/components/Product/filters/Filters'))
 const NoProductFound = dynamic(() => import('@/components/Common/NoProductFound'))
 const MobileHeader = dynamic(() => import('@/components/Headers/mobileHeader/MobileHeader'))
 const MobileCategoryFilter = dynamic(() => import('@/components/Product/filters/MobileCategoryFilter'))
-const ProductDetail = dynamic(()=> import('@/components/Detail/ProductDetail'))
+const ProductDetail = dynamic(() => import('@/components/Detail/ProductDetail'))
 import { useRouter } from 'next/router'
 import Image from 'next/image';
 import Rodal from 'rodal';
@@ -88,7 +88,7 @@ function List({ category, brand, search }) {
         filters = { ...filters, sort_by: localStorage['sort_by'] }
         setFilters({ ...filters });
         const obj = { sort_by: localStorage['sort_by'] }
-        dispatch(setAllFilter({ ...obj }))
+        // dispatch(setAllFilter({ ...obj }))
         // setTimeout(() => {
         //   localStorage.removeItem('sort_by')
         // }, 400);
@@ -419,12 +419,12 @@ function List({ category, brand, search }) {
     //     stock_range: { min: 0, max: 100000 },
     //   }));
     // }
-    setFilters((prevFilters) => ({
-      ...initialState,
-      price_range: { min: 0, max: 100000 },
-      stock_range: { min: 0, max: 100000 },
-    }));
-    setRemoveAllFilter((prev) => !prev);
+    // setFilters((prevFilters) => ({
+    //   ...initialState,
+    //   price_range: { min: 0, max: 100000 },
+    //   stock_range: { min: 0, max: 100000 },
+    // }));
+    // setRemoveAllFilter((prev) => !prev);
 
     dispatch(resetFilters())
     dispatch(resetFilter())
@@ -610,10 +610,10 @@ function List({ category, brand, search }) {
     });
 
     localStorage.setItem('sort_by', filters.sort_by);
+    // dispatch(setAllFilter({ ...filters }))
 
-    dispatch(setFilter({ ...filters }));
-    fetchResults(false, true);
-    // console.log("re", filters)
+    // dispatch(setFilter({ ...filters }));
+    fetchResults(true, true);
   }, [filters.hot_product, filters.sort_by, filters.has_variants, filters.in_stock, filters.show_promotion, filters.custom_in_bundle_item]);
 
   // Initial
@@ -632,7 +632,7 @@ function List({ category, brand, search }) {
       // }
 
       filters = {
-        ...filters,
+        ...productFilter,
         price_range: productFilter.price_range,
         stock_range: productFilter.stock_range,
         item_group: router.query['category'] ? (Array.isArray(router.query['category']) ? router.query['category'] : router.query['category'].split(",")) : productFilter.item_group.length > 0 ? productFilter.item_group : [],
@@ -670,12 +670,18 @@ function List({ category, brand, search }) {
   //   }
   // },[category, brand])
 
-
-
   useEffect(() => {
+    setTimeout(() => {
+      console.log("sor", filters)
+     }, 800);
     dispatch(setAllFilter({ ...filters }))
+   
     // console.log("price", productFilter)
     // console.log("checkFill", productFilter)
+
+    setTimeout(() => {
+      console.log("sorP", productFilter)
+     }, 1200);
 
   }, [filters])
 
@@ -746,14 +752,14 @@ function List({ category, brand, search }) {
 
 
   const [visible, setVisible] = useState(false)
-  const [currentProduct,setCurrentProduct] = useState(null)
+  const [currentProduct, setCurrentProduct] = useState(null)
 
   const navigateDetail = (item) => {
     setCurrentProduct(item.document)
     document.body.style.overflow = "hidden"
     setVisible(true)
   }
-  
+
   const hide = (status) => {
     setVisible(false)
     document.body.style.overflow = "unset"
@@ -775,6 +781,7 @@ function List({ category, brand, search }) {
         <meta property="og:url" content={getCurrentUrl(router.asPath)}></meta>
         <meta name="twitter:image" content={seo_Image(filterInfo?.meta_info?.meta_image)}></meta>
       </Head> */}
+      
 
       {visible && <ProductDetail visible={visible} product={currentProduct} hide={hide} />}
 

@@ -14,8 +14,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import Link from 'next/link';
 import SearchCom from '@/components/Search/SearchCom';
 import Cookies from 'js-cookie';
+import { resetFilters, setAllFilter } from '@/redux/slice/filtersList';
+import { resetSetFilters } from '@/redux/slice/ProductListFilters';
+import dynamic from 'next/dynamic';
 
-export default function MainHeader({ header_template, theme_settings, website_settings, all_categories }) {
+export default function MainHeader({ header_template, theme_settings, website_settings, all_categories, navigateDetail }) {
 
   const router = useRouter();
   const cartCount = useSelector((state) => state.cartSettings.cartCount)
@@ -183,6 +186,39 @@ export default function MainHeader({ header_template, theme_settings, website_se
 
   const [searchProducts, setSearchProducts] = useState([]);
 
+  const initialState = {
+    q: "*",
+    page_no: 1,
+    item_code: "",
+    item_description: "",
+    sort_by: 'stock:desc',
+    hot_product: false,
+    show_promotion: false,
+    in_stock: false,
+    brand: [],
+    price_range: { min: 0, max: 100000 },
+    stock_range: { min: 0, max: 100000 },
+    product_type: [],
+    has_variants: false,
+    custom_in_bundle_item: false,
+    category_list: [],
+    item_group: [],
+    beam_angle: [],
+    lumen_output: [],
+    mounting: [],
+    ip_rate: [],
+    lamp_type: [],
+    power: [],
+    input: [],
+    dimension: '',
+    material: [],
+    body_finish: [],
+    warranty_: [],
+    output_voltage: [],
+    output_current: [],
+    color_temp_: []
+  }
+
 
   async function getSearchValues(inputText) {
     // let data = { "search_text": inputText, "page_no": 1, "page_len": 15 }
@@ -195,7 +231,7 @@ export default function MainHeader({ header_template, theme_settings, website_se
     // }
 
 
-    if (inputText.length>=3) {
+    if (inputText.length >= 3) {
       const queryParams = new URLSearchParams({
         q: `${inputText ? inputText : '*'}`,
         query_by: "item_name,item_description,item_code",
@@ -263,6 +299,8 @@ export default function MainHeader({ header_template, theme_settings, website_se
       setSearchValue('')
     }
   }, [router.asPath])
+
+  const productFilter = useSelector((state) => state.FiltersList.filtersValue)
 
 
   // useEffect(()=>{
@@ -375,10 +413,27 @@ export default function MainHeader({ header_template, theme_settings, website_se
     };
   }, [isLogout]);
 
+  const clearSearchValue = () => {
+    setSearchValue('')
+    dispatch(resetSetFilters())
+    // dispatch(setAllFilter({...initialState}))
+    dispatch(resetFilters())
+    localStorage.setItem('sort_by', 'stock:desc')
+
+    if (router.asPath.includes('/list')) {
+      router.push('/list')
+      console.log(productFilter)
+    }
+
+  }
+
+
 
   return (
     <>
       {/* <ToastContainer position={'bottom-right'} autoClose={2000}  /> */}
+      
+
 
       {visible && <AuthModal visible={visible} hide={hide} setVisible={setVisible} />}
 
@@ -408,11 +463,11 @@ export default function MainHeader({ header_template, theme_settings, website_se
                     <div key={index} className={`${website_settings.enable_multi_store == 1 ? 'w-full' : 'w-full'} relative flex justify-end`}>
                       <div className="p-[5px_10px_5px_20px] h-[35px] flex items-center w-[69.5%]  border_color rounded-[30px]">
                         <input value={searchValue} autoComplete='off' id='search' spellCheck="false" onKeyDown={handleKeyDown} ref={searchRef} onChange={(eve) => { getSearchTxt(eve) }} onFocus={() => { setActiveSearch(true) }} onBlur={() => { setActiveSearch(true) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
-                        {searchValue && <Image onClick={() => setSearchValue('')} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer mr-2' height={25} width={25} alt='vantage' src={'/Navbar/cancel.svg'}></Image>}
+                        {searchValue && <Image onClick={() => clearSearchValue()} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer mr-2' height={25} width={25} alt='vantage' src={'/Navbar/cancel.svg'}></Image>}
                         <Image onClick={() => { searchValue == '' ? null : navigateToSearch('/list?search=' + searchValue) }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
                       </div>
                       {searchValue.length >= 3 && (activeSearch && searchProducts && searchProducts.length > 0) && <div className='w-[69.5%] p-[10px] max-h-[350px] min-h-[150px] overflow-auto scrollbarHide absolute top-[43px] bg-[#fff] z-99 rounded-[8px] shadow-[0_0_5px_#ddd]'>
-                        <SearchProduct router={router} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
+                        <SearchProduct router={router} navigateDetail={navigateDetail} loader={loader} all_categories={all_categories} searchValue={searchValue} get_search_products={get_search_products} searchProducts={searchProducts} theme_settings={theme_settings} navigateToSearch={navigateToSearch} /> </div>}
                     </div>
                   </div>
                 }

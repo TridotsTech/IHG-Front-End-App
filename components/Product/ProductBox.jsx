@@ -138,10 +138,10 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
 
                   </div>
 
-                  <div className='flex items-center justify-between md:flex-wrap'>
+                  <div className='flex items-center gap-1 justify-between md:flex-wrap'>
                     <div className='flex items-center gap-[4px]'>
                       <Image src={'/stock.svg'} height={13} width={13} alt='stock' />
-                      {item.document.stock > 0 && <p className={`line-clamp-1 uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>{item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''}</p>}
+                      {item.document.stock > 0 && <p className={`uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>{item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''}</p>}
                       {item.document.stock < 1 && <p className={`text-[12px] uppercase md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-red-600`}>Out of stock</p>}
                     </div>
                     {item.document.brand && <div className='flex items-center gap-[4px]'>

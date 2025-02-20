@@ -1,5 +1,6 @@
 // export const domain = 'ovationwps.go1cms.com'; https://ihgtest.tridotstech.com/
-export const domain = 'ihgtest.tridotstech.com';
+// export const domain = 'ihgtest.tridotstech.com';
+export const domain = 'erp.ihgind.com';
 // https://youkraft.go1market.com/
 // export const domain = 'youkraft.go1market.com';
 // import style from "@/styles/Variables.module.scss";

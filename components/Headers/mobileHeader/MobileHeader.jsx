@@ -13,6 +13,8 @@ import { toast } from 'react-toastify';
 import { setCustomerInfo } from '@/redux/slice/logInInfo';
 import { setCartItems } from '@/redux/slice/cartSettings'
 import Cookies from 'js-cookie';
+import { resetSetFilters } from '@/redux/slice/ProductListFilters';
+import { resetFilters } from '@/redux/slice/filtersList';
 // import Modals from '@/components/Detail/Modals'
 
 export default function MobileHeader({ home, back_btn, share, search, cart, clear_cart, title, titleDropDown, titleClick, empty_div, navigateLink, theme_settings,detailModal }) {
@@ -99,6 +101,18 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
     }
   },[router.asPath, router.query])
 
+  const clearSearchValue = () => {
+      setSearchValue('')
+      dispatch(resetSetFilters())
+      // dispatch(setAllFilter({...initialState}))
+      dispatch(resetFilters())
+      localStorage.setItem('sort_by', 'stock:desc')
+  
+      if (router.asPath.includes('/list')) {
+        router.push('/list')
+      }
+  
+    }
   // console.log('route', router.query.search)
 
   return (
@@ -157,7 +171,7 @@ export default function MobileHeader({ home, back_btn, share, search, cart, clea
 
                     <div className={`transition-all ease-in duration-500 delay-100 ${!showSearch ? 'h-0 w-0 opacity-0' : 'opacity-100 p-[5px_10px] h-[30px] flex items-center w-full border_color rounded-[20px]'} `}>
                       <input id='search' value={searchValue} spellcheck="false" onChange={(eve) => { getSearchTxt(eve) }} className='w-[95%] text-[14px]' placeholder='Search Products' />
-                      {searchValue && <Image onClick={() => setSearchValue('')} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer mr-2' height={25} width={25} alt='vantage' src={'/Navbar/cancel.svg'}></Image>}
+                      {searchValue && <Image onClick={() => clearSearchValue()} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer mr-2' height={25} width={25} alt='vantage' src={'/Navbar/cancel.svg'}></Image>}
                       <Image onClick={() => { searchValue == '' ? null : handleSearch() }} style={{ objectFit: 'contain' }} className='h-[18px] w-[15px] cursor-pointer' height={25} width={25} alt='vantage' src={'/search.svg'}></Image>
                     </div>
                   </>
