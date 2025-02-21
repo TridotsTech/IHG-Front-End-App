@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
-import { domain, website } from "./config/siteConfig"
+import { domain, typesense_api_key, website } from "./config/siteConfig"
 import Cookies from "js-cookie";
 
 // const methodUrl = `http://${domain}/api/method/`;
@@ -565,7 +565,7 @@ export async function typesense_search_items(queryParams) {
     // let api = `http://178.128.108.196:8108/collections/product/documents/search?${queryParams.toString()}`
     // let api = `https://search-ihg.tridotstech.com/collections/product/documents/search?${queryParams.toString()}`
     let api = `https://search.ihgind.com/collections/product/documents/search?${queryParams.toString()}`
-    const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": "xyz" })
+    const myHead = new Headers({ "Content-Type": "application/json", "x-typesense-api-key": `${typesense_api_key ? typesense_api_key : "xyz"}` })
     const response = await fetch(api, { method: 'GET', headers: myHead, })
     return await response.json()
 }
