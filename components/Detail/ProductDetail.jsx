@@ -74,37 +74,58 @@ const ProductDetail = ({ hide, visible, product }) => {
             const hasBoughtTogether = Array.isArray(details.related_products[relatedKeys.bought_together]) &&
                 details.related_products[relatedKeys.bought_together].length > 0;
 
-            const keysToFetch = hasBoughtTogether
-                ? [relatedKeys.bought_together, relatedKeys.must_use, relatedKeys.add_on]
-                : [relatedKeys.category_list];
+            const hasMustUse = Array.isArray(details.related_products[relatedKeys.must_use]) &&
+                details.related_products[relatedKeys.must_use].length > 0;
+
+            const hasAddOn = Array.isArray(details.related_products[relatedKeys.add_on]) &&
+                details.related_products[relatedKeys.add_on].length > 0;
+
+            const hasCategoryList = Array.isArray(details.related_products[relatedKeys.category_list]) &&
+                details.related_products[relatedKeys.category_list].length > 0;
+
+            let keysToFetch = [];
+
+            if (hasBoughtTogether && hasMustUse && hasAddOn) {
+                keysToFetch = [relatedKeys.bought_together, relatedKeys.must_use, relatedKeys.add_on];
+            } else if (hasBoughtTogether) {
+                keysToFetch = [relatedKeys.bought_together];
+                if (hasMustUse) keysToFetch.push(relatedKeys.must_use);
+                if (hasAddOn) keysToFetch.push(relatedKeys.add_on);
+            } else if (hasMustUse || hasAddOn) {
+                if (hasMustUse) keysToFetch.push(relatedKeys.must_use);
+                if (hasAddOn) keysToFetch.push(relatedKeys.add_on);
+            } else if (hasCategoryList) {
+                keysToFetch = [relatedKeys.category_list];
+            }
+
             keysToFetch.forEach((key) => {
                 const values = details.related_products[key];
                 if (Array.isArray(values) && values.length > 0) {
-                    const filterQuery = values.map((code) => `item_code:="${code}"`).join(" || ");
-                    relatedSections[key] = { query: filterQuery, data: [] };
+                    relatedSections[key] = { query: values.map((code) => `item_code:="${code}"`).join(" || "), data: [] };
                 } else {
                     relatedSections[key] = { query: "", data: [] };
                 }
             });
 
             const fetchData = async () => {
-                for (const key in relatedSections) {
-                    if (relatedSections[key].query) {
+                const fetchPromises = Object.entries(relatedSections).map(async ([key, section]) => {
+                    if (section.query) {
                         const queryParams = new URLSearchParams({
                             q: "*",
                             query_by: "item_name,item_description,brand",
                             query_by_weights: "1,2,3",
-                            filter_by: relatedSections[key].query,
+                            filter_by: section.query,
                         });
 
                         const data = await typesense_search_items(queryParams);
-                        // console.log(`Data for ${key}:`, data.hits);
 
-                        if (data.hits && data.hits.length > 0) {
+                        if (data?.hits?.length > 0) {
                             relatedSections[key].data = filterData(details.related_products[key], data.hits);
                         }
                     }
-                }
+                });
+
+                await Promise.all(fetchPromises);
                 setRelatedData(relatedSections);
             };
 
@@ -112,6 +133,9 @@ const ProductDetail = ({ hide, visible, product }) => {
         } else {
             setRelatedData({});
         }
+
+
+
 
         // console.log(relatedProductData, 'rela')
     };
@@ -417,24 +441,26 @@ const ProductDetail = ({ hide, visible, product }) => {
 
 
                                                 {relatedProductData && Object.keys(relatedProductData).length > 0 && (() => {
-                                                    const hasBoughtTogether = relatedProductData["Bought Together"] && relatedProductData["Bought Together"].data.length > 0;
-                                                    const hasMustUse = relatedProductData["Must Use"] && relatedProductData["Must Use"].data.length > 0;
-                                                    const hasAddOn = relatedProductData["Add On"] && relatedProductData["Add On"].data.length > 0;
-                                                    const hasCategoryList = relatedProductData["category_list"] && relatedProductData["category_list"].data.length > 0;
+                                                    const hasBoughtTogether = relatedProductData["Bought Together"]?.data.length > 0;
+                                                    const hasMustUse = relatedProductData["Must Use"]?.data.length > 0;
+                                                    const hasAddOn = relatedProductData["Add On"]?.data.length > 0;
+                                                    const hasCategoryList = relatedProductData["category_list"]?.data.length > 0;
 
                                                     return (
                                                         <>
-
-                                                            {Object.entries(relatedProductData).map(([key, value]) => (
-                                                                value.data.length > 0 && (
+                                                            {Object.entries(relatedProductData)
+                                                                .filter(([key, value]) => {
+                                                                    if (!value.data.length) return false;
+                                                                    // If any of Bought Together, Must Use, or Add On exist, hide category_list
+                                                                    if (key === "category_list" && (hasBoughtTogether || hasMustUse || hasAddOn)) return false;
+                                                                    return true;
+                                                                })
+                                                                .map(([key, value]) => (
                                                                     <div key={key} className="m-[15px_0] md:px-[10px]">
-                                                                        {(key === "Bought Together" || key === "category_list") ? (
-                                                                            <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">Related Products</h2>
-                                                                        ) : (
-                                                                            <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
-                                                                                {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
-                                                                            </h2>
-                                                                        )}
+                                                                        <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
+                                                                            {key === "Bought Together" || key === "category_list" ? "Related Products" :
+                                                                                key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                                        </h2>
 
                                                                         <ProductBox
                                                                             productList={value.data}
@@ -445,11 +471,12 @@ const ProductDetail = ({ hide, visible, product }) => {
                                                                             rowCount={"flex-[0_0_calc(20%_-_8px)]"}
                                                                         />
                                                                     </div>
-                                                                )
-                                                            ))}
+                                                                ))}
                                                         </>
                                                     );
                                                 })()}
+
+
 
 
 
