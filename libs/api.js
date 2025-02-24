@@ -612,7 +612,7 @@ export async function get_product_details(code) {
         apikey = localStorage['api_key'] ? localStorage['api_key'] : undefined;
         secret = localStorage['api_secret'] ? localStorage['api_secret'] : undefined;
     }
-    let api = `https://${domain}/api/method/igh_search.igh_search.api.get_product_info?item_code=${code}`
+    let api = `https://${domain}/api/method/igh_search.igh_search.api.get_product_info?item_code:${code}`
     const myHead = new Headers({ "Authorization": `token ${apikey}:${secret}`, "Content-Type": "application/json","x-typesense-api-key": "xyz" })
     const response = await fetch(api, { method: 'POST', headers: myHead, })
     return await response.json()
