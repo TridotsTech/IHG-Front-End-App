@@ -22,7 +22,7 @@ export const config = {
     '/:list',        
     '/list',        
     '/[...list]',        
-    // '/pr/:detail',               
+    '/pr/:detail',               
     '/',
     '/brand',
     '/search',

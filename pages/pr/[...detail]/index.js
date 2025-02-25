@@ -63,7 +63,7 @@ const Detail = () => {
         // productDetail["breadcrumb"] = breadcrumb;
         const detail = localStorage['product_detail']
         if (detail && JSON.parse(detail) && (JSON.parse(detail).item_code) === getPrRoute()) {
-            console.log("deta", JSON.parse(detail))
+            // console.log("deta", JSON.parse(detail))
             setProductDetail({ ...JSON.parse(detail) })
             // console.log('deta', JSON.parse(detail))
         } else {
@@ -137,55 +137,48 @@ const Detail = () => {
 
         if (details.related_products) {
             let relatedSections = {};
-
+        
             const relatedKeys = {
                 bought_together: "Bought Together",
                 must_use: "Must Use",
                 add_on: "Add On",
                 category_list: "category_list"
             };
-
-            const hasBoughtTogether = Array.isArray(details.related_products[relatedKeys.bought_together]) &&
-                details.related_products[relatedKeys.bought_together].length > 0;
-
-            const keysToFetch = hasBoughtTogether
-                ? [relatedKeys.bought_together, relatedKeys.must_use, relatedKeys.add_on] 
-                : [relatedKeys.category_list]; 
+        
+            const keysToFetch = Object.values(relatedKeys);
+        
             keysToFetch.forEach((key) => {
-                const values = details.related_products[key];
-                if (Array.isArray(values) && values.length > 0) {
-                    const filterQuery = values.map((code) => `item_code:="${code}"`).join(" || ");
-                    relatedSections[key] = { query: filterQuery, data: [] };
-                } else {
-                    relatedSections[key] = { query: "", data: [] };
-                }
+                const values = details.related_products[key] || [];
+                const filterQuery = values.map((code) => `item_code:="${code}"`).join(" || ");
+                relatedSections[key] = { query: filterQuery, data: [] };
             });
-
+        
+            // console.log("Initial relatedSections:", relatedSections);
+        
             const fetchData = async () => {
                 for (const key in relatedSections) {
-                    if (relatedSections[key].query) {
-                        const queryParams = new URLSearchParams({
-                            q: "*",
-                            query_by: "item_name,item_description,brand",
-                            query_by_weights: "1,2,3",
-                            filter_by: relatedSections[key].query,
-                        });
-
-                        const data = await typesense_search_items(queryParams);
-                        console.log(`Data for ${key}:`, data.hits);
-
-                        if (data.hits && data.hits.length > 0) {
-                            relatedSections[key].data = filterData(details.related_products[key], data.hits);
-                        }
-                    }
+                    const queryParams = new URLSearchParams({
+                        q: "*",
+                        query_by: "item_name,item_description,brand",
+                        query_by_weights: "1,2,3",
+                        filter_by: relatedSections[key].query
+                    });
+        
+                    const data = await typesense_search_items(queryParams);
+                    // console.log(`Data for ${key}:`, data.hits);
+        
+                    relatedSections[key].data = data.hits || [];
                 }
+        
+                // console.log("Final relatedSections:", relatedSections);
                 setRelatedData(relatedSections);
             };
-
+        
             fetchData();
         } else {
             setRelatedData({});
         }
+        
 
 
 
@@ -193,7 +186,8 @@ const Detail = () => {
 
 
 
-        console.log(relatedProductData, 'rela')
+
+        // console.log(relatedProductData, 'rela')
         // console.log('relatedSections', relatedProductData)
         // const resp = await get_product_details(router.query.detail);
         // const details = await resp.message || []
@@ -331,7 +325,7 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
     }, [relatedProductData])
 
     //   console.log(data,'data')
-    console.log("dedata", relatedData);
+    // console.log("dedata", relatedData);
 
     const productQty = (data) => {
         if (data) {
@@ -771,6 +765,33 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
         setSample(sample + 1);
     };
 
+    // const checkData = {
+    //     "Bought Together": { data: [] },
+    //     "Must Use": { data: [] },
+    //     "Add On": { data: [{ id: 3, name: "Product C" }] },
+    //     "category_list": { data: [{ id: 3, name: "Product C" }] }
+    // };
+
+    // const hasBoughtTogether = checkData["Bought Together"]?.data?.length > 0;
+    // const hasMustUse = checkData["Must Use"]?.data?.length > 0;
+    // const hasAddOn = checkData["Add On"]?.data?.length > 0;
+    // const hasCategoryList = checkData["category_list"]?.data?.length > 0;
+
+    // console.log("hasBoughtTogether:", hasBoughtTogether);
+    // console.log("hasMustUse:", hasMustUse);
+    // console.log("hasAddOn:", hasAddOn);
+    // console.log("hasCategoryList:", hasCategoryList);
+
+    // const filteredData = Object.entries(checkData).filter(([key, value]) => {
+    //     if (!value.data.length) return false; 
+    //     if (key === "category_list" && (hasBoughtTogether || hasMustUse || hasAddOn)) return false;
+    //     return true;
+    // });
+
+    // console.log("Filtered Data:", filteredData);
+
+
+
     // console.log('pr', data)
 
     return (
@@ -1021,41 +1042,46 @@ const DetailPage = ({ productDetail, toast, details, relatedProductData }) => {
 
 
                                 {relatedData && Object.keys(relatedData).length > 0 && (() => {
-                                    const hasBoughtTogether = relatedData["Bought Together"] && relatedData["Bought Together"].data.length > 0;
-                                    const hasMustUse = relatedData["Must Use"] && relatedData["Must Use"].data.length > 0;
-                                    const hasAddOn = relatedData["Add On"] && relatedData["Add On"].data.length > 0;
-                                    const hasCategoryList = relatedData["category_list"] && relatedData["category_list"].data.length > 0;
+                                    const hasBoughtTogether = relatedData["Bought Together"]?.data?.length > 0;
+                                    const hasMustUse = relatedData["Must Use"]?.data?.length > 0;
+                                    const hasAddOn = relatedData["Add On"]?.data?.length > 0;
+                                    const hasCategoryList = relatedData["category_list"]?.data?.length > 0;
+
+                                    const filteredData = Object.entries(relatedData).filter(([key, value]) => {
+                                        if (!value.data.length) return false;
+                                        if (key === "category_list" && (hasBoughtTogether || hasMustUse || hasAddOn)) return false;
+                                        return true;
+                                    });
+
+                                    if (filteredData.length === 0) return null;
 
                                     return (
                                         <>
-                                            {/* {hasBoughtTogether && (
-                                                <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">Related Products</h2>
-                                            )} */}
+                                            {filteredData.map(([key, value]) => (
+                                                <div key={key} className="m-[15px_0] md:px-[10px]">
+                                                    {(key === "Bought Together" || key === "category_list") ? (
+                                                        <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
+                                                            Related Products
+                                                        </h2>
+                                                    ) : (
+                                                        <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
+                                                            {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                        </h2>
+                                                    )}
 
-                                            {Object.entries(relatedData).map(([key, value]) => (
-                                                value.data.length > 0 && (
-                                                    <div key={key} className="m-[15px_0] md:px-[10px]">
-                                                        {(key === "Bought Together" || key === "category_list") ? (
-                                                            <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">Related Products</h2>
-                                                        ) : (
-                                                            <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
-                                                                {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
-                                                            </h2>
-                                                        )}
-
-                                                        <ProductBox
-                                                            productList={value.data}
-                                                            scroll_button={isMobile}
-                                                            rowStyle={true}
-                                                            scroll_id={`related_products_${key}`}
-                                                            rowCount={"flex-[0_0_calc(20%_-_8px)]"}
-                                                        />
-                                                    </div>
-                                                )
+                                                    <ProductBox
+                                                        productList={value.data}
+                                                        scroll_button={isMobile}
+                                                        rowStyle={true}
+                                                        scroll_id={`related_products_${key}`}
+                                                        rowCount={"flex-[0_0_calc(20%_-_8px)]"}
+                                                    />
+                                                </div>
                                             ))}
                                         </>
                                     );
                                 })()}
+
 
 
 
