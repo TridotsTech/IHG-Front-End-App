@@ -7,14 +7,21 @@ import MobileHeader from '../Headers/mobileHeader/MobileHeader';
 import Image from 'next/image';
 import ImageSlider from './ImageSlider';
 import ProductBox from '../Product/ProductBox';
+import { useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
+import { setProductDetail } from '@/redux/slice/productDetail';
 // import 'rodal/lib/rodal.css';
-const ProductDetail = ({ hide, visible, product }) => {
+const ProductDetail = ({ hide, visible, productData }) => {
 
+    const product = useSelector((state) => state.ProductDetails.data)
     const [relatedProductData, setRelatedData] = useState([])
     const [details, setDetails] = useState({});
     const [loader, setLoder] = useState(true);
     let [data, setData] = useState({})
     const [isMobile, setIsMobile] = useState(false)
+
+    const dispatch = useDispatch();
+
     useEffect(() => {
         if (product && product.item_code) {
             // console.log(data, "data ProductDetail")
@@ -24,9 +31,13 @@ const ProductDetail = ({ hide, visible, product }) => {
             getDetail();
             setLoder(false)
         }
-    }, [product])
 
+        if (productData) {
+            dispatch(setProductDetail(productData));
+        }
+    }, [product, productData])
 
+    console.log('pro', product)
     const loadLightGallery = () => {
         setTimeout(() => {
             const $lightGallery = $("#lightgallery");
@@ -51,6 +62,34 @@ const ProductDetail = ({ hide, visible, product }) => {
     //     return productRoute
     // }
 
+    // const ddata = {
+    //     "related_products": {
+    //         "Bought Together": [
+                
+    //         ],
+    //         "Must Use": [
+    //             "DRG-24X07.R.A.2M",
+    //             "LP.3535.SP.A.3M",
+    //         ],
+    //         "Add On": [
+    //             "DRG-24X07.R.A.2M",
+    //             "LP.3535.SP.A.3M",
+    //         ],
+    //         "category_list": [
+    //             "qe2e",
+    //             "Linear Profile - 7575 Kit",
+    //             "ZL.1715.S.A.2M",
+    //             "DRG-24X07.R.A.2M",
+    //             "LP.3535.SP.A.3M",
+    //             "ALU-A-2-5050-6M",
+    //             "ALU-T-2-2525-6M",
+    //             "ALU-S-1.8-48",
+    //             "FROS-GLS-10-262-1398",
+    //             "FROS-GLS-10-215-1215"
+    //         ]
+    //     }
+    // }
+
     const getDetail = async () => {
         const resp = await get_product_details(data.item_code);
         const details = (await resp.message) || {};
@@ -66,23 +105,36 @@ const ProductDetail = ({ hide, visible, product }) => {
 
             const relatedKeys = {
                 bought_together: "Bought Together",
+                category_list: "category_list",
                 must_use: "Must Use",
                 add_on: "Add On",
-                category_list: "category_list"
             };
 
             const keysToFetch = Object.values(relatedKeys);
 
+            let excludedItemCodes = new Set();
+            ["Bought Together", "Must Use", "Add On"].forEach((key) => {
+                if (details.related_products[key]) {
+                    details.related_products[key].forEach((code) => excludedItemCodes.add(code));
+                }
+            });
+
             keysToFetch.forEach((key) => {
-                const values = details.related_products[key] || [];
+                let values = details.related_products[key] || [];
+
+                if (key === "category_list") {
+                    values = values.filter((code) => !excludedItemCodes.has(code));
+                }
+
                 const filterQuery = values.map((code) => `item_code:="${code}"`).join(" || ");
                 relatedSections[key] = { query: filterQuery, data: [] };
             });
 
-            // console.log("Initial relatedSections:", relatedSections);
 
             const fetchData = async () => {
                 for (const key in relatedSections) {
+                    if (!relatedSections[key].query) continue; // Skip empty queries
+
                     const queryParams = new URLSearchParams({
                         q: "*",
                         query_by: "item_name,item_description,brand",
@@ -107,8 +159,9 @@ const ProductDetail = ({ hide, visible, product }) => {
 
 
 
-        // console.log(relatedProductData, 'rela')
+
     };
+    console.log(relatedProductData, 'rela')
 
 
     const filterData = (arr1, arr2) => {
@@ -142,6 +195,7 @@ const ProductDetail = ({ hide, visible, product }) => {
 
         window.addEventListener('resize', handleResize); // Event listener for window resize
 
+
         return () => {
             window.removeEventListener('resize', handleResize); // Clean up the event listener
         };
@@ -150,6 +204,7 @@ const ProductDetail = ({ hide, visible, product }) => {
     const openDetail = (value) => {
         if (value && value.document) {
             // console.log(value, "value")
+            // dispatch(setProductDetail(value.document));
             data = value.document
             setData({ ...data })
             getDetail();
@@ -417,9 +472,18 @@ const ProductDetail = ({ hide, visible, product }) => {
                                                     const hasCategoryList = relatedProductData["category_list"]?.data?.length > 0;
 
                                                     const filteredData = Object.entries(relatedProductData).filter(([key, value]) => {
-                                                        if (!value.data.length) return false;
-                                                        if (key === "category_list" && (hasBoughtTogether || hasMustUse || hasAddOn)) return false;
-                                                        return true;
+                                                        if (!value.data.length) return false; // Skip if no data
+
+                                                        // Always show Add On & Must Use
+                                                        if (key === "Add On" || key === "Must Use") return true;
+
+                                                        // Show Bought Together if it exists
+                                                        if (key === "Bought Together") return true;
+
+                                                        // Show category_list **only if** Bought Together is NOT present
+                                                        if (key === "category_list" && !hasBoughtTogether) return true;
+
+                                                        return false;
                                                     });
 
                                                     if (filteredData.length === 0) return null;
@@ -428,17 +492,13 @@ const ProductDetail = ({ hide, visible, product }) => {
                                                         <>
                                                             {filteredData.map(([key, value]) => (
                                                                 <div key={key} className="m-[15px_0] md:px-[10px]">
-                                                                    {(key === "Bought Together" || key === "category_list") ? (
-                                                                        <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
-                                                                            Related Products
-                                                                        </h2>
-                                                                    ) : (
-                                                                        <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
-                                                                            {key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
-                                                                        </h2>
-                                                                    )}
+                                                                    <h2 className="text-[16px] lg:text-[18px] mb-[10px] font-semibold text-[#000]">
+                                                                        {key === "Bought Together" || key === "category_list" ? "Related Products"
+                                                                            : key.replace(/_/g, " ").replace(/\b\w/g, (char) => char.toUpperCase())}
+                                                                    </h2>
 
                                                                     <ProductBox
+                                                                        openDetail={openDetail}
                                                                         productList={value.data}
                                                                         scroll_button={isMobile}
                                                                         rowStyle={true}
@@ -450,6 +510,7 @@ const ProductDetail = ({ hide, visible, product }) => {
                                                         </>
                                                     );
                                                 })()}
+
 
 
 

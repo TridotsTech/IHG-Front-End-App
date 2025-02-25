@@ -141,12 +141,12 @@ export default function ProductBox({ productList, size, rowCount, leftHorizontal
                   <div className='flex items-center gap-1 justify-between md:flex-wrap'>
                     <div className='flex items-center gap-[4px]'>
                       <Image src={'/stock.svg'} height={13} width={13} alt='stock' />
-                      {item.document.stock > 0 && <p className={`uppercase text-[12px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>{item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''}</p>}
-                      {item.document.stock < 1 && <p className={`text-[12px] uppercase md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-red-600`}>Out of stock</p>}
+                      {item.document.stock > 0 && <p className={`uppercase lg:text-[10px] 2xl:text-[11px] md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-[#189E46]`}>{item.document.stock ? item.document.stock : '0'} {item.document.stock_uom ? item.document.stock_uom : ''}</p>}
+                      {item.document.stock < 1 && <p className={`lg:text-[10px] 2xl:text-[11px]  uppercase md:text-[11px] md:leading-[2.1] font-semibold lg:leading-[25px] text-red-600`}>Out of stock</p>}
                     </div>
                     {item.document.brand && <div className='flex items-center gap-[4px]'>
                       <Image src={'/brand.svg'} height={13} width={13} alt='brand' />
-                      <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer text-[12px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}><span className='text-[11px] font-semibold'>{item.document.brand}</span></p>
+                      <p onClick={() => navigateDetail(item)} className={`line-clamp-2 cursor-pointer !lg:text-[9px] md:text-[12px] font-semibold md:leading-[2.1] lg:leading-[25px] openSens gray_color`}><span className='text-[9px] 2xl:text-[11px] md:text-[10px] font-semibold'>{item.document.brand}</span></p>
                     </div>}
                   </div>
                 </div>

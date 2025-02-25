@@ -21,6 +21,7 @@ import { Switch } from '@headlessui/react';
 import clsx from 'clsx'
 import useTabView from '@/libs/hooks/useTabView';
 import { resetFilter } from '@/redux/slice/homeFilter';
+import { setProductDetail } from '@/redux/slice/productDetail';
 // import ProductDetail from '@/components/Detail/ProductDetail';
 
 const initialState = {
@@ -755,11 +756,13 @@ function List({ category, brand, search }) {
   const [currentProduct, setCurrentProduct] = useState(null)
 
   const navigateDetail = (item) => {
+    dispatch(setProductDetail(item.document));
     setCurrentProduct(item.document)
     document.body.style.overflow = "hidden"
     setVisible(true)
   }
 
+  // console.log("visible", visible)
   const hide = (status) => {
     setVisible(false)
     document.body.style.overflow = "unset"

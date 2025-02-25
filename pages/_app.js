@@ -316,7 +316,7 @@ function App({ Component, pageProps }) {
               {/* <main className={`${poppins.className} min-h-screen w-full`}> */}
               {/* router.pathname == "/pr/[...detail]" ? pageKey : null */}
               {/* <div key={pageKey} className="page fade-enter fade-enter-active"> */}
-              {detailVisible && <ProductDetail visible={detailVisible} product={currentProduct} hide={DetailHide} />}
+              {detailVisible && <ProductDetail visible={detailVisible} productData={currentProduct} hide={DetailHide} />}
               <div className="page fade-enter fade-enter-active">
                 <Component  {...pageProps} />
               </div>

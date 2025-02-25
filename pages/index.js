@@ -11,6 +11,7 @@ import { resetFilters } from "@/redux/slice/filtersList";
 
 import Head from 'next/head'
 import { useDispatch } from "react-redux";
+import { setProductDetail } from "@/redux/slice/productDetail";
 const ProductDetail = dynamic(() => import('@/components/Detail/ProductDetail'))
 export default function Home() {
   let [isMobile, setIsMobile] = useState(false);
@@ -79,6 +80,7 @@ export default function Home() {
 
   const navigateDetail = (item) => {
     // console.log(item, "item")
+    dispatch(setProductDetail(item.document));
     setCurrentProduct(item.document)
     document.body.style.overflow = "hidden"
     setVisible(true)

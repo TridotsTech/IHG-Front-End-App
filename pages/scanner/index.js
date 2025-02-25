@@ -6,10 +6,14 @@ import { toast } from 'react-toastify';
 import NoProductFound from '@/components/Common/NoProductFound';
 import MobileHeader from '@/components/Headers/mobileHeader/MobileHeader';
 import { Scanner } from "@yudiel/react-qr-scanner";
+import ProductDetail from '@/components/Detail/ProductDetail';
+import { useDispatch } from 'react-redux';
+import { setProductDetail } from '@/redux/slice/productDetail';
 
 function QrScanner() {
   const router = useRouter()
   const [qrCodeNumber, setQrNumber] = useState('');
+  const dispatch = useDispatch();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -34,7 +38,6 @@ function QrScanner() {
     const data = await typesense_search_items(queryParams);
     console.log(data, "data")
     if (data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document) {
-      setDetailVisible(true);
       navigateDetail(data.hits[0].document);
       // router.push(`/pr/${data.hits[0].document.item_code}`)
     } else {
@@ -47,6 +50,7 @@ function QrScanner() {
   const [currentProduct, setCurrentProduct] = useState(null)
 
   const navigateDetail = (item) => {
+    dispatch(setProductDetail(item));
     setCurrentProduct(item)
     document.body.style.overflow = "hidden"
     setDetailVisible(true)
