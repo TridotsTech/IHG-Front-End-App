@@ -53,7 +53,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
   }
 
   const filterSubmit = () => {
-    console.log(filtersList, "filtersList")
+    // console.log(filtersList, "filtersList")
   }
 
   const handleChange = async (e, type) => {
@@ -62,7 +62,7 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
     ProductFilter({ ...obj })
 
     const value = await typesense_search_items(e.target.value, "name,description")
-    console.log(value, "value")
+    // console.log(value, "value")
   }
 
 
@@ -115,13 +115,13 @@ export default function Filters({ mastersData, filtersList, ProductFilter, close
     // { type: "custom_in_bundle_item", label: "Custom In Bundle Item", options: mastersData.custom_in_bundle_item || [] },
   ];
   const handleSelectionChange = (type, selectedArray) => {
-    console.log("Selected Options:", selectedArray);
+    // console.log("Selected Options:", selectedArray);
 
     setFilters((prevFilters) => ({
       ...prevFilters,
       [type]: selectedArray,
     }));
-    console.log("filters", filters)
+    // console.log("filters", filters)
   };
 
   return (

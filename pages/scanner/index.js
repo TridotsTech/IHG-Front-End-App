@@ -24,7 +24,7 @@ function QrScanner() {
   }, [qrCodeNumber])
 
   const getScannedProducts = async (barcode) => {
-    console.log(barcode, "barcode")
+    // console.log(barcode, "barcode")
 
     const queryParams = new URLSearchParams({
       q: "*",
@@ -36,7 +36,7 @@ function QrScanner() {
     });
 
     const data = await typesense_search_items(queryParams);
-    console.log(data, "data")
+    // console.log(data, "data")
     if (data && data.hits && data.hits.length > 0 && data.hits[0] && data.hits[0].document) {
       navigateDetail(data.hits[0].document);
       // router.push(`/pr/${data.hits[0].document.item_code}`)
@@ -75,7 +75,7 @@ function QrScanner() {
           {
             errorMsg === '' ? (
               <Scanner
-                onScan={(result) => { setQrNumber(result[0].rawValue), console.log(result[0].rawValue) }}
+                onScan={(result) => { setQrNumber(result[0].rawValue) }}
                 //   onDecode={(result) => setScannedData(result)}
                 //   onError={(error) => console.error("QR Scanner Error:", error)}
                 className="w-full"

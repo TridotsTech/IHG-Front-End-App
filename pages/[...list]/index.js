@@ -673,7 +673,7 @@ function List({ category, brand, search }) {
 
   useEffect(() => {
     setTimeout(() => {
-      console.log("sor", filters)
+      // console.log("sor", filters)
      }, 800);
     dispatch(setAllFilter({ ...filters }))
    
@@ -681,7 +681,7 @@ function List({ category, brand, search }) {
     // console.log("checkFill", productFilter)
 
     setTimeout(() => {
-      console.log("sorP", productFilter)
+      // console.log("sorP", productFilter)
      }, 1200);
 
   }, [filters])

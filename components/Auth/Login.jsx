@@ -234,10 +234,15 @@ export default function LogIn({ hide, checkModal }) {
             </div>
             <form onSubmit={handleSubmit((data) => log_in(data))} autoComplete='off'>
                 <div className={`flex flex-col py-5 relative`}>
-                    <label className={`${styles.label} `} htmlFor='email' >Email Address</label>
+                    <label className={`${styles.label} `} htmlFor='email' >Username / Email Address</label>
                     <div className='border rounded-[5px] flex gap-[5px] mt-[5px] p-[0_10px] h-[40px] items-center'>
                         <Image className={`t-[10px] ${errors.email?.message ? 'bottom-[48px]' : 'bottom-[25px]'} h-[23px] w-[20px] object-contain`} src={'/login/mail-01.svg'} height={15} width={15} alt={"pass"} />
-                        <input id='emailId' placeholder='Email' className={`${styles.input} ${styles.border_left} h-full`} {...register('email', { required: { value: true, message: 'Email is required' }, pattern: { value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/, message: "Please enter a valid email" } },)} />
+                        <input id='emailId' placeholder='Email' className={`${styles.input} ${styles.border_left} h-full`} 
+                        {...register('email',)} 
+                        // { required: { value: true, message: 'Email is required' }, 
+                        // pattern: { value: /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,4}$/, message: "Please enter a valid email" } 
+                        // },)} 
+                        />
                     </div>
                     {errors?.email && <p className={`${styles.danger}`}>{errors.email.message}</p>}
                 </div>
