@@ -32,7 +32,7 @@ export default function BottomTabs({ activeTab, getActiveTab, tabs }) {
 
 
     return (<>
-        <div id='tabs' className="fixed bottom-0 w-full z-[99] md:min-h-[60px] your-element">
+        <div id='tabs' className="fixed bottom-0 w-full z-[99999999] md:min-h-[60px] your-element">
             <ul className='flex justify-between w-full bg-[#fff] py-[6px] your-element' style={{ borderTop: '1px solid #ddd' }}>
                 {tabs.map((nav, index) => {
                     return (

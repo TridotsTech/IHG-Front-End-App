@@ -81,7 +81,7 @@ export default function LogIn({ hide, checkModal }) {
                 hide()
             }
             else {
-                msg = { message: val.message ? val.message : 'Something wen wrong try again later' }
+                msg = { message: val.message.message ? val.message.message : 'Something wen wrong try again later' }
                 setMsg(msg)
                 headerMsg = 'Alert'
                 setHeaderMsg(headerMsg)

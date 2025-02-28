@@ -37,7 +37,7 @@ const ProductDetail = ({ hide, visible, productData }) => {
         }
     }, [product, productData])
 
-    console.log('pro', product)
+    // console.log('pro', product)
     const loadLightGallery = () => {
         setTimeout(() => {
             const $lightGallery = $("#lightgallery");
@@ -161,7 +161,7 @@ const ProductDetail = ({ hide, visible, productData }) => {
 
 
     };
-    console.log(relatedProductData, 'rela')
+    // console.log(relatedProductData, 'rela')
 
 
     const filterData = (arr1, arr2) => {
@@ -255,7 +255,7 @@ const ProductDetail = ({ hide, visible, productData }) => {
 
             <div className={`product_detail`}>
                 <Rodal visible={visible} animation='fade' onClose={() => { hide(undefined) }}>
-                    <div className='h-[calc(100vh_-_110px)] md:h-screen overflow-auto'>
+                    <div className='h-[calc(100vh_-_110px)] md:h-screen overflow-auto md:pb-20'>
                         <div className="">
                             {loader ? (
                                 <Skeleton />
